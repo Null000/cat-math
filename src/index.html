@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Math Practice</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f4f8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      .container {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 90%;
+        max-width: 400px;
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 25px;
+      }
+
+      #problem-container {
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #555;
+        margin-bottom: 20px;
+        padding: 20px;
+        background-color: #e9ecef;
+        border-radius: 5px;
+      }
+
+      .answer-section {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      #answer-input {
+        padding: 10px;
+        font-size: 1.2em;
+        width: 150px;
+        text-align: center;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 1.1em;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        color: white;
+        transition: background-color 0.3s;
+      }
+
+      #submit-btn {
+        background-color: #007bff;
+      }
+
+      #submit-btn:hover {
+        background-color: #0056b3;
+      }
+
+      #feedback {
+        font-size: 1.2em;
+        font-weight: bold;
+        min-height: 25px; /* Prevents layout shift */
+        margin-top: 20px;
+      }
+
+      .correct {
+        color: #28a745; /* Green */
+      }
+
+      .incorrect {
+        color: #dc3545; /* Red */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Math Practice 🧠</h1>
+      <div id="problem-container">
+        <span id="problem"></span>
+      </div>
+      <div class="answer-section">
+        <input
+          type="number"
+          id="answer-input"
+          placeholder="Your answer"
+          autocomplete="off"
+        />
+        <button id="submit-btn">Check</button>
+      </div>
+      <p id="feedback"></p>
+    </div>
+
+    <script type="module">
+      import { getProblem } from "./app.js";
+      document.addEventListener("DOMContentLoaded", () => {
+        // DOM Elements
+        const problemElement = document.getElementById("problem");
+        const answerInput = document.getElementById("answer-input");
+        const submitButton = document.getElementById("submit-btn");
+        const feedbackElement = document.getElementById("feedback");
+
+        let correctAnswer;
+
+        // Function to generate a new math problem
+        function newProblem() {
+          const problem = getProblem(["Addition: 10"]);
+          correctAnswer = problem.answer;
+
+          problemElement.textContent = problem.text;
+          resetState();
+        }
+
+        // Function to check the user's answer
+        function checkAnswer() {
+          const userAnswer = parseInt(answerInput.value, 10);
+
+          if (isNaN(userAnswer)) {
+            feedbackElement.textContent = "Please enter a number!";
+            feedbackElement.className = "incorrect";
+            return;
+          }
+
+          if (userAnswer === correctAnswer) {
+            feedbackElement.textContent = "Correct! 🎉";
+            feedbackElement.className = "correct";
+          } else {
+            feedbackElement.textContent = `Incorrect. The answer was ${correctAnswer}.`;
+            feedbackElement.className = "incorrect";
+          }
+
+          submitButton.disabled = true;
+          answerInput.disabled = true;
+          setTimeout(newProblem, 1000);
+        }
+
+        // Function to reset the input field and feedback
+        function resetState() {
+          answerInput.value = "";
+          feedbackElement.textContent = "";
+          feedbackElement.className = "";
+          submitButton.disabled = false;
+          answerInput.disabled = false;
+          answerInput.focus();
+        }
+
+        // Event Listeners
+        submitButton.addEventListener("click", checkAnswer);
+
+        // Allow pressing 'Enter' to check the answer
+        answerInput.addEventListener("keyup", (event) => {
+          if (event.key === "Enter") {
+            checkAnswer();
+          }
+        });
+
+        // Generate the first problem on page load
+        newProblem();
+      });
+    </script>
+  </body>
+</html>

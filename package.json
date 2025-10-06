@@ -1,4 +1,12 @@
 {
   "name": "math",
-  "packageManager": "yarn@4.10.3"
+  "packageManager": "yarn@4.10.3",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && cp src/*.html dist"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3"
+  }
 }
