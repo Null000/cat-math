@@ -37,9 +37,6 @@ if not all_problems:
             correct_answer = num1 - num2
             all_problems.append((problem, correct_answer))
     
-    # Shuffle the problems for random order
-    random.shuffle(all_problems)
-    
     # Save initial problems to file
     save_problems_to_file(all_problems, "problems_sub20")
     print(f"Generated {len(all_problems)} subtraction problems. Let's start!")
@@ -63,7 +60,7 @@ while all_problems:
         break
     
     # Check if too slow
-    if response_time > 5:
+    if response_time > 12:
         print("Too slow!")
     
     try:
@@ -72,7 +69,7 @@ while all_problems:
         
         # Check if correct
         if user_answer == correct_answer:
-            print("Correct! Great job.")
+            print("Correct! Great job Lia!")
             # Remove the problem from the array after correct and quick solution
             if response_time <= 5:  # Only remove if solved quickly
                 all_problems.pop(random_index)
@@ -84,10 +81,6 @@ while all_problems:
     
     except ValueError:
         print("Invalid input. Please enter a number or 'q' to quit.")
-        # Move to next problem on invalid input
-        all_problems.pop(0)
-        # Save remaining problems to file
-        save_problems_to_file(all_problems, "problems_sub20")
     
     print()  # Empty line for readability
 
