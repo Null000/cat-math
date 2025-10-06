@@ -9,7 +9,13 @@ export function getProblem(categories: Category[]): Problem {
 function generateProblem(category: Category): Problem {
   switch (category) {
     case Category.Addition_Ten:
-      return addition.generateAdditionTenProblem();
+    case Category.Addition_TwentyWithoutCarry:
+    case Category.Addition_TwentyWithCarry:
+    case Category.Addition_TwentyMixed:
+    case Category.Addition_HundredWithoutCarry:
+    case Category.Addition_HundredWithCarry:
+    case Category.Addition_HundredMixed:
+      return addition.generateAdditionProblem(category);
     default:
       throw new Error(`Unknown category: ${category}`);
   }
