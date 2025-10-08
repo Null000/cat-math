@@ -41,7 +41,8 @@ export function removeSolvedProblem(
   category: Category,
   problemId: string,
 ): void {
-  if (cache[category]) {
-    cache[category] = cache[category]!.filter((p) => p.id !== problemId);
+  const problems = getCachedProblems(category);
+  if (problems) {
+    cache[category] = problems.filter((p) => p.id !== problemId);
   }
 }
