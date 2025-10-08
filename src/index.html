@@ -177,7 +177,7 @@
     </div>
 
     <script type="module">
-      import { getProblem, getCategories, removeSolvedProblem } from "./app.js";
+      import { getProblem, getCategories, solvedProblem } from "./app.js";
       document.addEventListener("DOMContentLoaded", () => {
         // DOM Elements
         const categorySelection = document.getElementById("category-selection");
@@ -267,7 +267,7 @@
             feedbackElement.textContent = "Correct! 🎉";
             feedbackElement.className = "correct";
             // Remove the correctly solved problem from cache
-            removeSolvedProblem(currentCategory, currentProblem.id);
+            solvedProblem(currentCategory, currentProblem.id);
           } else {
             feedbackElement.textContent = `Incorrect. The answer was ${currentProblem.answer}.`;
             feedbackElement.className = "incorrect";

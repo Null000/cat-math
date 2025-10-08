@@ -1,7 +1,5 @@
 import { Category, Problem } from "./common.js";
 
-const problemCache: Record<string, Problem[]> = {};
-
 const generateProps: Record<
   string,
   {
@@ -31,15 +29,8 @@ const generateProps: Record<
   },
 };
 
-function generate(
-  category: Category,
-  props: {
-    xMax: number;
-    yMax: number;
-    borrowAllowed?: boolean;
-    borrowForced?: boolean;
-  },
-): Problem[] {
+export function generate(category: Category): Problem[] {
+  const props = generateProps[category]!;
   let { xMax, yMax, borrowAllowed, borrowForced } = props;
   borrowAllowed = borrowAllowed ?? true;
   borrowForced = borrowForced ?? false;
@@ -63,23 +54,4 @@ function generate(
     }
   }
   return allProblems;
-}
-
-export function generateSubtractionProblem(category: Category): Problem {
-  if (!problemCache[category]) {
-    problemCache[category] = generate(category, generateProps[category]!);
-  }
-  const problems = problemCache[category]!;
-  return problems[Math.floor(Math.random() * problems.length)]!;
-}
-
-export function removeSolvedSubtractionProblem(
-  category: Category,
-  problemId: string,
-): void {
-  if (problemCache[category]) {
-    problemCache[category] = problemCache[category]!.filter(
-      (p) => p.id !== problemId,
-    );
-  }
 }

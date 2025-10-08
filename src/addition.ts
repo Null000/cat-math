@@ -1,7 +1,5 @@
 import { Category, Problem } from "./common.js";
 
-const problemCache: Record<string, Problem[]> = {};
-
 const generateProps: Record<
   string,
   {
@@ -48,15 +46,8 @@ const generateProps: Record<
   },
 };
 
-function generate(
-  category: Category,
-  props: {
-    xMax: number;
-    yMax: number;
-    carryAllowed?: boolean;
-    carryForced?: boolean;
-  },
-): Problem[] {
+export function generate(category: Category): Problem[] {
+  const props = generateProps[category]!;
   let { xMax, yMax, carryAllowed, carryForced } = props;
   carryAllowed = carryAllowed ?? true;
   carryForced = carryForced ?? false;
@@ -79,23 +70,4 @@ function generate(
     }
   }
   return allProblems;
-}
-
-export function generateAdditionProblem(category: Category): Problem {
-  if (!problemCache[category]) {
-    problemCache[category] = generate(category, generateProps[category]!);
-  }
-  const problems = problemCache[category]!;
-  return problems[Math.floor(Math.random() * problems.length)]!;
-}
-
-export function removeSolvedAdditionProblem(
-  category: Category,
-  problemId: string,
-): void {
-  if (problemCache[category]) {
-    problemCache[category] = problemCache[category]!.filter(
-      (p) => p.id !== problemId,
-    );
-  }
 }
