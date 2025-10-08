@@ -1,9 +1,13 @@
 import * as addition from "./addition.js";
+import * as subtraction from "./subtraction.js";
 import { Category, Problem } from "./common.js";
 
-export function getProblem(categories: Category[]): Problem {
-  const category = categories[Math.floor(Math.random() * categories.length)];
-  return generateProblem(category!);
+export function getProblem(categories: Category[]): {
+  problem: Problem;
+  category: Category;
+} {
+  const category = categories[Math.floor(Math.random() * categories.length)]!;
+  return { problem: generateProblem(category), category };
 }
 
 function generateProblem(category: Category): Problem {
@@ -16,9 +20,26 @@ function generateProblem(category: Category): Problem {
     case Category.Addition_HundredWithCarry:
     case Category.Addition_HundredMixed:
       return addition.generateAdditionProblem(category);
+    case Category.Subtraction_Ten:
+    case Category.Subtraction_Twenty:
+    case Category.Subtraction_HundredWithoutBorrow:
+    case Category.Subtraction_HundredWithBorrow:
+      return subtraction.generateSubtractionProblem(category);
     default:
       throw new Error(`Unknown category: ${category}`);
   }
+}
+
+export function removeSolvedProblem(
+  category: Category,
+  problemId: string,
+): void {
+  if (category.startsWith("Addition")) {
+    addition.removeSolvedAdditionProblem(category, problemId);
+  } else if (category.startsWith("Subtraction")) {
+    subtraction.removeSolvedSubtractionProblem(category, problemId);
+  }
+  // Add other categories as they are implemented
 }
 
 export function getCategories(): Record<string, string[]> {

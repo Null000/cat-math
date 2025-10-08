@@ -177,7 +177,7 @@
     </div>
 
     <script type="module">
-      import { getProblem, getCategories } from "./app.js";
+      import { getProblem, getCategories, removeSolvedProblem } from "./app.js";
       document.addEventListener("DOMContentLoaded", () => {
         // DOM Elements
         const categorySelection = document.getElementById("category-selection");
@@ -189,7 +189,8 @@
         const submitButton = document.getElementById("submit-btn");
         const feedbackElement = document.getElementById("feedback");
 
-        let correctAnswer;
+        let currentProblem;
+        let currentCategory;
         let selectedCategories = [];
 
         // Populate category checkboxes
@@ -244,10 +245,11 @@
           if (selectedCategories.length === 0) {
             selectedCategories = ["Addition: 10"]; // Default fallback
           }
-          const problem = getProblem(selectedCategories);
-          correctAnswer = problem.answer;
+          const result = getProblem(selectedCategories);
+          currentProblem = result.problem;
+          currentCategory = result.category;
 
-          problemElement.textContent = problem.text;
+          problemElement.textContent = currentProblem.text;
           resetState();
         }
 
@@ -261,11 +263,13 @@
             return;
           }
 
-          if (userAnswer === correctAnswer) {
+          if (userAnswer === currentProblem.answer) {
             feedbackElement.textContent = "Correct! 🎉";
             feedbackElement.className = "correct";
+            // Remove the correctly solved problem from cache
+            removeSolvedProblem(currentCategory, currentProblem.id);
           } else {
-            feedbackElement.textContent = `Incorrect. The answer was ${correctAnswer}.`;
+            feedbackElement.textContent = `Incorrect. The answer was ${currentProblem.answer}.`;
             feedbackElement.className = "incorrect";
           }
 

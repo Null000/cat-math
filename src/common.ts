@@ -1,4 +1,5 @@
 export interface Problem {
+  id: string;
   text: string;
   answer: number;
 }

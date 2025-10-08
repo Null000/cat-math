@@ -48,12 +48,15 @@ const generateProps: Record<
   },
 };
 
-function generate(props: {
-  xMax: number;
-  yMax: number;
-  carryAllowed?: boolean;
-  carryForced?: boolean;
-}): Problem[] {
+function generate(
+  category: Category,
+  props: {
+    xMax: number;
+    yMax: number;
+    carryAllowed?: boolean;
+    carryForced?: boolean;
+  },
+): Problem[] {
   let { xMax, yMax, carryAllowed, carryForced } = props;
   carryAllowed = carryAllowed ?? true;
   carryForced = carryForced ?? false;
@@ -69,6 +72,7 @@ function generate(props: {
         continue;
       }
       allProblems.push({
+        id: `${category}_${i}_${j}`,
         text: `${i} + ${j} = ?`,
         answer: i + j,
       });
@@ -79,8 +83,19 @@ function generate(props: {
 
 export function generateAdditionProblem(category: Category): Problem {
   if (!problemCache[category]) {
-    problemCache[category] = generate(generateProps[category]!);
+    problemCache[category] = generate(category, generateProps[category]!);
   }
   const problems = problemCache[category]!;
   return problems[Math.floor(Math.random() * problems.length)]!;
+}
+
+export function removeSolvedAdditionProblem(
+  category: Category,
+  problemId: string,
+): void {
+  if (problemCache[category]) {
+    problemCache[category] = problemCache[category]!.filter(
+      (p) => p.id !== problemId,
+    );
+  }
 }
