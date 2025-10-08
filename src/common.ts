@@ -18,7 +18,6 @@ export enum Category {
   Subtraction_HundredWithBorrow = "Subtraction: 100 (with borrow)",
   Multiplication_Ten = "Multiplication: 10",
   Multiplication_Twenty = "Multiplication: 20",
-  Multiplication_Hundred = "Multiplication: 100",
   Division_Ten = "Division: 10",
   Division_Twenty = "Division: 20",
   Division_Hundred = "Division: 100",
