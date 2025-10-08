@@ -194,14 +194,17 @@
         let selectedCategories = [];
 
         // Load solved problems from localStorage and mark them as solved
-        const solvedProblems = JSON.parse(
-          localStorage.getItem("solvedProblems") || "{}",
-        );
-        Object.entries(solvedProblems).forEach(([category, problemIds]) => {
-          problemIds.forEach((problemId) => {
-            solvedProblem(category, problemId);
+        const categories = getCategories();
+        Object.values(categories)
+          .flat()
+          .forEach((category) => {
+            const solvedProblemIds = JSON.parse(
+              localStorage.getItem(category) || "[]",
+            );
+            solvedProblemIds.forEach((problemId) => {
+              solvedProblem(category, problemId);
+            });
           });
-        });
 
         // Populate category checkboxes
         function populateCategories() {
@@ -279,19 +282,16 @@
             // Remove the correctly solved problem from cache
             solvedProblem(currentCategory, currentProblem.id);
             // Store the solved problem in localStorage
-            const solvedProblems = JSON.parse(
-              localStorage.getItem("solvedProblems") || "{}",
+            const solvedProblemIds = JSON.parse(
+              localStorage.getItem(currentCategory) || "[]",
             );
-            if (!solvedProblems[currentCategory]) {
-              solvedProblems[currentCategory] = [];
+            if (!solvedProblemIds.includes(currentProblem.id)) {
+              solvedProblemIds.push(currentProblem.id);
+              localStorage.setItem(
+                currentCategory,
+                JSON.stringify(solvedProblemIds),
+              );
             }
-            if (!solvedProblems[currentCategory].includes(currentProblem.id)) {
-              solvedProblems[currentCategory].push(currentProblem.id);
-            }
-            localStorage.setItem(
-              "solvedProblems",
-              JSON.stringify(solvedProblems),
-            );
           } else {
             feedbackElement.textContent = `Incorrect. The answer was ${currentProblem.answer}.`;
             feedbackElement.className = "incorrect";
