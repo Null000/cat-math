@@ -84,6 +84,35 @@
         letter-spacing: -0.02em;
       }
 
+      .brain-emoji {
+        background: linear-gradient(
+          135deg,
+          #ff6b6b 0%,
+          #feca57 25%,
+          #48dbfb 50%,
+          #0abde3 75%,
+          #ff9ff3 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        display: inline-block;
+        animation: brainPulse 2s ease-in-out infinite;
+        text-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
+      }
+
+      @keyframes brainPulse {
+        0%,
+        100% {
+          transform: scale(1);
+          filter: brightness(1);
+        }
+        50% {
+          transform: scale(1.1);
+          filter: brightness(1.1);
+        }
+      }
+
       #problem-container {
         font-size: 3em;
         font-weight: 700;
@@ -384,7 +413,7 @@
   </head>
   <body>
     <div class="container">
-      <h1>Math Practice 🧠</h1>
+      <h1>Math Practice <span class="brain-emoji">🧠</span></h1>
       <div class="category-selection" id="category-selection">
         <h2>Select Practice Categories</h2>
         <div id="category-groups"></div>
