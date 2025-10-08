@@ -1,6 +1,8 @@
 import { Category, Problem } from "./common.js";
 import * as addition from "./addition.js";
 import * as subtraction from "./subtraction.js";
+import * as division from "./division.js";
+import * as multiplication from "./multiplication.js";
 import { categoryToGroup } from "./common.js";
 
 export type ProblemCache = Record<string, Problem[]>;
@@ -8,8 +10,8 @@ export type ProblemCache = Record<string, Problem[]>;
 const generateFnPerGroup: Record<string, (category: Category) => Problem[]> = {
   Addition: (category) => addition.generate(category),
   Subtraction: (category) => subtraction.generate(category),
-  //   Multiplication: () => multiplication.generateMultiplicationProblem(),
-  //   Division: () => division.generateDivisionProblem(),
+  Multiplication: (category) => multiplication.generate(category),
+  Division: (category) => division.generate(category),
 };
 
 const cache: ProblemCache = {};
