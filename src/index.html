@@ -89,40 +89,162 @@
       .incorrect {
         color: #dc3545; /* Red */
       }
+
+      .category-selection {
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+      }
+
+      .category-selection h2 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        font-size: 1.2em;
+        color: #495057;
+      }
+
+      .category-group {
+        margin-bottom: 15px;
+      }
+
+      .category-group h3 {
+        margin: 0 0 8px 0;
+        font-size: 1em;
+        color: #6c757d;
+        text-align: left;
+      }
+
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 8px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .checkbox-item input[type="checkbox"] {
+        margin: 0;
+      }
+
+      .checkbox-item label {
+        font-size: 0.9em;
+        color: #495057;
+        cursor: pointer;
+        margin: 0;
+      }
+
+      .start-practice-btn {
+        background-color: #28a745;
+        margin-top: 20px;
+      }
+
+      .start-practice-btn:hover {
+        background-color: #218838;
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <h1>Math Practice 🧠</h1>
-      <div id="problem-container">
-        <span id="problem"></span>
+      <div class="category-selection" id="category-selection">
+        <h2>Select Practice Categories</h2>
+        <div id="category-groups"></div>
+        <button id="start-practice-btn" class="start-practice-btn">
+          Start Practice
+        </button>
       </div>
-      <div class="answer-section">
-        <input
-          type="number"
-          id="answer-input"
-          placeholder="Your answer"
-          autocomplete="off"
-        />
-        <button id="submit-btn">Check</button>
+      <div id="practice-container" style="display: none">
+        <div id="problem-container">
+          <span id="problem"></span>
+        </div>
+        <div class="answer-section">
+          <input
+            type="number"
+            id="answer-input"
+            placeholder="Your answer"
+            autocomplete="off"
+          />
+          <button id="submit-btn">Check</button>
+        </div>
+        <p id="feedback"></p>
       </div>
-      <p id="feedback"></p>
     </div>
 
     <script type="module">
-      import { getProblem } from "./app.js";
+      import { getProblem, getCategories } from "./app.js";
       document.addEventListener("DOMContentLoaded", () => {
         // DOM Elements
+        const categorySelection = document.getElementById("category-selection");
+        const categoryGroups = document.getElementById("category-groups");
+        const startPracticeBtn = document.getElementById("start-practice-btn");
+        const practiceContainer = document.getElementById("practice-container");
         const problemElement = document.getElementById("problem");
         const answerInput = document.getElementById("answer-input");
         const submitButton = document.getElementById("submit-btn");
         const feedbackElement = document.getElementById("feedback");
 
         let correctAnswer;
+        let selectedCategories = [];
+
+        // Populate category checkboxes
+        function populateCategories() {
+          const categories = getCategories();
+          categoryGroups.innerHTML = "";
+
+          Object.entries(categories).forEach(([groupName, categoryList]) => {
+            const groupDiv = document.createElement("div");
+            groupDiv.className = "category-group";
+
+            const groupTitle = document.createElement("h3");
+            groupTitle.textContent = groupName;
+            groupDiv.appendChild(groupTitle);
+
+            const checkboxGrid = document.createElement("div");
+            checkboxGrid.className = "checkbox-grid";
+
+            categoryList.forEach((category) => {
+              const checkboxItem = document.createElement("div");
+              checkboxItem.className = "checkbox-item";
+
+              const checkbox = document.createElement("input");
+              checkbox.type = "checkbox";
+              checkbox.id = category;
+              checkbox.value = category;
+
+              const label = document.createElement("label");
+              label.htmlFor = category;
+              label.textContent = category;
+
+              checkboxItem.appendChild(checkbox);
+              checkboxItem.appendChild(label);
+              checkboxGrid.appendChild(checkboxItem);
+            });
+
+            groupDiv.appendChild(checkboxGrid);
+            categoryGroups.appendChild(groupDiv);
+          });
+        }
+
+        // Function to get selected categories
+        function getSelectedCategories() {
+          const checkboxes = document.querySelectorAll(
+            '#category-groups input[type="checkbox"]:checked',
+          );
+          return Array.from(checkboxes).map((checkbox) => checkbox.value);
+        }
 
         // Function to generate a new math problem
         function newProblem() {
-          const problem = getProblem(["Addition: 10"]);
+          if (selectedCategories.length === 0) {
+            selectedCategories = ["Addition: 10"]; // Default fallback
+          }
+          const problem = getProblem(selectedCategories);
           correctAnswer = problem.answer;
 
           problemElement.textContent = problem.text;
@@ -162,7 +284,24 @@
           answerInput.focus();
         }
 
+        // Function to start practice
+        function startPractice() {
+          selectedCategories = getSelectedCategories();
+          if (selectedCategories.length === 0) {
+            alert("Please select at least one category to practice!");
+            return;
+          }
+
+          // Hide category selection and show practice container
+          categorySelection.style.display = "none";
+          practiceContainer.style.display = "block";
+
+          // Generate the first problem
+          newProblem();
+        }
+
         // Event Listeners
+        startPracticeBtn.addEventListener("click", startPractice);
         submitButton.addEventListener("click", checkAnswer);
 
         // Allow pressing 'Enter' to check the answer
@@ -172,8 +311,8 @@
           }
         });
 
-        // Generate the first problem on page load
-        newProblem();
+        // Initialize categories on page load
+        populateCategories();
       });
     </script>
   </body>
