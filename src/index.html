@@ -348,6 +348,41 @@
         flex: 1;
       }
 
+      .category-examples {
+        margin-top: 12px;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.4);
+        border-radius: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .category-examples h4 {
+        margin: 0 0 8px 0;
+        font-size: 0.8em;
+        font-weight: 600;
+        color: #718096;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .examples-list {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .example-problem {
+        font-family: "Courier New", monospace;
+        font-size: 0.85em;
+        color: #2d3748;
+        background: rgba(255, 255, 255, 0.6);
+        padding: 6px 10px;
+        border-radius: 4px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        text-align: center;
+        font-weight: 500;
+      }
+
       .start-practice-btn {
         background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
         box-shadow: 0 8px 25px rgba(72, 187, 120, 0.3);
@@ -440,6 +475,7 @@
 
     <script type="module">
       import { getProblem, getCategories, solvedProblem } from "./app.js";
+      import { getRandomProblem } from "./problem.js";
       document.addEventListener("DOMContentLoaded", () => {
         // DOM Elements
         const categorySelection = document.getElementById("category-selection");
@@ -499,6 +535,30 @@
 
               checkboxItem.appendChild(checkbox);
               checkboxItem.appendChild(label);
+
+              // Add examples for this category
+              const examplesDiv = document.createElement("div");
+              examplesDiv.className = "category-examples";
+
+              const examplesTitle = document.createElement("h4");
+              examplesTitle.textContent = "Examples";
+              examplesDiv.appendChild(examplesTitle);
+
+              const examplesList = document.createElement("div");
+              examplesList.className = "examples-list";
+
+              // Generate 3 example problems
+              for (let i = 0; i < 3; i++) {
+                const exampleProblem = getRandomProblem(category);
+                const exampleDiv = document.createElement("div");
+                exampleDiv.className = "example-problem";
+                exampleDiv.textContent = exampleProblem.text;
+                examplesList.appendChild(exampleDiv);
+              }
+
+              examplesDiv.appendChild(examplesList);
+              checkboxItem.appendChild(examplesDiv);
+
               checkboxGrid.appendChild(checkboxItem);
             });
 
