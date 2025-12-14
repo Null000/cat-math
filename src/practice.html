@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Math Practice</title>
+
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background-attachment: fixed;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.03)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.03)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        pointer-events: none;
+      }
+
+      .container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 40px;
+        border-radius: 24px;
+        box-shadow:
+          0 25px 50px -12px rgba(0, 0, 0, 0.25),
+          0 0 0 1px rgba(255, 255, 255, 0.1);
+        text-align: center;
+        width: 100%;
+        max-width: 500px;
+        position: relative;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        animation: slideIn 0.6s ease-out;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px) scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      h1 {
+        color: #1a1a1a;
+        margin-bottom: 30px;
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: 0 2px 10px rgba(102, 126, 234, 0.2);
+        letter-spacing: -0.02em;
+      }
+
+      .brain-emoji {
+        background: linear-gradient(
+          135deg,
+          #ff6b6b 0%,
+          #feca57 25%,
+          #48dbfb 50%,
+          #0abde3 75%,
+          #ff9ff3 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        display: inline-block;
+        animation: brainPulse 2s ease-in-out infinite;
+        text-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
+      }
+
+      @keyframes brainPulse {
+        0%,
+        100% {
+          transform: scale(1);
+          filter: brightness(1);
+        }
+        50% {
+          transform: scale(1.1);
+          filter: brightness(1.1);
+        }
+      }
+
+      #problem-container {
+        font-size: 3em;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 25px;
+        padding: 30px 25px;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        border-radius: 16px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(245, 87, 108, 0.2);
+        transition: all 0.3s ease;
+      }
+
+      #problem-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        animation: shine 3s infinite;
+      }
+
+      @keyframes shine {
+        0% {
+          left: -100%;
+        }
+        100% {
+          left: 100%;
+        }
+      }
+
+      .answer-section {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+      }
+
+      #answer-input {
+        padding: 16px 20px;
+        font-size: 1.3em;
+        width: 180px;
+        text-align: center;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        background: #ffffff;
+        color: #2d3748;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      #answer-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow:
+          0 0 0 3px rgba(102, 126, 234, 0.1),
+          0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+      }
+
+      #answer-input:hover {
+        border-color: #cbd5e0;
+      }
+
+      button {
+        padding: 14px 28px;
+        font-size: 1.1em;
+        font-weight: 600;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        color: white;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-size: 0.9em;
+      }
+
+      button::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      button:hover::before {
+        left: 100%;
+      }
+
+      #submit-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      }
+
+      #submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+      }
+
+      #submit-btn:active {
+        transform: translateY(0);
+      }
+
+      #feedback {
+        font-size: 1.3em;
+        font-weight: 600;
+        min-height: 30px;
+        margin-top: 25px;
+        padding: 15px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        animation: fadeIn 0.3s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .correct {
+        color: #48bb78;
+        background: rgba(72, 187, 120, 0.1);
+        border: 1px solid rgba(72, 187, 120, 0.2);
+      }
+
+      .incorrect {
+        color: #f56565;
+        background: rgba(245, 101, 101, 0.1);
+        border: 1px solid rgba(245, 101, 101, 0.2);
+      }
+
+      .back-btn {
+        background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+        box-shadow: 0 8px 25px rgba(74, 85, 104, 0.3);
+        margin-bottom: 25px;
+      }
+
+      .back-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 35px rgba(74, 85, 104, 0.4);
+      }
+
+      .back-btn:active {
+        transform: translateY(0);
+      }
+
+      /* Responsive design */
+      @media (max-width: 600px) {
+        .container {
+          padding: 30px 20px;
+          margin: 10px;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+
+        #problem-container {
+          font-size: 2.5em;
+          padding: 25px 15px;
+        }
+
+        #answer-input {
+          width: 140px;
+          font-size: 1.1em;
+        }
+
+        .answer-section {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        #submit-btn {
+          width: 100%;
+          max-width: 180px;
+        }
+      }
+
+      /* Focus states for accessibility */
+      button:focus,
+      input:focus {
+        outline: 2px solid #667eea;
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Math Practice <span class="brain-emoji">🧠</span></h1>
+      <button id="back-btn" class="back-btn">← Back to Categories</button>
+      <div id="practice-container">
+        <div id="problem-container">
+          <span id="problem"></span>
+        </div>
+        <div class="answer-section">
+          <input
+            type="number"
+            id="answer-input"
+            placeholder="Your answer"
+            autocomplete="off"
+          />
+          <button id="submit-btn">Check</button>
+        </div>
+        <p id="feedback"></p>
+      </div>
+    </div>
+
+    <script type="module">
+      import { getProblem, solvedProblem } from "./app.js";
+
+      document.addEventListener("DOMContentLoaded", () => {
+        // DOM Elements
+        const problemElement = document.getElementById("problem");
+        const answerInput = document.getElementById("answer-input");
+        const submitButton = document.getElementById("submit-btn");
+        const feedbackElement = document.getElementById("feedback");
+        const backBtn = document.getElementById("back-btn");
+
+        let currentProblem;
+        let currentCategory;
+        let selectedCategories = [];
+
+        // Get categories from URL query params
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoriesParam = urlParams.get("categories");
+        if (categoriesParam) {
+          selectedCategories = categoriesParam
+            .split(",")
+            .map(decodeURIComponent);
+        }
+
+        if (selectedCategories.length === 0) {
+          // Fallback if no categories provided
+          selectedCategories = ["Addition: 10"];
+        }
+
+        // Load solved problems from localStorage and mark them as solved
+        selectedCategories.forEach((category) => {
+          const solvedProblemIds = JSON.parse(
+            localStorage.getItem(category) || "[]",
+          );
+          solvedProblemIds.forEach((problemId) => {
+            solvedProblem(category, problemId);
+          });
+        });
+
+        // Function to generate a new math problem
+        function newProblem() {
+          const result = getProblem(selectedCategories);
+          currentProblem = result.problem;
+          currentCategory = result.category;
+
+          problemElement.textContent = currentProblem.text;
+          resetState();
+        }
+
+        // Function to check the user's answer
+        function checkAnswer() {
+          const userAnswer = parseInt(answerInput.value, 10);
+
+          if (isNaN(userAnswer)) {
+            feedbackElement.textContent = "Please enter a number!";
+            feedbackElement.className = "incorrect";
+            return;
+          }
+
+          if (userAnswer === currentProblem.answer) {
+            feedbackElement.textContent = "Correct! 🎉";
+            feedbackElement.className = "correct";
+            // Remove the correctly solved problem from cache
+            solvedProblem(currentCategory, currentProblem.id);
+            // Store the solved problem in localStorage
+            const solvedProblemIds = JSON.parse(
+              localStorage.getItem(currentCategory) || "[]",
+            );
+            if (!solvedProblemIds.includes(currentProblem.id)) {
+              solvedProblemIds.push(currentProblem.id);
+              localStorage.setItem(
+                currentCategory,
+                JSON.stringify(solvedProblemIds),
+              );
+            }
+          } else {
+            feedbackElement.textContent = `Incorrect. The answer was ${currentProblem.answer}.`;
+            feedbackElement.className = "incorrect";
+          }
+
+          submitButton.disabled = true;
+          answerInput.disabled = true;
+          setTimeout(newProblem, 1000);
+        }
+
+        // Function to reset the input field and feedback
+        function resetState() {
+          answerInput.value = "";
+          feedbackElement.textContent = "";
+          feedbackElement.className = "";
+          submitButton.disabled = false;
+          answerInput.disabled = false;
+          answerInput.focus();
+        }
+
+        // Event Listeners
+        backBtn.addEventListener("click", () => {
+          window.location.href = "index.html";
+        });
+
+        submitButton.addEventListener("click", checkAnswer);
+
+        // Allow pressing 'Enter' to check the answer
+        answerInput.addEventListener("keyup", (event) => {
+          if (event.key === "Enter") {
+            checkAnswer();
+          }
+        });
+
+        // Generate the first problem
+        newProblem();
+      });
+    </script>
+  </body>
+</html>

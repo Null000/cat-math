@@ -113,80 +113,6 @@
         }
       }
 
-      #problem-container {
-        font-size: 3em;
-        font-weight: 700;
-        color: #2d3748;
-        margin-bottom: 25px;
-        padding: 30px 25px;
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        border-radius: 16px;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 10px 25px rgba(245, 87, 108, 0.2);
-        transition: all 0.3s ease;
-      }
-
-      #problem-container::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.2),
-          transparent
-        );
-        animation: shine 3s infinite;
-      }
-
-      @keyframes shine {
-        0% {
-          left: -100%;
-        }
-        100% {
-          left: 100%;
-        }
-      }
-
-      .answer-section {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin-bottom: 25px;
-        flex-wrap: wrap;
-      }
-
-      #answer-input {
-        padding: 16px 20px;
-        font-size: 1.3em;
-        width: 180px;
-        text-align: center;
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        background: #ffffff;
-        color: #2d3748;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      }
-
-      #answer-input:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow:
-          0 0 0 3px rgba(102, 126, 234, 0.1),
-          0 4px 12px rgba(0, 0, 0, 0.1);
-        transform: translateY(-2px);
-      }
-
-      #answer-input:hover {
-        border-color: #cbd5e0;
-      }
-
       button {
         padding: 14px 28px;
         font-size: 1.1em;
@@ -221,54 +147,6 @@
 
       button:hover::before {
         left: 100%;
-      }
-
-      #submit-btn {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-      }
-
-      #submit-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
-      }
-
-      #submit-btn:active {
-        transform: translateY(0);
-      }
-
-      #feedback {
-        font-size: 1.3em;
-        font-weight: 600;
-        min-height: 30px;
-        margin-top: 25px;
-        padding: 15px;
-        border-radius: 12px;
-        transition: all 0.3s ease;
-        animation: fadeIn 0.3s ease-out;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .correct {
-        color: #48bb78;
-        background: rgba(72, 187, 120, 0.1);
-        border: 1px solid rgba(72, 187, 120, 0.2);
-      }
-
-      .incorrect {
-        color: #f56565;
-        background: rgba(245, 101, 101, 0.1);
-        border: 1px solid rgba(245, 101, 101, 0.2);
       }
 
       .category-selection {
@@ -412,28 +290,8 @@
           font-size: 2rem;
         }
 
-        #problem-container {
-          font-size: 2.5em;
-          padding: 25px 15px;
-        }
-
-        #answer-input {
-          width: 140px;
-          font-size: 1.1em;
-        }
-
         .checkbox-grid {
           grid-template-columns: 1fr;
-        }
-
-        .answer-section {
-          flex-direction: column;
-          align-items: center;
-        }
-
-        #submit-btn {
-          width: 100%;
-          max-width: 180px;
         }
       }
 
@@ -456,53 +314,17 @@
           Start Practice
         </button>
       </div>
-      <div id="practice-container" style="display: none">
-        <div id="problem-container">
-          <span id="problem"></span>
-        </div>
-        <div class="answer-section">
-          <input
-            type="number"
-            id="answer-input"
-            placeholder="Your answer"
-            autocomplete="off"
-          />
-          <button id="submit-btn">Check</button>
-        </div>
-        <p id="feedback"></p>
-      </div>
     </div>
 
     <script type="module">
-      import { getProblem, getCategories, solvedProblem } from "./app.js";
+      import { getCategories } from "./app.js";
       import { getRandomProblem } from "./problem.js";
       document.addEventListener("DOMContentLoaded", () => {
         // DOM Elements
-        const categorySelection = document.getElementById("category-selection");
         const categoryGroups = document.getElementById("category-groups");
         const startPracticeBtn = document.getElementById("start-practice-btn");
-        const practiceContainer = document.getElementById("practice-container");
-        const problemElement = document.getElementById("problem");
-        const answerInput = document.getElementById("answer-input");
-        const submitButton = document.getElementById("submit-btn");
-        const feedbackElement = document.getElementById("feedback");
 
-        let currentProblem;
-        let currentCategory;
         let selectedCategories = [];
-
-        // Load solved problems from localStorage and mark them as solved
-        const categories = getCategories();
-        Object.values(categories)
-          .flat()
-          .forEach((category) => {
-            const solvedProblemIds = JSON.parse(
-              localStorage.getItem(category) || "[]",
-            );
-            solvedProblemIds.forEach((problemId) => {
-              solvedProblem(category, problemId);
-            });
-          });
 
         // Populate category checkboxes
         function populateCategories() {
@@ -575,65 +397,6 @@
           return Array.from(checkboxes).map((checkbox) => checkbox.value);
         }
 
-        // Function to generate a new math problem
-        function newProblem() {
-          if (selectedCategories.length === 0) {
-            selectedCategories = ["Addition: 10"]; // Default fallback
-          }
-          const result = getProblem(selectedCategories);
-          currentProblem = result.problem;
-          currentCategory = result.category;
-
-          problemElement.textContent = currentProblem.text;
-          resetState();
-        }
-
-        // Function to check the user's answer
-        function checkAnswer() {
-          const userAnswer = parseInt(answerInput.value, 10);
-
-          if (isNaN(userAnswer)) {
-            feedbackElement.textContent = "Please enter a number!";
-            feedbackElement.className = "incorrect";
-            return;
-          }
-
-          if (userAnswer === currentProblem.answer) {
-            feedbackElement.textContent = "Correct! 🎉";
-            feedbackElement.className = "correct";
-            // Remove the correctly solved problem from cache
-            solvedProblem(currentCategory, currentProblem.id);
-            // Store the solved problem in localStorage
-            const solvedProblemIds = JSON.parse(
-              localStorage.getItem(currentCategory) || "[]",
-            );
-            if (!solvedProblemIds.includes(currentProblem.id)) {
-              solvedProblemIds.push(currentProblem.id);
-              localStorage.setItem(
-                currentCategory,
-                JSON.stringify(solvedProblemIds),
-              );
-            }
-          } else {
-            feedbackElement.textContent = `Incorrect. The answer was ${currentProblem.answer}.`;
-            feedbackElement.className = "incorrect";
-          }
-
-          submitButton.disabled = true;
-          answerInput.disabled = true;
-          setTimeout(newProblem, 1000);
-        }
-
-        // Function to reset the input field and feedback
-        function resetState() {
-          answerInput.value = "";
-          feedbackElement.textContent = "";
-          feedbackElement.className = "";
-          submitButton.disabled = false;
-          answerInput.disabled = false;
-          answerInput.focus();
-        }
-
         // Function to start practice
         function startPractice() {
           selectedCategories = getSelectedCategories();
@@ -642,24 +405,15 @@
             return;
           }
 
-          // Hide category selection and show practice container
-          categorySelection.style.display = "none";
-          practiceContainer.style.display = "block";
-
-          // Generate the first problem
-          newProblem();
+          // Navigate to practice.html with selected categories as query params
+          const encodedCategories = selectedCategories
+            .map(encodeURIComponent)
+            .join(",");
+          window.location.href = `practice.html?categories=${encodedCategories}`;
         }
 
         // Event Listeners
         startPracticeBtn.addEventListener("click", startPractice);
-        submitButton.addEventListener("click", checkAnswer);
-
-        // Allow pressing 'Enter' to check the answer
-        answerInput.addEventListener("keyup", (event) => {
-          if (event.key === "Enter") {
-            checkAnswer();
-          }
-        });
 
         // Initialize categories on page load
         populateCategories();
