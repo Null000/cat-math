@@ -366,6 +366,45 @@
         outline: 2px solid #667eea;
         outline-offset: 2px;
       }
+
+      /* Statistics Display */
+      #stats-container {
+        margin-top: 30px;
+        padding: 12px 20px;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px 20px;
+        justify-content: center;
+        font-size: 0.8em;
+        font-weight: 500;
+        color: #2d3748;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+      }
+
+      .stat-item span {
+        font-family: "Inter", monospace;
+        font-weight: 600;
+        color: #1a202c;
+      }
+
+      /* Responsive statistics */
+      @media (max-width: 600px) {
+        #stats-container {
+          font-size: 0.75em;
+          padding: 10px 15px;
+          gap: 8px 15px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -417,6 +456,21 @@
           <div class="grid-part" data-part="23"></div>
         </div>
       </div>
+
+      <!-- Statistics Display -->
+      <div id="stats-container">
+        <div class="stat-item">Correct: <span id="correct-count">0</span></div>
+        <div class="stat-item">
+          Incorrect: <span id="incorrect-count">0</span>
+        </div>
+        <div class="stat-item">
+          Accuracy: <span id="accuracy-percent">0.0%</span>
+        </div>
+        <div class="stat-item">Streak: <span id="current-streak">0</span></div>
+        <div class="stat-item">Best: <span id="longest-streak">0</span></div>
+        <div class="stat-item">Time: <span id="total-time">0:00</span></div>
+        <div class="stat-item">Avg: <span id="average-time">0.0s</span></div>
+      </div>
     </div>
 
     <script type="module">
@@ -430,8 +484,57 @@
         const feedbackElement = document.getElementById("feedback");
         const backBtn = document.getElementById("back-btn");
 
+        // Statistics DOM Elements
+        const correctCountElement = document.getElementById("correct-count");
+        const incorrectCountElement =
+          document.getElementById("incorrect-count");
+        const accuracyPercentElement =
+          document.getElementById("accuracy-percent");
+        const currentStreakElement = document.getElementById("current-streak");
+        const longestStreakElement = document.getElementById("longest-streak");
+        const totalTimeElement = document.getElementById("total-time");
+        const averageTimeElement = document.getElementById("average-time");
+
         // Reward Image Elements
         const gridParts = Array.from(document.querySelectorAll(".grid-part"));
+
+        // Statistics tracking
+        const stats = {
+          correct: 0,
+          incorrect: 0,
+          currentStreak: 0,
+          longestStreak: 0,
+          totalTime: 0,
+          problemStartTime: null,
+        };
+
+        // Function to update statistics display
+        function updateStatsDisplay() {
+          const totalProblems = stats.correct + stats.incorrect;
+          const accuracy =
+            totalProblems > 0
+              ? ((stats.correct / totalProblems) * 100).toFixed(1)
+              : "0.0";
+          const averageTime =
+            totalProblems > 0
+              ? (stats.totalTime / totalProblems / 1000).toFixed(1)
+              : "0.0";
+
+          // Format total time as minutes:seconds
+          const totalSeconds = Math.floor(stats.totalTime / 1000);
+          const minutes = Math.floor(totalSeconds / 60);
+          const seconds = totalSeconds % 60;
+          const formattedTime = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+
+          // Update DOM elements
+          correctCountElement.textContent = stats.correct.toString();
+          incorrectCountElement.textContent = stats.incorrect.toString();
+          accuracyPercentElement.textContent = `${accuracy}%`;
+          currentStreakElement.textContent = stats.currentStreak.toString();
+          longestStreakElement.textContent = stats.longestStreak.toString();
+          totalTimeElement.textContent = formattedTime;
+          averageTimeElement.textContent = `${averageTime}s`;
+        }
 
         let currentProblem;
         let currentCategory;
@@ -493,6 +596,9 @@
 
           problemElement.textContent = currentProblem.text;
           resetState();
+
+          // Start timing for this problem
+          stats.problemStartTime = Date.now();
         }
 
         // Function to check the user's answer
@@ -504,6 +610,10 @@
             feedbackElement.className = "incorrect";
             return;
           }
+
+          // Calculate time spent on this problem
+          const elapsed = Date.now() - stats.problemStartTime;
+          stats.totalTime += elapsed;
 
           if (userAnswer === currentProblem.answer) {
             feedbackElement.textContent = "Correct! 🎉";
@@ -523,12 +633,27 @@
                 JSON.stringify(solvedProblemIds),
               );
             }
+
+            // Update statistics for correct answer
+            stats.correct++;
+            stats.currentStreak++;
+            stats.longestStreak = Math.max(
+              stats.longestStreak,
+              stats.currentStreak,
+            );
           } else {
             feedbackElement.textContent = `Incorrect. 😢 The answer was ${currentProblem.answer}.`;
             feedbackElement.className = "incorrect";
             // Hide a random revealed part of the reward image
             hideRandomPart();
+
+            // Update statistics for incorrect answer
+            stats.incorrect++;
+            stats.currentStreak = 0;
           }
+
+          // Update statistics display
+          updateStatsDisplay();
 
           submitButton.disabled = true;
           answerInput.disabled = true;
