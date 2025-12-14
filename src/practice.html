@@ -428,7 +428,7 @@
       </div>
 
       <div class="reward-container">
-        <img class="reward-image" src="rewardImages/1.jpg" alt="Reward Image" />
+        <img id="reward-image" class="reward-image" src="" alt="Reward Image" />
         <div class="reward-grid">
           <div class="grid-part" data-part="0"></div>
           <div class="grid-part" data-part="1"></div>
@@ -497,6 +497,17 @@
 
         // Reward Image Elements
         const gridParts = Array.from(document.querySelectorAll(".grid-part"));
+        const rewardImage = document.getElementById("reward-image");
+
+        // Function to choose a random reward image
+        function chooseRandomRewardImage() {
+          const imageCount = 3; // We have 1.jpg, 2.jpg, 3.jpg
+          const randomIndex = Math.floor(Math.random() * imageCount) + 1;
+          rewardImage.src = `rewardImages/${randomIndex}.jpg`;
+        }
+
+        // Choose random reward image on page load
+        chooseRandomRewardImage();
 
         // Statistics tracking
         const stats = {
