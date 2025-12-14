@@ -286,6 +286,48 @@
         transform: translateY(0);
       }
 
+      /* Reward Image Styles */
+      .reward-container {
+        position: relative;
+        width: 100%;
+        max-width: 400px;
+        margin: 30px auto 0;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .reward-image {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 16px;
+      }
+
+      .reward-grid {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+        pointer-events: none;
+      }
+
+      .grid-part {
+        background: rgba(0, 0, 0, 1);
+        transition: opacity 0.3s ease;
+        opacity: 1;
+        border-radius: 2px;
+        margin: 1px;
+      }
+
+      .grid-part.revealed {
+        opacity: 0;
+      }
+
       /* Responsive design */
       @media (max-width: 600px) {
         .container {
@@ -345,6 +387,36 @@
         </div>
         <p id="feedback"></p>
       </div>
+
+      <div class="reward-container">
+        <img class="reward-image" src="rewardImages/1.jpg" alt="Reward Image" />
+        <div class="reward-grid">
+          <div class="grid-part" data-part="0"></div>
+          <div class="grid-part" data-part="1"></div>
+          <div class="grid-part" data-part="2"></div>
+          <div class="grid-part" data-part="3"></div>
+          <div class="grid-part" data-part="4"></div>
+          <div class="grid-part" data-part="5"></div>
+          <div class="grid-part" data-part="6"></div>
+          <div class="grid-part" data-part="7"></div>
+          <div class="grid-part" data-part="8"></div>
+          <div class="grid-part" data-part="9"></div>
+          <div class="grid-part" data-part="10"></div>
+          <div class="grid-part" data-part="11"></div>
+          <div class="grid-part" data-part="12"></div>
+          <div class="grid-part" data-part="13"></div>
+          <div class="grid-part" data-part="14"></div>
+          <div class="grid-part" data-part="15"></div>
+          <div class="grid-part" data-part="16"></div>
+          <div class="grid-part" data-part="17"></div>
+          <div class="grid-part" data-part="18"></div>
+          <div class="grid-part" data-part="19"></div>
+          <div class="grid-part" data-part="20"></div>
+          <div class="grid-part" data-part="21"></div>
+          <div class="grid-part" data-part="22"></div>
+          <div class="grid-part" data-part="23"></div>
+        </div>
+      </div>
     </div>
 
     <script type="module">
@@ -357,6 +429,9 @@
         const submitButton = document.getElementById("submit-btn");
         const feedbackElement = document.getElementById("feedback");
         const backBtn = document.getElementById("back-btn");
+
+        // Reward Image Elements
+        const gridParts = Array.from(document.querySelectorAll(".grid-part"));
 
         let currentProblem;
         let currentCategory;
@@ -386,6 +461,30 @@
           });
         });
 
+        // Function to reveal a random covered part of the reward image
+        function revealRandomPart() {
+          const coveredParts = gridParts.filter(
+            (part) => !part.classList.contains("revealed"),
+          );
+          if (coveredParts.length > 0) {
+            const randomPart =
+              coveredParts[Math.floor(Math.random() * coveredParts.length)];
+            randomPart.classList.add("revealed");
+          }
+        }
+
+        // Function to hide a random revealed part of the reward image
+        function hideRandomPart() {
+          const revealedParts = gridParts.filter((part) =>
+            part.classList.contains("revealed"),
+          );
+          if (revealedParts.length > 0) {
+            const randomPart =
+              revealedParts[Math.floor(Math.random() * revealedParts.length)];
+            randomPart.classList.remove("revealed");
+          }
+        }
+
         // Function to generate a new math problem
         function newProblem() {
           const result = getProblem(selectedCategories);
@@ -409,6 +508,8 @@
           if (userAnswer === currentProblem.answer) {
             feedbackElement.textContent = "Correct! 🎉";
             feedbackElement.className = "correct";
+            // Reveal a random part of the reward image
+            revealRandomPart();
             // Remove the correctly solved problem from cache
             solvedProblem(currentCategory, currentProblem.id);
             // Store the solved problem in localStorage
@@ -423,8 +524,10 @@
               );
             }
           } else {
-            feedbackElement.textContent = `Incorrect. The answer was ${currentProblem.answer}.`;
+            feedbackElement.textContent = `Incorrect. 😢 The answer was ${currentProblem.answer}.`;
             feedbackElement.className = "incorrect";
+            // Hide a random revealed part of the reward image
+            hideRandomPart();
           }
 
           submitButton.disabled = true;

@@ -13,10 +13,7 @@ function generateProblem(category: Category): Problem {
   return getRandomProblem(category);
 }
 
-export function solvedProblem(
-  category: Category,
-  problemId: string,
-): void {
+export function solvedProblem(category: Category, problemId: string): void {
   removeSolvedProblem(category, problemId);
 }
 

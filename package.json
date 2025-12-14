@@ -3,7 +3,7 @@
   "packageManager": "yarn@4.10.3",
   "type": "module",
   "scripts": {
-    "build": "tsc && cp src/*.html dist"
+    "build": "tsc && cp src/*.html dist && cp -r src/rewardImages dist"
   },
   "devDependencies": {
     "prettier": "^3.6.2",
