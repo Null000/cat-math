@@ -5,6 +5,8 @@ const generateProps: Record<
   {
     xMax: number;
     yMax: number;
+    xMin?: number;
+    yMin?: number;
     carryAllowed?: boolean;
     carryForced?: boolean;
     missingFact?: "first" | "second" | "result";
@@ -26,37 +28,11 @@ const generateProps: Record<
     yMax: 20,
     carryAllowed: false,
   },
-  [Category.Addition_TwentyWithoutCarry_MissingFirst]: {
-    xMax: 20,
-    yMax: 20,
-    carryAllowed: false,
-    missingFact: "first",
-  },
-  [Category.Addition_TwentyWithoutCarry_MissingSecond]: {
-    xMax: 20,
-    yMax: 20,
-    carryAllowed: false,
-    missingFact: "second",
-  },
   [Category.Addition_TwentyWithCarry]: {
     xMax: 20,
     yMax: 20,
     carryAllowed: true,
     carryForced: true,
-  },
-  [Category.Addition_TwentyWithCarry_MissingFirst]: {
-    xMax: 20,
-    yMax: 20,
-    carryAllowed: true,
-    carryForced: true,
-    missingFact: "first",
-  },
-  [Category.Addition_TwentyWithCarry_MissingSecond]: {
-    xMax: 20,
-    yMax: 20,
-    carryAllowed: true,
-    carryForced: true,
-    missingFact: "second",
   },
   [Category.Addition_TwentyMixed]: {
     xMax: 20,
@@ -81,49 +57,31 @@ const generateProps: Record<
   [Category.Addition_HundredWithoutCarry]: {
     xMax: 100,
     yMax: 100,
+    xMin: 10,
+    yMin: 10,
     carryAllowed: false,
-  },
-  [Category.Addition_HundredWithoutCarry_MissingFirst]: {
-    xMax: 100,
-    yMax: 100,
-    carryAllowed: false,
-    missingFact: "first",
-  },
-  [Category.Addition_HundredWithoutCarry_MissingSecond]: {
-    xMax: 100,
-    yMax: 100,
-    carryAllowed: false,
-    missingFact: "second",
   },
   [Category.Addition_HundredWithCarry]: {
     xMax: 100,
     yMax: 100,
+    xMin: 10,
+    yMin: 10,
     carryAllowed: true,
     carryForced: true,
-  },
-  [Category.Addition_HundredWithCarry_MissingFirst]: {
-    xMax: 100,
-    yMax: 100,
-    carryAllowed: true,
-    carryForced: true,
-    missingFact: "first",
-  },
-  [Category.Addition_HundredWithCarry_MissingSecond]: {
-    xMax: 100,
-    yMax: 100,
-    carryAllowed: true,
-    carryForced: true,
-    missingFact: "second",
   },
   [Category.Addition_HundredMixed]: {
     xMax: 100,
     yMax: 100,
+    xMin: 10,
+    yMin: 10,
     carryAllowed: true,
     carryForced: false,
   },
   [Category.Addition_HundredMixed_MissingFirst]: {
     xMax: 100,
     yMax: 100,
+    xMin: 10,
+    yMin: 10,
     carryAllowed: true,
     carryForced: false,
     missingFact: "first",
@@ -131,6 +89,8 @@ const generateProps: Record<
   [Category.Addition_HundredMixed_MissingSecond]: {
     xMax: 100,
     yMax: 100,
+    xMin: 10,
+    yMin: 10,
     carryAllowed: true,
     carryForced: false,
     missingFact: "second",
@@ -139,15 +99,18 @@ const generateProps: Record<
 
 export function generate(category: Category): Problem[] {
   const props = generateProps[category]!;
-  let { xMax, yMax, carryAllowed, carryForced, missingFact } = props;
+  let { xMax, yMax, xMin, yMin, carryAllowed, carryForced, missingFact } =
+    props;
+  xMin = xMin ?? 0;
+  yMin = yMin ?? 0;
   carryAllowed = carryAllowed ?? true;
   carryForced = carryForced ?? false;
   missingFact = missingFact ?? "result";
 
   const allProblems: Problem[] = [];
-  for (let i = 0; i <= xMax; i++) {
-    for (let j = 0; j <= yMax; j++) {
-      const hasCarry = carryAllowed && i + j >= 10;
+  for (let i = xMin; i <= xMax; i++) {
+    for (let j = yMin; j <= yMax; j++) {
+      const hasCarry = carryAllowed && (i % 10) + (j % 10) >= 10;
       if (hasCarry && !carryForced) {
         continue;
       }

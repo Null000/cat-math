@@ -653,8 +653,15 @@
               stats.longestStreak,
               stats.currentStreak,
             );
+
+            // Update statistics display
+            updateStatsDisplay();
+
+            submitButton.disabled = true;
+            answerInput.disabled = true;
+            setTimeout(newProblem, 1000);
           } else {
-            feedbackElement.textContent = `Incorrect. 😢 The answer was ${currentProblem.answer}.`;
+            feedbackElement.textContent = `Incorrect. 😢`;
             feedbackElement.className = "incorrect";
             // Hide a random revealed part of the reward image
             hideRandomPart();
@@ -663,14 +670,18 @@
             // Update statistics for incorrect answer
             stats.incorrect++;
             stats.currentStreak = 0;
+
+            // Update statistics display
+            updateStatsDisplay();
+
+            submitButton.disabled = true;
+            answerInput.disabled = true;
+
+            // For incorrect answers, allow retry after a short delay
+            setTimeout(() => {
+              resetState();
+            }, 2000);
           }
-
-          // Update statistics display
-          updateStatsDisplay();
-
-          submitButton.disabled = true;
-          answerInput.disabled = true;
-          setTimeout(newProblem, 1000);
         }
 
         // Function to reset the input field and feedback

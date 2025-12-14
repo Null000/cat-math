@@ -46,18 +46,6 @@ const generateProps: Record<
     yMax: 100,
     borrowAllowed: false,
   },
-  [Category.Subtraction_HundredWithoutBorrow_MissingFirst]: {
-    xMax: 100,
-    yMax: 100,
-    borrowAllowed: false,
-    missingFact: "first",
-  },
-  [Category.Subtraction_HundredWithoutBorrow_MissingSecond]: {
-    xMax: 100,
-    yMax: 100,
-    borrowAllowed: false,
-    missingFact: "second",
-  },
   [Category.Subtraction_HundredWithBorrow]: {
     xMax: 100,
     yMax: 100,
