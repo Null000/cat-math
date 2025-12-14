@@ -408,7 +408,7 @@
           // Navigate to practice.html with selected categories as query params
           const encodedCategories = selectedCategories
             .map(encodeURIComponent)
-            .join(",");
+            .join(";");
           window.location.href = `practice.html?categories=${encodedCategories}`;
         }
 

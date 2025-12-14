@@ -556,7 +556,7 @@
         const categoriesParam = urlParams.get("categories");
         if (categoriesParam) {
           selectedCategories = categoriesParam
-            .split(",")
+            .split(";")
             .map(decodeURIComponent);
         }
 
@@ -602,6 +602,7 @@
         // Function to generate a new math problem
         function newProblem() {
           const result = getProblem(selectedCategories);
+          console.log(JSON.stringify(result, null, 2));
           currentProblem = result.problem;
           currentCategory = result.category;
 
@@ -656,6 +657,7 @@
             feedbackElement.textContent = `Incorrect. 😢 The answer was ${currentProblem.answer}.`;
             feedbackElement.className = "incorrect";
             // Hide a random revealed part of the reward image
+            hideRandomPart();
             hideRandomPart();
 
             // Update statistics for incorrect answer
