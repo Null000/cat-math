@@ -7,6 +7,7 @@ const generateProps: Record<
     yMax: number;
     xMin?: number;
     yMin?: number;
+    maxResult?: number;
     carryAllowed?: boolean;
     carryForced?: boolean;
     missingFact?: "first" | "second" | "result";
@@ -26,23 +27,27 @@ const generateProps: Record<
   [Category.Addition_TwentyWithoutCarry]: {
     xMax: 20,
     yMax: 20,
+    maxResult: 20,
     carryAllowed: false,
   },
   [Category.Addition_TwentyWithCarry]: {
     xMax: 20,
     yMax: 20,
+    maxResult: 20,
     carryAllowed: true,
     carryForced: true,
   },
   [Category.Addition_TwentyMixed]: {
     xMax: 20,
     yMax: 20,
+    maxResult: 20,
     carryAllowed: true,
     carryForced: false,
   },
   [Category.Addition_TwentyMixed_MissingFirst]: {
     xMax: 20,
     yMax: 20,
+    maxResult: 20,
     carryAllowed: true,
     carryForced: false,
     missingFact: "first",
@@ -50,6 +55,7 @@ const generateProps: Record<
   [Category.Addition_TwentyMixed_MissingSecond]: {
     xMax: 20,
     yMax: 20,
+    maxResult: 20,
     carryAllowed: true,
     carryForced: false,
     missingFact: "second",
@@ -59,6 +65,7 @@ const generateProps: Record<
     yMax: 100,
     xMin: 10,
     yMin: 10,
+    maxResult: 100,
     carryAllowed: false,
   },
   [Category.Addition_HundredWithCarry]: {
@@ -66,6 +73,7 @@ const generateProps: Record<
     yMax: 100,
     xMin: 10,
     yMin: 10,
+    maxResult: 100,
     carryAllowed: true,
     carryForced: true,
   },
@@ -74,6 +82,7 @@ const generateProps: Record<
     yMax: 100,
     xMin: 10,
     yMin: 10,
+    maxResult: 100,
     carryAllowed: true,
     carryForced: false,
   },
@@ -82,6 +91,7 @@ const generateProps: Record<
     yMax: 100,
     xMin: 10,
     yMin: 10,
+    maxResult: 100,
     carryAllowed: true,
     carryForced: false,
     missingFact: "first",
@@ -91,6 +101,7 @@ const generateProps: Record<
     yMax: 100,
     xMin: 10,
     yMin: 10,
+    maxResult: 100,
     carryAllowed: true,
     carryForced: false,
     missingFact: "second",
@@ -99,8 +110,16 @@ const generateProps: Record<
 
 export function generate(category: Category): Problem[] {
   const props = generateProps[category]!;
-  let { xMax, yMax, xMin, yMin, carryAllowed, carryForced, missingFact } =
-    props;
+  let {
+    xMax,
+    yMax,
+    xMin,
+    yMin,
+    maxResult,
+    carryAllowed,
+    carryForced,
+    missingFact,
+  } = props;
   xMin = xMin ?? 0;
   yMin = yMin ?? 0;
   carryAllowed = carryAllowed ?? true;
@@ -118,25 +137,30 @@ export function generate(category: Category): Problem[] {
         continue;
       }
 
+      const result = i + j;
+      if (maxResult && result > maxResult) {
+        continue;
+      }
+
       let text: string;
       let answer: number;
       let id: string;
 
       switch (missingFact) {
         case "first":
-          text = `? + ${j} = ${i + j}`;
+          text = `? + ${j} = ${result}`;
           answer = i;
           id = `${category}_${i}_${j}_first`;
           break;
         case "second":
-          text = `${i} + ? = ${i + j}`;
+          text = `${i} + ? = ${result}`;
           answer = j;
           id = `${category}_${i}_${j}_second`;
           break;
         case "result":
         default:
           text = `${i} + ${j} = ?`;
-          answer = i + j;
+          answer = result;
           id = `${category}_${i}_${j}_result`;
           break;
       }
