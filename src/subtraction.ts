@@ -52,18 +52,24 @@ const generateProps: Record<
     borrowAllowed: true,
     borrowForced: true,
   },
-  [Category.Subtraction_HundredWithBorrow_MissingFirst]: {
+  [Category.Subtraction_HundredMixed]: {
     xMax: 100,
     yMax: 100,
     borrowAllowed: true,
-    borrowForced: true,
+    borrowForced: false,
+  },
+  [Category.Subtraction_HundredMixed_MissingFirst]: {
+    xMax: 100,
+    yMax: 100,
+    borrowAllowed: true,
+    borrowForced: false,
     missingFact: "first",
   },
-  [Category.Subtraction_HundredWithBorrow_MissingSecond]: {
+  [Category.Subtraction_HundredMixed_MissingSecond]: {
     xMax: 100,
     yMax: 100,
     borrowAllowed: true,
-    borrowForced: true,
+    borrowForced: false,
     missingFact: "second",
   },
 };
