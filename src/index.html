@@ -37,17 +37,18 @@
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      padding: 40px;
+      padding: 30px;
       border-radius: 24px;
       box-shadow:
         0 25px 50px -12px rgba(0, 0, 0, 0.25),
         0 0 0 1px rgba(255, 255, 255, 0.1);
       text-align: center;
       width: 100%;
-      max-width: 500px;
+      max-width: 800px;
       position: relative;
       border: 1px solid rgba(255, 255, 255, 0.2);
       animation: slideIn 0.6s ease-out;
+      margin-bottom: 80px;
     }
 
     /* Language Switcher */
@@ -199,42 +200,74 @@
     }
 
     .category-group {
-      margin-bottom: 20px;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(0, 0, 0, 0.05);
     }
 
-    .category-group h3 {
-      margin: 0 0 12px 0;
-      font-size: 1em;
-      font-weight: 600;
-      color: #4a5568;
+    .category-group summary {
+      padding: 12px 20px;
+      font-size: 0.9em;
+      font-weight: 700;
+      color: #2d3748;
       text-align: left;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      font-size: 0.85em;
+      cursor: pointer;
+      user-select: none;
+      background: rgba(255, 255, 255, 0.8);
+      transition: background 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .category-group summary:hover {
+      background: rgba(255, 255, 255, 1);
+    }
+
+    .category-group[open] summary {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      margin-bottom: 15px;
+    }
+
+    .category-group summary::marker {
+      color: #667eea;
     }
 
     .checkbox-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 10px;
+      padding: 0 15px 15px 15px;
     }
 
     .checkbox-item {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 16px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 12px;
       background: rgba(255, 255, 255, 0.6);
-      border-radius: 8px;
+      border-radius: 10px;
       border: 1px solid rgba(0, 0, 0, 0.05);
       transition: all 0.2s ease;
       cursor: pointer;
     }
 
     .checkbox-item:hover {
-      background: rgba(255, 255, 255, 0.8);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.9);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .checkbox-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
     }
 
     .checkbox-item input[type="checkbox"] {
@@ -246,65 +279,62 @@
     }
 
     .checkbox-item label {
-      font-size: 0.9em;
-      font-weight: 500;
-      color: #4a5568;
+      font-size: 0.85em;
+      font-weight: 600;
+      color: #2d3748;
       cursor: pointer;
       margin: 0;
       flex: 1;
+      text-align: left;
     }
 
     .category-examples {
-      margin-top: 12px;
-      padding: 12px;
-      background: rgba(255, 255, 255, 0.4);
-      border-radius: 8px;
-      border: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
-    .category-examples h4 {
-      margin: 0 0 8px 0;
-      font-size: 0.8em;
-      font-weight: 600;
-      color: #718096;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      width: 100%;
+      padding-top: 4px;
+      border-top: 1px solid rgba(0, 0, 0, 0.03);
     }
 
     .examples-list {
       display: flex;
-      flex-direction: column;
-      gap: 4px;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 6px;
     }
 
     .example-problem {
       font-family: "Courier New", monospace;
-      font-size: 0.85em;
-      color: #2d3748;
-      background: rgba(255, 255, 255, 0.6);
-      padding: 6px 10px;
+      font-size: 0.75em;
+      color: #718096;
+      background: rgba(255, 255, 255, 0.4);
+      padding: 2px 6px;
       border-radius: 4px;
-      border: 1px solid rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.03);
       text-align: center;
       font-weight: 500;
+    }
+
+    .action-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 15px;
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: center;
+      z-index: 100;
     }
 
     .start-practice-btn {
       background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
       box-shadow: 0 8px 25px rgba(72, 187, 120, 0.3);
-      margin-top: 25px;
       font-size: 1em;
-      padding: 16px 32px;
-      min-width: 200px;
-    }
-
-    .start-practice-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 35px rgba(72, 187, 120, 0.4);
-    }
-
-    .start-practice-btn:active {
-      transform: translateY(0);
+      padding: 14px 40px;
+      min-width: 250px;
+      margin: 0;
     }
 
     /* Responsive design */
@@ -344,10 +374,13 @@
     <div class="category-selection" id="category-selection">
       <h2 data-i18n="select_categories">Select Practice Categories</h2>
       <div id="category-groups"></div>
-      <button id="start-practice-btn" class="start-practice-btn" data-i18n="start_practice">
-        Start Practice
-      </button>
     </div>
+  </div>
+
+  <div class="action-bar">
+    <button id="start-practice-btn" class="start-practice-btn" data-i18n="start_practice">
+      Start Practice
+    </button>
   </div>
 
   <script type="module">
@@ -397,13 +430,14 @@
         const categories = getCategories();
         categoryGroups.innerHTML = "";
 
-        Object.entries(categories).forEach(([groupName, categoryList]) => {
-          const groupDiv = document.createElement("div");
-          groupDiv.className = "category-group";
+        Object.entries(categories).forEach(([groupName, categoryList], index) => {
+          const groupDetails = document.createElement("details");
+          groupDetails.className = "category-group";
+          if (index === 0) groupDetails.open = true;
 
-          const groupTitle = document.createElement("h3");
-          groupTitle.textContent = t(`group_${groupName}`);
-          groupDiv.appendChild(groupTitle);
+          const groupSummary = document.createElement("summary");
+          groupSummary.textContent = t(`group_${groupName}`);
+          groupDetails.appendChild(groupSummary);
 
           const checkboxGrid = document.createElement("div");
           checkboxGrid.className = "checkbox-grid";
@@ -411,6 +445,15 @@
           categoryList.forEach((category) => {
             const checkboxItem = document.createElement("div");
             checkboxItem.className = "checkbox-item";
+            checkboxItem.onclick = (e) => {
+              if (e.target.tagName !== "INPUT") {
+                const cb = checkboxItem.querySelector('input');
+                cb.checked = !cb.checked;
+              }
+            };
+
+            const topDiv = document.createElement("div");
+            topDiv.className = "checkbox-top";
 
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
@@ -429,24 +472,21 @@
 
             if (count > 0) {
               const countSpan = document.createElement("span");
-              countSpan.textContent = ` (${count} ${t('solved')})`;
-              countSpan.style.fontSize = "0.9em";
+              countSpan.textContent = ` (${count})`;
+              countSpan.style.fontSize = "0.8em";
               countSpan.style.color = "#718096";
               countSpan.style.fontWeight = "normal";
-              countSpan.style.marginLeft = "5px";
+              countSpan.style.marginLeft = "3px";
               label.appendChild(countSpan);
             }
 
-            checkboxItem.appendChild(checkbox);
-            checkboxItem.appendChild(label);
+            topDiv.appendChild(checkbox);
+            topDiv.appendChild(label);
+            checkboxItem.appendChild(topDiv);
 
             // Add examples for this category
             const examplesDiv = document.createElement("div");
             examplesDiv.className = "category-examples";
-
-            const examplesTitle = document.createElement("h4");
-            examplesTitle.textContent = t("examples");
-            examplesDiv.appendChild(examplesTitle);
 
             const examplesList = document.createElement("div");
             examplesList.className = "examples-list";
@@ -466,8 +506,8 @@
             checkboxGrid.appendChild(checkboxItem);
           });
 
-          groupDiv.appendChild(checkboxGrid);
-          categoryGroups.appendChild(groupDiv);
+          groupDetails.appendChild(checkboxGrid);
+          categoryGroups.appendChild(groupDetails);
         });
       }
 
