@@ -31,8 +31,10 @@ export enum Category {
   Subtraction_HundredMixed_MissingSecond = "Subtraction: 100 (mixed, missing second)",
   Multiplication_Ten = "Multiplication: 10",
   Multiplication_Twenty = "Multiplication: 20",
+  Multiplication_Lia = "Multiplication Lia",
   Division_Ten = "Division: 10",
   Division_Twenty = "Division: 20",
+  Division_Lia = "Division Lia"
 }
 
 export const categoryGroups: Record<string, Category[]> = {
@@ -64,8 +66,8 @@ export const categoryGroups: Record<string, Category[]> = {
     Category.Subtraction_HundredMixed_MissingFirst,
     Category.Subtraction_HundredMixed_MissingSecond,
   ],
-  Multiplication: [Category.Multiplication_Ten, Category.Multiplication_Twenty],
-  Division: [Category.Division_Ten, Category.Division_Twenty],
+  Multiplication: [Category.Multiplication_Ten, Category.Multiplication_Twenty, Category.Multiplication_Lia],
+  Division: [Category.Division_Ten, Category.Division_Twenty, Category.Division_Lia],
 };
 
 export const categoryToGroup: Record<Category, string> = (() => {
