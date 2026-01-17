@@ -1,0 +1,27 @@
+import { Category } from "./common.js";
+const generateProps = {
+    [Category.Multiplication_Ten]: { xMax: 10, yMax: 10 },
+    [Category.Multiplication_Twenty]: { xMax: 20, yMax: 20 },
+    [Category.Multiplication_Lia]: { xMax: 10, yMax: 10 },
+};
+export function generate(category) {
+    const props = generateProps[category];
+    const { xMax, yMax } = props;
+    const allProblems = [];
+    for (let i = 0; i <= xMax; i++) {
+        for (let j = 0; j <= yMax; j++) {
+            if (category === Category.Multiplication_Lia) {
+                if (j === 8 || j === 9) {
+                    continue;
+                }
+            }
+            allProblems.push({
+                id: `${category}_${i}_${j}`,
+                text: `${i} × ${j} = ?`,
+                answer: i * j,
+            });
+        }
+    }
+    return allProblems;
+}
+//# sourceMappingURL=multiplication.js.map

@@ -1,5 +1,4 @@
 import { Category } from "./common.js";
-
 export const translations = {
     en: {
         title: "Math Practice",
@@ -14,7 +13,6 @@ export const translations = {
         input_placeholder: "Your answer",
         examples: "Examples",
         solved: "solved",
-
         // Stats
         stat_correct: "Correct:",
         stat_incorrect: "Incorrect:",
@@ -23,7 +21,6 @@ export const translations = {
         stat_best: "Best:",
         stat_time: "Time:",
         stat_avg: "Avg:",
-
         // Categories
         [Category.Addition_Ten]: "Addition: 10",
         [Category.Addition_Ten_MissingFirst]: "Addition: 10 (missing first)",
@@ -38,7 +35,6 @@ export const translations = {
         [Category.Addition_HundredMixed]: "Addition: 100 (mixed)",
         [Category.Addition_HundredMixed_MissingFirst]: "Addition: 100 (mixed, missing first)",
         [Category.Addition_HundredMixed_MissingSecond]: "Addition: 100 (mixed, missing second)",
-
         [Category.Subtraction_Ten]: "Subtraction: 10",
         [Category.Subtraction_Ten_MissingFirst]: "Subtraction: 10 (missing first)",
         [Category.Subtraction_Ten_MissingSecond]: "Subtraction: 10 (missing second)",
@@ -50,15 +46,12 @@ export const translations = {
         [Category.Subtraction_HundredMixed]: "Subtraction: 100 (mixed)",
         [Category.Subtraction_HundredMixed_MissingFirst]: "Subtraction: 100 (mixed, missing first)",
         [Category.Subtraction_HundredMixed_MissingSecond]: "Subtraction: 100 (mixed, missing second)",
-
         [Category.Multiplication_Ten]: "Multiplication: 10",
         [Category.Multiplication_Twenty]: "Multiplication: 20",
         [Category.Multiplication_Lia]: "Multiplication Lia",
-
         [Category.Division_Ten]: "Division: 10",
         [Category.Division_Twenty]: "Division: 20",
         [Category.Division_Lia]: "Division Lia",
-
         // Group Names
         group_Addition: "Addition",
         group_Subtraction: "Subtraction",
@@ -78,7 +71,6 @@ export const translations = {
         input_placeholder: "Tvoj odgovor",
         examples: "Primeri",
         solved: "rešeno",
-
         // Stats
         stat_correct: "Pravilno:",
         stat_incorrect: "Nepravilno:",
@@ -87,7 +79,6 @@ export const translations = {
         stat_best: "Najboljše:",
         stat_time: "Čas:",
         stat_avg: "Povpr:",
-
         // Categories
         [Category.Addition_Ten]: "Seštevanje: 10",
         [Category.Addition_Ten_MissingFirst]: "Seštevanje: 10 (manjka prvi)",
@@ -102,7 +93,6 @@ export const translations = {
         [Category.Addition_HundredMixed]: "Seštevanje: 100 (mešano)",
         [Category.Addition_HundredMixed_MissingFirst]: "Seštevanje: 100 (mešano, manjka prvi)",
         [Category.Addition_HundredMixed_MissingSecond]: "Seštevanje: 100 (mešano, manjka drugi)",
-
         [Category.Subtraction_Ten]: "Odštevanje: 10",
         [Category.Subtraction_Ten_MissingFirst]: "Odštevanje: 10 (manjka prvi)",
         [Category.Subtraction_Ten_MissingSecond]: "Odštevanje: 10 (manjka drugi)",
@@ -114,15 +104,12 @@ export const translations = {
         [Category.Subtraction_HundredMixed]: "Odštevanje: 100 (mešano)",
         [Category.Subtraction_HundredMixed_MissingFirst]: "Odštevanje: 100 (mešano, manjka prvi)",
         [Category.Subtraction_HundredMixed_MissingSecond]: "Odštevanje: 100 (mešano, manjka drugi)",
-
         [Category.Multiplication_Ten]: "Množenje: 10",
         [Category.Multiplication_Twenty]: "Množenje: 20",
         [Category.Multiplication_Lia]: "Množenje Lia",
-
         [Category.Division_Ten]: "Deljenje: 10",
         [Category.Division_Twenty]: "Deljenje: 20",
         [Category.Division_Lia]: "Deljenje Lia",
-
         // Group Names
         group_Addition: "Seštevanje",
         group_Subtraction: "Odštevanje",
@@ -130,3 +117,4 @@ export const translations = {
         group_Division: "Deljenje"
     }
 };
+//# sourceMappingURL=translations.js.map
