@@ -54,10 +54,14 @@ export const translations = {
         [Category.Multiplication_Ten]: "Multiplication: 10",
         [Category.Multiplication_Twenty]: "Multiplication: 20",
         [Category.Multiplication_Lia]: "Multiplication Lia",
+        [Category.Multiplication_Lia_MissingFirst]: "Multiplication Lia (missing first)",
+        [Category.Multiplication_Lia_MissingSecond]: "Multiplication Lia (missing second)",
 
         [Category.Division_Ten]: "Division: 10",
         [Category.Division_Twenty]: "Division: 20",
         [Category.Division_Lia]: "Division Lia",
+        [Category.Division_Lia_MissingFirst]: "Division Lia (missing first)",
+        [Category.Division_Lia_MissingSecond]: "Division Lia (missing second)",
 
         // Group Names
         group_Addition: "Addition",
@@ -118,10 +122,14 @@ export const translations = {
         [Category.Multiplication_Ten]: "Množenje: 10",
         [Category.Multiplication_Twenty]: "Množenje: 20",
         [Category.Multiplication_Lia]: "Množenje Lia",
+        [Category.Multiplication_Lia_MissingFirst]: "Množenje Lia (manjka prvi)",
+        [Category.Multiplication_Lia_MissingSecond]: "Množenje Lia (manjka drugi)",
 
         [Category.Division_Ten]: "Deljenje: 10",
         [Category.Division_Twenty]: "Deljenje: 20",
         [Category.Division_Lia]: "Deljenje Lia",
+        [Category.Division_Lia_MissingFirst]: "Deljenje Lia (manjka prvi)",
+        [Category.Division_Lia_MissingSecond]: "Deljenje Lia (manjka drugi)",
 
         // Group Names
         group_Addition: "Seštevanje",
