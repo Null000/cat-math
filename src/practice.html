@@ -403,7 +403,7 @@
 
 <body>
   <div class="container">
-    <h1 data-i18n="title">Math Practice <span class="brain-emoji">🧠</span></h1>
+    <h1 data-i18n="title">Math Practice <span class="brain-emoji">🐈</span></h1>
     <button id="back-btn" class="back-btn" data-i18n="back_to_categories">← Back to Categories</button>
     <div id="practice-container">
       <div id="problem-container">
@@ -480,7 +480,7 @@
         } else {
           // Handle emoji in title if it exists, simple replacement otherwise
           if (key === "title") {
-            el.innerHTML = `${t(key)} <span class="brain-emoji">🧠</span>`;
+            el.innerHTML = `${t(key)} <span class="brain-emoji">🐈</span>`;
           } else {
             el.textContent = t(key);
           }

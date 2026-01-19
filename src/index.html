@@ -370,7 +370,7 @@
       <button class="lang-btn" data-lang="sl">SL</button>
     </div>
 
-    <h1 data-i18n="title">Math Practice <span class="brain-emoji">🧠</span></h1>
+    <h1 data-i18n="title">Math Practice <span class="brain-emoji">🐈</span></h1>
     <div class="category-selection" id="category-selection">
       <h2 data-i18n="select_categories">Select Practice Categories</h2>
       <div id="category-groups"></div>
@@ -411,7 +411,7 @@
         } else {
           // Handle emoji in title if it exists, simple replacement otherwise
           if (key === "title") {
-            el.innerHTML = `${t(key)} <span class="brain-emoji">🧠</span>`;
+            el.innerHTML = `${t(key)} <span class="brain-emoji">🐈</span>`;
           } else {
             el.textContent = t(key);
           }
@@ -433,7 +433,6 @@
         Object.entries(categories).forEach(([groupName, categoryList], index) => {
           const groupDetails = document.createElement("details");
           groupDetails.className = "category-group";
-          if (index === 0) groupDetails.open = true;
 
           const groupSummary = document.createElement("summary");
           groupSummary.textContent = t(`group_${groupName}`);
