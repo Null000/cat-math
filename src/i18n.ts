@@ -21,11 +21,18 @@ export function setLanguage(lang: Language): void {
 
 export function t(key: string): string {
     const lang = getCurrentLanguage();
-    return (translations[lang] as any)[key] || key;
+    const translated = (translations[lang] as any)[key];
+    if (!translated) {
+        console.error(`Missing translation for language ${lang} and key: ${key}`);
+    }
+    return translated || key;
 }
 
 export function getCategoryDisplayName(category: Category): string {
     const lang = getCurrentLanguage();
     const translated = (translations[lang] as any)[category];
+    if (!translated) {
+        console.error(`Missing translation for language ${lang} and category: ${category}`);
+    }
     return translated || category;
 }

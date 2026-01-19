@@ -2,7 +2,7 @@ import { Category } from "./common.js";
 
 export const translations = {
     en: {
-        title: "Math Practice",
+        title: "Cat Math",
         select_categories: "Select Practice Categories",
         start_practice: "Start Practice",
         back_to_categories: "← Back to Categories",
@@ -52,13 +52,21 @@ export const translations = {
         [Category.Subtraction_HundredMixed_MissingSecond]: "Subtraction: 100 (mixed, missing second)",
 
         [Category.Multiplication_Ten]: "Multiplication: 10",
+        [Category.Multiplication_Ten_MissingFirst]: "Multiplication: 10 (missing first)",
+        [Category.Multiplication_Ten_MissingSecond]: "Multiplication: 10 (missing second)",
         [Category.Multiplication_Twenty]: "Multiplication: 20",
+        [Category.Multiplication_Twenty_MissingFirst]: "Multiplication: 20 (missing first)",
+        [Category.Multiplication_Twenty_MissingSecond]: "Multiplication: 20 (missing second)",
         [Category.Multiplication_Lia]: "Multiplication Lia",
         [Category.Multiplication_Lia_MissingFirst]: "Multiplication Lia (missing first)",
         [Category.Multiplication_Lia_MissingSecond]: "Multiplication Lia (missing second)",
 
         [Category.Division_Ten]: "Division: 10",
+        [Category.Division_Ten_MissingFirst]: "Division: 10 (missing first)",
+        [Category.Division_Ten_MissingSecond]: "Division: 10 (missing second)",
         [Category.Division_Twenty]: "Division: 20",
+        [Category.Division_Twenty_MissingFirst]: "Division: 20 (missing first)",
+        [Category.Division_Twenty_MissingSecond]: "Division: 20 (missing second)",
         [Category.Division_Lia]: "Division Lia",
         [Category.Division_Lia_MissingFirst]: "Division Lia (missing first)",
         [Category.Division_Lia_MissingSecond]: "Division Lia (missing second)",
@@ -70,7 +78,7 @@ export const translations = {
         group_Division: "Division"
     },
     sl: {
-        title: "Vaja Matematike",
+        title: "Mačja Matematika",
         select_categories: "Izberi Kategorije",
         start_practice: "Začni Vajo",
         back_to_categories: "← Nazaj na Kategorije",
@@ -120,13 +128,21 @@ export const translations = {
         [Category.Subtraction_HundredMixed_MissingSecond]: "Odštevanje: 100 (mešano, manjka drugi)",
 
         [Category.Multiplication_Ten]: "Množenje: 10",
+        [Category.Multiplication_Ten_MissingFirst]: "Množenje: 10 (manjka prvi)",
+        [Category.Multiplication_Ten_MissingSecond]: "Množenje: 10 (manjka drugi)",
         [Category.Multiplication_Twenty]: "Množenje: 20",
+        [Category.Multiplication_Twenty_MissingFirst]: "Množenje: 20 (manjka prvi)",
+        [Category.Multiplication_Twenty_MissingSecond]: "Množenje: 20 (manjka drugi)",
         [Category.Multiplication_Lia]: "Množenje Lia",
         [Category.Multiplication_Lia_MissingFirst]: "Množenje Lia (manjka prvi)",
         [Category.Multiplication_Lia_MissingSecond]: "Množenje Lia (manjka drugi)",
 
         [Category.Division_Ten]: "Deljenje: 10",
+        [Category.Division_Ten_MissingFirst]: "Deljenje: 10 (manjka prvi)",
+        [Category.Division_Ten_MissingSecond]: "Deljenje: 10 (manjka drugi)",
         [Category.Division_Twenty]: "Deljenje: 20",
+        [Category.Division_Twenty_MissingFirst]: "Deljenje: 20 (manjka prvi)",
+        [Category.Division_Twenty_MissingSecond]: "Deljenje: 20 (manjka drugi)",
         [Category.Division_Lia]: "Deljenje Lia",
         [Category.Division_Lia_MissingFirst]: "Deljenje Lia (manjka prvi)",
         [Category.Division_Lia_MissingSecond]: "Deljenje Lia (manjka drugi)",

@@ -9,7 +9,11 @@ const generateProps: Record<
   }
 > = {
   [Category.Division_Ten]: { answerMax: 10, divisorMax: 10 },
+  [Category.Division_Ten_MissingFirst]: { answerMax: 10, divisorMax: 10, missingField: "dividend" },
+  [Category.Division_Ten_MissingSecond]: { answerMax: 10, divisorMax: 10, missingField: "divisor" },
   [Category.Division_Twenty]: { answerMax: 20, divisorMax: 20 },
+  [Category.Division_Twenty_MissingFirst]: { answerMax: 20, divisorMax: 20, missingField: "dividend" },
+  [Category.Division_Twenty_MissingSecond]: { answerMax: 20, divisorMax: 20, missingField: "divisor" },
   [Category.Division_Lia]: { answerMax: 10, divisorMax: 10 },
   [Category.Division_Lia_MissingFirst]: { answerMax: 10, divisorMax: 10, missingField: "dividend" },
   [Category.Division_Lia_MissingSecond]: { answerMax: 10, divisorMax: 10, missingField: "divisor" },

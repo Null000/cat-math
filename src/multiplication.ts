@@ -9,7 +9,11 @@ const generateProps: Record<
   }
 > = {
   [Category.Multiplication_Ten]: { xMax: 10, yMax: 10 },
+  [Category.Multiplication_Ten_MissingFirst]: { xMax: 10, yMax: 10, missingField: "first" },
+  [Category.Multiplication_Ten_MissingSecond]: { xMax: 10, yMax: 10, missingField: "second" },
   [Category.Multiplication_Twenty]: { xMax: 20, yMax: 20 },
+  [Category.Multiplication_Twenty_MissingFirst]: { xMax: 20, yMax: 20, missingField: "first" },
+  [Category.Multiplication_Twenty_MissingSecond]: { xMax: 20, yMax: 20, missingField: "second" },
   [Category.Multiplication_Lia]: { xMax: 10, yMax: 10 },
   [Category.Multiplication_Lia_MissingFirst]: { xMax: 10, yMax: 10, missingField: "first" },
   [Category.Multiplication_Lia_MissingSecond]: { xMax: 10, yMax: 10, missingField: "second" },
