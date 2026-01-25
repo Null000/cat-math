@@ -3,8 +3,9 @@
   "packageManager": "yarn@4.10.3",
   "type": "module",
   "scripts": {
-    "build": "cp src/*.html dist && cp -r src/rewardImages dist && bun build ./src/app.ts --outdir dist",
-    "dev": "cp src/*.html dist && cp -r src/rewardImages dist && cd dist && caddy file-server --listen :3000 ; cd .. && bun build ./src/app.ts --outdir dist --watch"
+    "build": "cp src/*.html dist && cp -r src/rewardImages dist && bun build ./src/app.ts ./src/index.ts --outdir dist",
+    "dev": "cp src/*.html dist && cp -r src/rewardImages dist && bun build ./src/app.ts ./src/index.ts --outdir dist --watch",
+    "caddy": "cd dist && caddy file-server --listen :3000"
   },
   "devDependencies": {
     "prettier": "^3.6.2",
