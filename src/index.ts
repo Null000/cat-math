@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             // Handle emoji in title if it exists, simple replacement otherwise
             if (key === "title") {
-                el.innerHTML = `${t(key)} <span class="brain-emoji">🐈</span>`;
+                el.innerHTML = `${t(key)} <span class="brain-emoji">🐈‍⬛</span>`;
             } else {
                 el.textContent = t(key);
             }
