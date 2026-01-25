@@ -15,6 +15,7 @@ export const translations = {
         examples: "Examples",
         solved: "solved",
         selected_label: "Selected:",
+        next_round: "Next Round",
 
         // Stats
         stat_correct: "Correct:",
@@ -76,6 +77,7 @@ export const translations = {
         examples: "Primeri",
         solved: "rešeno",
         selected_label: "Izbrano:",
+        next_round: "Naslednji krog",
 
         // Stats
         stat_correct: "Pravilno:",

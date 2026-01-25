@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // DOM Elements
     const problemElement = document.getElementById("problem");
+    const problemContainer = document.getElementById("problem-container");
     const answerInput = document.getElementById("answer-input") as HTMLInputElement;
     const submitButton = document.getElementById("submit-btn") as HTMLButtonElement;
     const feedbackElement = document.getElementById("feedback");
@@ -44,6 +45,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Reward Image Elements
     const gridParts = Array.from(document.querySelectorAll(".grid-part")) as HTMLElement[];
     const rewardImage = document.getElementById("reward-image") as HTMLImageElement;
+    const nextRoundBtn = document.getElementById("next-round-btn") as HTMLButtonElement;
+    const answerSection = document.querySelector(".answer-section") as HTMLElement;
 
     // Function to choose a random reward image
     function chooseRandomRewardImage() {
@@ -136,6 +139,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Function to check if the whole picture is revealed
+    function isPictureComplete() {
+        return gridParts.every((part) => part.classList.contains("revealed"));
+    }
+
     // Function to hide a random revealed part of the reward image
     function hideRandomPart() {
         const revealedParts = gridParts.filter((part) =>
@@ -211,7 +219,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (submitButton) submitButton.disabled = true;
             if (answerInput) answerInput.disabled = true;
-            setTimeout(newProblem, 1000);
+
+            if (isPictureComplete()) {
+                // Show "Next Round" button and hide answer section
+                if (nextRoundBtn) nextRoundBtn.style.display = "block";
+                if (answerSection) answerSection.style.display = "none";
+                if (feedbackElement) feedbackElement.style.display = "none";
+                if (problemContainer) problemContainer.style.display = "none";
+            } else {
+                setTimeout(newProblem, 1000);
+            }
         } else {
             feedbackElement.textContent = t("incorrect");
             feedbackElement.className = "incorrect";
@@ -252,6 +269,23 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Function to start a new round
+    function startNextRound() {
+        if (nextRoundBtn) nextRoundBtn.style.display = "none";
+        if (answerSection) answerSection.style.display = "flex";
+        if (feedbackElement) feedbackElement.style.display = "flex";
+        if (problemContainer) problemContainer.style.display = "block";
+
+        // Reset grid
+        gridParts.forEach((part) => part.classList.remove("revealed"));
+
+        // Choose new image
+        chooseRandomRewardImage();
+
+        // Start new problem
+        newProblem();
+    }
+
     // Event Listeners
     if (backBtn) {
         backBtn.addEventListener("click", () => {
@@ -270,6 +304,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 checkAnswer();
             }
         });
+    }
+
+    if (nextRoundBtn) {
+        nextRoundBtn.addEventListener("click", startNextRound);
     }
 
     // Generate the first problem
