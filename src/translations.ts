@@ -26,8 +26,7 @@ export const translations = {
 
         // Categories
         [Category.Addition_Ten]: "Addition: 10",
-        [Category.Addition_Ten_MissingFirst]: "Addition: 10 (missing first)",
-        [Category.Addition_Ten_MissingSecond]: "Addition: 10 (missing second)",
+        [Category.Addition_Ten_Missing]: "Addition: 10 (missing facts)",
         [Category.Addition_TwentyWithoutCarry]: "Addition: 20 (without carry)",
         [Category.Addition_TwentyWithCarry]: "Addition: 20 (with carry)",
         [Category.Addition_TwentyMixed]: "Addition: 20 (mixed)",
@@ -102,8 +101,7 @@ export const translations = {
 
         // Categories
         [Category.Addition_Ten]: "Seštevanje: 10",
-        [Category.Addition_Ten_MissingFirst]: "Seštevanje: 10 (manjka prvi)",
-        [Category.Addition_Ten_MissingSecond]: "Seštevanje: 10 (manjka drugi)",
+        [Category.Addition_Ten_Missing]: "Seštevanje: 10 (neznani člen)",
         [Category.Addition_TwentyWithoutCarry]: "Seštevanje: 20 (brez prehoda)",
         [Category.Addition_TwentyWithCarry]: "Seštevanje: 20 (s prehodom)",
         [Category.Addition_TwentyMixed]: "Seštevanje: 20 (mešano)",

@@ -10,19 +10,14 @@ const generateProps: Record<
     maxResult?: number;
     carryAllowed?: boolean;
     carryForced?: boolean;
-    missingFact?: "first" | "second" | "result";
+    missingFact?: ("first" | "second" | "result") | ("first" | "second" | "result")[];
   }
 > = {
   [Category.Addition_Ten]: { xMax: 10, yMax: 10 },
-  [Category.Addition_Ten_MissingFirst]: {
+  [Category.Addition_Ten_Missing]: {
     xMax: 10,
     yMax: 10,
-    missingFact: "first",
-  },
-  [Category.Addition_Ten_MissingSecond]: {
-    xMax: 10,
-    yMax: 10,
-    missingFact: "second",
+    missingFact: ["first", "second"],
   },
   [Category.Addition_TwentyWithoutCarry]: {
     xMax: 20,
@@ -127,6 +122,8 @@ export function generate(category: Category): Problem[] {
   missingFact = missingFact ?? "result";
 
   const allProblems: Problem[] = [];
+  const missingFacts = Array.isArray(missingFact) ? missingFact : [missingFact];
+
   for (let i = xMin; i <= xMax; i++) {
     for (let j = yMin; j <= yMax; j++) {
       const hasCarry = carryAllowed && (i % 10) + (j % 10) >= 10;
@@ -142,34 +139,36 @@ export function generate(category: Category): Problem[] {
         continue;
       }
 
-      let text: string;
-      let answer: number;
-      let id: string;
+      for (const fact of missingFacts) {
+        let text: string;
+        let answer: number;
+        let id: string;
 
-      switch (missingFact) {
-        case "first":
-          text = `? + ${j} = ${result}`;
-          answer = i;
-          id = `${category}_${i}_${j}_first`;
-          break;
-        case "second":
-          text = `${i} + ? = ${result}`;
-          answer = j;
-          id = `${category}_${i}_${j}_second`;
-          break;
-        case "result":
-        default:
-          text = `${i} + ${j} = ?`;
-          answer = result;
-          id = `${category}_${i}_${j}_result`;
-          break;
+        switch (fact) {
+          case "first":
+            text = `? + ${j} = ${result}`;
+            answer = i;
+            id = `${category}_${i}_${j}_first`;
+            break;
+          case "second":
+            text = `${i} + ? = ${result}`;
+            answer = j;
+            id = `${category}_${i}_${j}_second`;
+            break;
+          case "result":
+          default:
+            text = `${i} + ${j} = ?`;
+            answer = result;
+            id = `${category}_${i}_${j}_result`;
+            break;
+        }
+
+        allProblems.push({
+          id,
+          text,
+          answer,
+        });
       }
-
-      allProblems.push({
-        id,
-        text,
-        answer,
-      });
     }
   }
   return allProblems;

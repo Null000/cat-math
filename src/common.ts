@@ -6,8 +6,7 @@ export interface Problem {
 
 export enum Category {
   Addition_Ten = "Addition: 10",
-  Addition_Ten_MissingFirst = "Addition: 10 (missing first)",
-  Addition_Ten_MissingSecond = "Addition: 10 (missing second)",
+  Addition_Ten_Missing = "Addition: 10 (missing facts)",
   Addition_TwentyWithoutCarry = "Addition: 20 (without carry)",
   Addition_TwentyWithCarry = "Addition: 20 (with carry)",
   Addition_TwentyMixed = "Addition: 20 (mixed)",
@@ -52,8 +51,7 @@ export enum Category {
 export const categoryGroups: Record<string, Category[]> = {
   Addition: [
     Category.Addition_Ten,
-    Category.Addition_Ten_MissingFirst,
-    Category.Addition_Ten_MissingSecond,
+    Category.Addition_Ten_Missing,
     Category.Addition_TwentyWithoutCarry,
     Category.Addition_TwentyWithCarry,
     Category.Addition_TwentyMixed,
