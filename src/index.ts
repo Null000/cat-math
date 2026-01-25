@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (count > 0) {
                     const countSpan = document.createElement("span");
-                    countSpan.textContent = ` (${count})`;
+                    countSpan.textContent = ` (${count} ${t("solved")})`;
                     countSpan.style.fontSize = "0.8em";
                     countSpan.style.color = "#718096";
                     countSpan.style.fontWeight = "normal";
