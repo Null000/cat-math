@@ -31,11 +31,13 @@ export function generate(category: Category): Problem[] {
 
         switch (field) {
           case "first":
+            if (j === 0) continue;
             text = `? × ${j} = ${i * j}`;
             problemAnswer = i;
             id = `${category}_${i}_${j}_first`;
             break;
           case "second":
+            if (i === 0) continue;
             text = `${i} × ? = ${i * j}`;
             problemAnswer = j;
             id = `${category}_${i}_${j}_second`;
