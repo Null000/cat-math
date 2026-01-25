@@ -96,8 +96,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 checkboxItem.className = "checkbox-item";
                 checkboxItem.onclick = (e) => {
                     const target = e.target as HTMLElement;
-                    if (target.tagName !== "INPUT") {
-                        const cb = checkboxItem.querySelector('input');
+                    if (target.tagName !== "INPUT" && !target.closest("label")) {
+                        const cb = checkboxItem.querySelector("input");
                         if (cb) {
                             cb.checked = !cb.checked;
                             updateSelectedDisplay();
