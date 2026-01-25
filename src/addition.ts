@@ -39,21 +39,13 @@ const generateProps: Record<
     carryAllowed: true,
     carryForced: false,
   },
-  [Category.Addition_TwentyMixed_MissingFirst]: {
+  [Category.Addition_TwentyMixed_Missing]: {
     xMax: 20,
     yMax: 20,
     maxResult: 20,
     carryAllowed: true,
     carryForced: false,
-    missingFact: "first",
-  },
-  [Category.Addition_TwentyMixed_MissingSecond]: {
-    xMax: 20,
-    yMax: 20,
-    maxResult: 20,
-    carryAllowed: true,
-    carryForced: false,
-    missingFact: "second",
+    missingFact: ["first", "second"],
   },
   [Category.Addition_HundredWithoutCarry]: {
     xMax: 100,
@@ -81,7 +73,7 @@ const generateProps: Record<
     carryAllowed: true,
     carryForced: false,
   },
-  [Category.Addition_HundredMixed_MissingFirst]: {
+  [Category.Addition_HundredMixed_Missing]: {
     xMax: 100,
     yMax: 100,
     xMin: 10,
@@ -89,17 +81,7 @@ const generateProps: Record<
     maxResult: 100,
     carryAllowed: true,
     carryForced: false,
-    missingFact: "first",
-  },
-  [Category.Addition_HundredMixed_MissingSecond]: {
-    xMax: 100,
-    yMax: 100,
-    xMin: 10,
-    yMin: 10,
-    maxResult: 100,
-    carryAllowed: true,
-    carryForced: false,
-    missingFact: "second",
+    missingFact: ["first", "second"],
   },
 };
 

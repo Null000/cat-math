@@ -7,19 +7,14 @@ const generateProps: Record<
     yMax: number;
     borrowAllowed?: boolean;
     borrowForced?: boolean;
-    missingFact?: "first" | "second" | "result";
+    missingFact?: ("first" | "second" | "result") | ("first" | "second" | "result")[];
   }
 > = {
   [Category.Subtraction_Ten]: { xMax: 10, yMax: 10 },
-  [Category.Subtraction_Ten_MissingFirst]: {
+  [Category.Subtraction_Ten_Missing]: {
     xMax: 10,
     yMax: 10,
-    missingFact: "first",
-  },
-  [Category.Subtraction_Ten_MissingSecond]: {
-    xMax: 10,
-    yMax: 10,
-    missingFact: "second",
+    missingFact: ["first", "second"],
   },
   [Category.Subtraction_Twenty]: {
     xMax: 20,
@@ -27,19 +22,12 @@ const generateProps: Record<
     borrowAllowed: true,
     borrowForced: false,
   },
-  [Category.Subtraction_Twenty_MissingFirst]: {
+  [Category.Subtraction_Twenty_Missing]: {
     xMax: 20,
     yMax: 20,
     borrowAllowed: true,
     borrowForced: false,
-    missingFact: "first",
-  },
-  [Category.Subtraction_Twenty_MissingSecond]: {
-    xMax: 20,
-    yMax: 20,
-    borrowAllowed: true,
-    borrowForced: false,
-    missingFact: "second",
+    missingFact: ["first", "second"],
   },
   [Category.Subtraction_HundredWithoutBorrow]: {
     xMax: 100,
@@ -58,19 +46,12 @@ const generateProps: Record<
     borrowAllowed: true,
     borrowForced: false,
   },
-  [Category.Subtraction_HundredMixed_MissingFirst]: {
+  [Category.Subtraction_HundredMixed_Missing]: {
     xMax: 100,
     yMax: 100,
     borrowAllowed: true,
     borrowForced: false,
-    missingFact: "first",
-  },
-  [Category.Subtraction_HundredMixed_MissingSecond]: {
-    xMax: 100,
-    yMax: 100,
-    borrowAllowed: true,
-    borrowForced: false,
-    missingFact: "second",
+    missingFact: ["first", "second"],
   },
 };
 
@@ -82,6 +63,8 @@ export function generate(category: Category): Problem[] {
   missingFact = missingFact ?? "result";
 
   const allProblems: Problem[] = [];
+  const missingFacts = Array.isArray(missingFact) ? missingFact : [missingFact];
+
   for (let i = 0; i <= xMax; i++) {
     for (let j = 0; j <= yMax; j++) {
       if (i < j) continue; // Can't subtract to get negative
@@ -93,34 +76,36 @@ export function generate(category: Category): Problem[] {
         continue;
       }
 
-      let text: string;
-      let answer: number;
-      let id: string;
+      for (const fact of missingFacts) {
+        let text: string;
+        let answer: number;
+        let id: string;
 
-      switch (missingFact) {
-        case "first":
-          text = `? - ${j} = ${i - j}`;
-          answer = i;
-          id = `${category}_${i}_${j}_first`;
-          break;
-        case "second":
-          text = `${i} - ? = ${i - j}`;
-          answer = j;
-          id = `${category}_${i}_${j}_second`;
-          break;
-        case "result":
-        default:
-          text = `${i} - ${j} = ?`;
-          answer = i - j;
-          id = `${category}_${i}_${j}_result`;
-          break;
+        switch (fact) {
+          case "first":
+            text = `? - ${j} = ${i - j}`;
+            answer = i;
+            id = `${category}_${i}_${j}_first`;
+            break;
+          case "second":
+            text = `${i} - ? = ${i - j}`;
+            answer = j;
+            id = `${category}_${i}_${j}_second`;
+            break;
+          case "result":
+          default:
+            text = `${i} - ${j} = ?`;
+            answer = i - j;
+            id = `${category}_${i}_${j}_result`;
+            break;
+        }
+
+        allProblems.push({
+          id,
+          text,
+          answer,
+        });
       }
-
-      allProblems.push({
-        id,
-        text,
-        answer,
-      });
     }
   }
   return allProblems;
