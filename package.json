@@ -3,8 +3,8 @@
   "packageManager": "yarn@4.10.3",
   "type": "module",
   "scripts": {
-    "build": "cp src/*.html dist && cp -r src/rewardImages dist && bun build ./src/app.ts ./src/index.ts --outdir dist",
-    "dev": "cp src/*.html dist && cp -r src/rewardImages dist && bun build ./src/app.ts ./src/index.ts --outdir dist --watch",
+    "build": "cp src/*.html dist && cp -r src/rewardImages dist && bun build ./src/app.ts ./src/index.ts ./src/practice.ts --outdir dist",
+    "dev": "cp src/*.html dist && cp -r src/rewardImages dist && bun build ./src/app.ts ./src/index.ts ./src/practice.ts --outdir dist --watch",
     "caddy": "cd dist && caddy file-server --listen :3000"
   },
   "devDependencies": {
