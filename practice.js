@@ -597,12 +597,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const rewardImage = document.getElementById("reward-image");
   const nextRoundBtn = document.getElementById("next-round-btn");
   const answerSection = document.querySelector(".answer-section");
+  let currentProblem;
+  let currentCategory;
+  let selectedCategories = [];
+  let currentRewardImageId = null;
   function chooseRandomRewardImage() {
     if (!rewardImage)
       return;
-    const imageCount = 5;
-    const randomIndex = Math.floor(Math.random() * imageCount) + 1;
-    rewardImage.src = `rewardImages/${randomIndex}.jpg`;
+    const totalImages = 5;
+    let completedImages = JSON.parse(localStorage.getItem("completedRewardImages") || "[]");
+    let availableImages = Array.from({ length: totalImages }, (_, i) => i + 1).filter((id) => !completedImages.includes(id));
+    if (availableImages.length === 0) {
+      completedImages = [];
+      availableImages = Array.from({ length: totalImages }, (_, i) => i + 1);
+      localStorage.setItem("completedRewardImages", JSON.stringify(completedImages));
+    }
+    const randomIndex = Math.floor(Math.random() * availableImages.length);
+    currentRewardImageId = availableImages[randomIndex];
+    rewardImage.src = `rewardImages/${currentRewardImageId}.jpg`;
   }
   chooseRandomRewardImage();
   const stats = {
@@ -636,9 +648,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (averageTimeElement)
       averageTimeElement.textContent = `${averageTime}s`;
   }
-  let currentProblem;
-  let currentCategory;
-  let selectedCategories = [];
   const urlParams = new URLSearchParams(window.location.search);
   const categoriesParam = urlParams.get("categories");
   if (categoriesParam) {
@@ -714,6 +723,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (answerInput)
         answerInput.disabled = true;
       if (isPictureComplete()) {
+        if (currentRewardImageId !== null) {
+          const completedImages = JSON.parse(localStorage.getItem("completedRewardImages") || "[]");
+          if (!completedImages.includes(currentRewardImageId)) {
+            completedImages.push(currentRewardImageId);
+            localStorage.setItem("completedRewardImages", JSON.stringify(completedImages));
+          }
+        }
         if (nextRoundBtn)
           nextRoundBtn.style.display = "block";
         if (answerSection)
