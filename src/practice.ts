@@ -48,12 +48,36 @@ document.addEventListener("DOMContentLoaded", () => {
     const nextRoundBtn = document.getElementById("next-round-btn") as HTMLButtonElement;
     const answerSection = document.querySelector(".answer-section") as HTMLElement;
 
+    // State Variables
+    let currentProblem: any;
+    let currentCategory: Category;
+    let selectedCategories: string[] = [];
+    let currentRewardImageId: number | null = null;
+
     // Function to choose a random reward image
     function chooseRandomRewardImage() {
         if (!rewardImage) return;
-        const imageCount = 5; // We have 1.jpg to 5.jpg
-        const randomIndex = Math.floor(Math.random() * imageCount) + 1;
-        rewardImage.src = `rewardImages/${randomIndex}.jpg`;
+        const totalImages = 5; // We have 1.jpg to 5.jpg
+
+        // Get completed images from localStorage
+        let completedImages: number[] = JSON.parse(localStorage.getItem("completedRewardImages") || "[]");
+
+        // Find available images
+        let availableImages = Array.from({ length: totalImages }, (_, i) => i + 1)
+            .filter(id => !completedImages.includes(id));
+
+        // If all images have been shown, reset the list
+        if (availableImages.length === 0) {
+            completedImages = [];
+            availableImages = Array.from({ length: totalImages }, (_, i) => i + 1);
+            localStorage.setItem("completedRewardImages", JSON.stringify(completedImages));
+        }
+
+        // Pick a random image from available
+        const randomIndex = Math.floor(Math.random() * availableImages.length);
+        currentRewardImageId = availableImages[randomIndex] as number;
+
+        rewardImage.src = `rewardImages/${currentRewardImageId}.jpg`;
     }
 
     // Choose random reward image on page load
@@ -97,9 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (averageTimeElement) averageTimeElement.textContent = `${averageTime}s`;
     }
 
-    let currentProblem: any;
-    let currentCategory: Category;
-    let selectedCategories: string[] = [];
+
 
     // Get categories from URL query params
     const urlParams = new URLSearchParams(window.location.search);
@@ -221,6 +243,15 @@ document.addEventListener("DOMContentLoaded", () => {
             if (answerInput) answerInput.disabled = true;
 
             if (isPictureComplete()) {
+                // Mark current image as completed in localStorage
+                if (currentRewardImageId !== null) {
+                    const completedImages: number[] = JSON.parse(localStorage.getItem("completedRewardImages") || "[]");
+                    if (!completedImages.includes(currentRewardImageId)) {
+                        completedImages.push(currentRewardImageId);
+                        localStorage.setItem("completedRewardImages", JSON.stringify(completedImages));
+                    }
+                }
+
                 // Show "Next Round" button and hide answer section
                 if (nextRoundBtn) nextRoundBtn.style.display = "block";
                 if (answerSection) answerSection.style.display = "none";
