@@ -436,6 +436,7 @@ var translations = {
     examples: "Examples",
     solved: "solved",
     selected_label: "Selected:",
+    next_round: "Next Round",
     stat_correct: "Correct:",
     stat_incorrect: "Incorrect:",
     stat_accuracy: "Accuracy:",
@@ -488,6 +489,7 @@ var translations = {
     examples: "Primeri",
     solved: "rešeno",
     selected_label: "Izbrano:",
+    next_round: "Naslednji krog",
     stat_correct: "Pravilno:",
     stat_incorrect: "Nepravilno:",
     stat_accuracy: "Natančnost:",
@@ -598,6 +600,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!selectedTagsContainer || !selectedCategoriesContainer)
       return;
     selectedCategories = getSelectedCategories();
+    localStorage.setItem("selected_categories", JSON.stringify(selectedCategories));
     if (selectedCategories.length === 0) {
       selectedCategoriesContainer.style.display = "none";
       return;
@@ -616,6 +619,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     const categories = getCategories();
     categoryGroups2.innerHTML = "";
+    const savedCategories = JSON.parse(localStorage.getItem("selected_categories") || "[]");
     Object.entries(categories).forEach(([groupName, categoryList]) => {
       const groupDetails = document.createElement("details");
       groupDetails.className = "category-group";
@@ -629,10 +633,11 @@ document.addEventListener("DOMContentLoaded", () => {
         checkboxItem.className = "checkbox-item";
         checkboxItem.onclick = (e) => {
           const target = e.target;
-          if (target.tagName !== "INPUT") {
+          if (target.tagName !== "INPUT" && !target.closest("label")) {
             const cb = checkboxItem.querySelector("input");
             if (cb) {
               cb.checked = !cb.checked;
+              updateSelectedDisplay();
             }
           }
         };
@@ -642,6 +647,11 @@ document.addEventListener("DOMContentLoaded", () => {
         checkbox.type = "checkbox";
         checkbox.id = category;
         checkbox.value = category;
+        const isChecked = savedCategories.includes(category);
+        checkbox.checked = isChecked;
+        if (isChecked) {
+          groupDetails.open = true;
+        }
         checkbox.addEventListener("change", updateSelectedDisplay);
         const label = document.createElement("label");
         label.htmlFor = category;

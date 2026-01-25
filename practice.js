@@ -436,6 +436,7 @@ var translations = {
     examples: "Examples",
     solved: "solved",
     selected_label: "Selected:",
+    next_round: "Next Round",
     stat_correct: "Correct:",
     stat_incorrect: "Incorrect:",
     stat_accuracy: "Accuracy:",
@@ -488,6 +489,7 @@ var translations = {
     examples: "Primeri",
     solved: "rešeno",
     selected_label: "Izbrano:",
+    next_round: "Naslednji krog",
     stat_correct: "Pravilno:",
     stat_incorrect: "Nepravilno:",
     stat_accuracy: "Natančnost:",
@@ -579,6 +581,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   document.title = t("title");
   const problemElement = document.getElementById("problem");
+  const problemContainer = document.getElementById("problem-container");
   const answerInput = document.getElementById("answer-input");
   const submitButton = document.getElementById("submit-btn");
   const feedbackElement = document.getElementById("feedback");
@@ -592,6 +595,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const averageTimeElement = document.getElementById("average-time");
   const gridParts = Array.from(document.querySelectorAll(".grid-part"));
   const rewardImage = document.getElementById("reward-image");
+  const nextRoundBtn = document.getElementById("next-round-btn");
+  const answerSection = document.querySelector(".answer-section");
   function chooseRandomRewardImage() {
     if (!rewardImage)
       return;
@@ -657,6 +662,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   }
+  function isPictureComplete() {
+    return gridParts.every((part) => part.classList.contains("revealed"));
+  }
   function hideRandomPart() {
     const revealedParts = gridParts.filter((part) => part.classList.contains("revealed"));
     if (revealedParts.length > 0) {
@@ -705,7 +713,18 @@ document.addEventListener("DOMContentLoaded", () => {
         submitButton.disabled = true;
       if (answerInput)
         answerInput.disabled = true;
-      setTimeout(newProblem, 1000);
+      if (isPictureComplete()) {
+        if (nextRoundBtn)
+          nextRoundBtn.style.display = "block";
+        if (answerSection)
+          answerSection.style.display = "none";
+        if (feedbackElement)
+          feedbackElement.style.display = "none";
+        if (problemContainer)
+          problemContainer.style.display = "none";
+      } else {
+        setTimeout(newProblem, 1000);
+      }
     } else {
       feedbackElement.textContent = t("incorrect");
       feedbackElement.className = "incorrect";
@@ -737,6 +756,19 @@ document.addEventListener("DOMContentLoaded", () => {
       submitButton.disabled = false;
     }
   }
+  function startNextRound() {
+    if (nextRoundBtn)
+      nextRoundBtn.style.display = "none";
+    if (answerSection)
+      answerSection.style.display = "flex";
+    if (feedbackElement)
+      feedbackElement.style.display = "flex";
+    if (problemContainer)
+      problemContainer.style.display = "block";
+    gridParts.forEach((part) => part.classList.remove("revealed"));
+    chooseRandomRewardImage();
+    newProblem();
+  }
   if (backBtn) {
     backBtn.addEventListener("click", () => {
       window.location.href = "index.html";
@@ -751,6 +783,9 @@ document.addEventListener("DOMContentLoaded", () => {
         checkAnswer();
       }
     });
+  }
+  if (nextRoundBtn) {
+    nextRoundBtn.addEventListener("click", startNextRound);
   }
   newProblem();
 });

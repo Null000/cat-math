@@ -225,6 +225,22 @@
       transform: translateY(0);
     }
 
+    #next-round-btn {
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      box-shadow: 0 8px 25px rgba(72, 187, 120, 0.3);
+      display: none;
+      margin: 20px auto;
+    }
+
+    #next-round-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(72, 187, 120, 0.4);
+    }
+
+    #next-round-btn:active {
+      transform: translateY(0);
+    }
+
     #feedback {
       font-size: 1.3em;
       font-weight: 600;
@@ -415,6 +431,7 @@
         <button id="submit-btn" data-i18n="check_button">Check</button>
       </div>
       <p id="feedback"></p>
+      <button id="next-round-btn" data-i18n="next_round">Next Round</button>
     </div>
 
     <div class="reward-container">
