@@ -49,15 +49,11 @@ export const translations = {
         [Category.Multiplication_Ten_Missing]: "Multiplication: 10 (missing facts)",
         [Category.Multiplication_Twenty]: "Multiplication: 20",
         [Category.Multiplication_Twenty_Missing]: "Multiplication: 20 (missing facts)",
-        [Category.Multiplication_Lia]: "Multiplication Lia",
-        [Category.Multiplication_Lia_Missing]: "Multiplication Lia (missing facts)",
 
         [Category.Division_Ten]: "Division: 10",
         [Category.Division_Ten_Missing]: "Division: 10 (missing facts)",
         [Category.Division_Twenty]: "Division: 20",
         [Category.Division_Twenty_Missing]: "Division: 20 (missing facts)",
-        [Category.Division_Lia]: "Division Lia",
-        [Category.Division_Lia_Missing]: "Division Lia (missing facts)",
 
         // Group Names
         group_Addition: "Addition",
@@ -113,15 +109,11 @@ export const translations = {
         [Category.Multiplication_Ten_Missing]: "Množenje: 10 (neznani člen)",
         [Category.Multiplication_Twenty]: "Množenje: 20",
         [Category.Multiplication_Twenty_Missing]: "Množenje: 20 (neznani člen)",
-        [Category.Multiplication_Lia]: "Množenje Lia",
-        [Category.Multiplication_Lia_Missing]: "Množenje Lia (neznani člen)",
 
         [Category.Division_Ten]: "Deljenje: 10",
         [Category.Division_Ten_Missing]: "Deljenje: 10 (neznani člen)",
         [Category.Division_Twenty]: "Deljenje: 20",
         [Category.Division_Twenty_Missing]: "Deljenje: 20 (neznani člen)",
-        [Category.Division_Lia]: "Deljenje Lia",
-        [Category.Division_Lia_Missing]: "Deljenje Lia (neznani člen)",
 
         // Group Names
         group_Addition: "Seštevanje",

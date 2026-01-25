@@ -12,8 +12,6 @@ const generateProps: Record<
   [Category.Division_Ten_Missing]: { answerMax: 10, divisorMax: 10, missingField: ["dividend", "divisor"] },
   [Category.Division_Twenty]: { answerMax: 20, divisorMax: 20 },
   [Category.Division_Twenty_Missing]: { answerMax: 20, divisorMax: 20, missingField: ["dividend", "divisor"] },
-  [Category.Division_Lia]: { answerMax: 10, divisorMax: 10 },
-  [Category.Division_Lia_Missing]: { answerMax: 10, divisorMax: 10, missingField: ["dividend", "divisor"] },
 };
 
 export function generate(category: Category): Problem[] {
@@ -25,14 +23,6 @@ export function generate(category: Category): Problem[] {
 
   for (let answer = 0; answer <= answerMax; answer++) {
     for (let divisor = 1; divisor <= divisorMax; divisor++) {
-      if (
-        category === Category.Division_Lia ||
-        category === Category.Division_Lia_Missing
-      ) {
-        if (divisor === 8 || divisor === 9) {
-          continue;
-        }
-      }
 
       const dividend = answer * divisor;
 

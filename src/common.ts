@@ -27,14 +27,10 @@ export enum Category {
   Multiplication_Ten_Missing = "Multiplication: 10 (missing facts)",
   Multiplication_Twenty = "Multiplication: 20",
   Multiplication_Twenty_Missing = "Multiplication: 20 (missing facts)",
-  Multiplication_Lia = "Multiplication Lia",
-  Multiplication_Lia_Missing = "Multiplication Lia (missing facts)",
   Division_Ten = "Division: 10",
   Division_Ten_Missing = "Division: 10 (missing facts)",
   Division_Twenty = "Division: 20",
-  Division_Twenty_Missing = "Division: 20 (missing facts)",
-  Division_Lia = "Division Lia",
-  Division_Lia_Missing = "Division Lia (missing facts)"
+  Division_Twenty_Missing = "Division: 20 (missing facts)"
 }
 
 export const categoryGroups: Record<string, Category[]> = {
@@ -64,17 +60,13 @@ export const categoryGroups: Record<string, Category[]> = {
     Category.Multiplication_Ten,
     Category.Multiplication_Ten_Missing,
     Category.Multiplication_Twenty,
-    Category.Multiplication_Twenty_Missing,
-    Category.Multiplication_Lia,
-    Category.Multiplication_Lia_Missing
+    Category.Multiplication_Twenty_Missing
   ],
   Division: [
     Category.Division_Ten,
     Category.Division_Ten_Missing,
     Category.Division_Twenty,
-    Category.Division_Twenty_Missing,
-    Category.Division_Lia,
-    Category.Division_Lia_Missing
+    Category.Division_Twenty_Missing
   ],
 };
 

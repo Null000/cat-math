@@ -12,8 +12,6 @@ const generateProps: Record<
   [Category.Multiplication_Ten_Missing]: { xMax: 10, yMax: 10, missingField: ["first", "second"] },
   [Category.Multiplication_Twenty]: { xMax: 20, yMax: 20 },
   [Category.Multiplication_Twenty_Missing]: { xMax: 20, yMax: 20, missingField: ["first", "second"] },
-  [Category.Multiplication_Lia]: { xMax: 10, yMax: 10 },
-  [Category.Multiplication_Lia_Missing]: { xMax: 10, yMax: 10, missingField: ["first", "second"] },
 };
 
 export function generate(category: Category): Problem[] {
@@ -25,14 +23,6 @@ export function generate(category: Category): Problem[] {
 
   for (let i = 0; i <= xMax; i++) {
     for (let j = 0; j <= yMax; j++) {
-      if (
-        category === Category.Multiplication_Lia ||
-        category === Category.Multiplication_Lia_Missing
-      ) {
-        if (j === 8 || j === 9) {
-          continue;
-        }
-      }
 
       for (const field of missingFields) {
         let text: string;
