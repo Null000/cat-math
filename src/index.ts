@@ -52,6 +52,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         selectedCategories = getSelectedCategories();
 
+        // Save to local storage
+        localStorage.setItem("selected_categories", JSON.stringify(selectedCategories));
+
         if (selectedCategories.length === 0) {
             selectedCategoriesContainer.style.display = "none";
             return;
@@ -74,6 +77,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const categories = getCategories();
         categoryGroups.innerHTML = "";
 
+        // Load from local storage
+        const savedCategories = JSON.parse(localStorage.getItem("selected_categories") || "[]");
+
         Object.entries(categories).forEach(([groupName, categoryList]) => {
             const groupDetails = document.createElement("details");
             groupDetails.className = "category-group";
@@ -94,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         const cb = checkboxItem.querySelector('input');
                         if (cb) {
                             cb.checked = !cb.checked;
+                            updateSelectedDisplay();
                         }
                     }
                 };
@@ -105,6 +112,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 checkbox.type = "checkbox";
                 checkbox.id = category;
                 checkbox.value = category;
+                const isChecked = savedCategories.includes(category);
+                checkbox.checked = isChecked;
+                if (isChecked) {
+                    groupDetails.open = true;
+                }
                 checkbox.addEventListener("change", updateSelectedDisplay);
 
                 const label = document.createElement("label");
