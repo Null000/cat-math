@@ -40,13 +40,13 @@ const generateProps: Record<
     borrowAllowed: true,
     borrowForced: true,
   },
-  [Category.Subtraction_HundredMixed]: {
+  [Category.Subtraction_Hundred]: {
     xMax: 100,
     yMax: 100,
     borrowAllowed: true,
     borrowForced: false,
   },
-  [Category.Subtraction_HundredMixed_Missing]: {
+  [Category.Subtraction_Hundred_Missing]: {
     xMax: 100,
     yMax: 100,
     borrowAllowed: true,

@@ -32,14 +32,14 @@ const generateProps: Record<
     carryAllowed: true,
     carryForced: true,
   },
-  [Category.Addition_TwentyMixed]: {
+  [Category.Addition_Twenty]: {
     xMax: 20,
     yMax: 20,
     maxResult: 20,
     carryAllowed: true,
     carryForced: false,
   },
-  [Category.Addition_TwentyMixed_Missing]: {
+  [Category.Addition_Twenty_Missing]: {
     xMax: 20,
     yMax: 20,
     maxResult: 20,
@@ -64,7 +64,7 @@ const generateProps: Record<
     carryAllowed: true,
     carryForced: true,
   },
-  [Category.Addition_HundredMixed]: {
+  [Category.Addition_Hundred]: {
     xMax: 100,
     yMax: 100,
     xMin: 10,
@@ -73,7 +73,7 @@ const generateProps: Record<
     carryAllowed: true,
     carryForced: false,
   },
-  [Category.Addition_HundredMixed_Missing]: {
+  [Category.Addition_Hundred_Missing]: {
     xMax: 100,
     yMax: 100,
     xMin: 10,
