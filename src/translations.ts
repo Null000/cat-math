@@ -14,6 +14,7 @@ export const translations = {
         input_placeholder: "Your answer",
         examples: "Examples",
         solved: "solved",
+        selected_label: "Selected:",
 
         // Stats
         stat_correct: "Correct:",
@@ -74,6 +75,7 @@ export const translations = {
         input_placeholder: "Tvoj odgovor",
         examples: "Primeri",
         solved: "rešeno",
+        selected_label: "Izbrano:",
 
         // Stats
         stat_correct: "Pravilno:",

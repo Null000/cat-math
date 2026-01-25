@@ -42,8 +42,31 @@ document.addEventListener("DOMContentLoaded", () => {
     // DOM Elements
     const categoryGroups = document.getElementById("category-groups");
     const startPracticeBtn = document.getElementById("start-practice-btn");
+    const selectedTagsContainer = document.getElementById("selected-tags");
+    const selectedCategoriesContainer = document.getElementById("selected-categories-container");
 
     let selectedCategories: string[] = [];
+
+    function updateSelectedDisplay() {
+        if (!selectedTagsContainer || !selectedCategoriesContainer) return;
+
+        selectedCategories = getSelectedCategories();
+
+        if (selectedCategories.length === 0) {
+            selectedCategoriesContainer.style.display = "none";
+            return;
+        }
+
+        selectedCategoriesContainer.style.display = "flex";
+        selectedTagsContainer.innerHTML = "";
+
+        selectedCategories.forEach(cat => {
+            const tag = document.createElement("span");
+            tag.className = "selected-tag";
+            tag.textContent = getCategoryDisplayName(cat as Category);
+            selectedTagsContainer.appendChild(tag);
+        });
+    }
 
     // Populate category checkboxes
     function populateCategories() {
@@ -82,6 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 checkbox.type = "checkbox";
                 checkbox.id = category;
                 checkbox.value = category;
+                checkbox.addEventListener("change", updateSelectedDisplay);
 
                 const label = document.createElement("label");
                 label.htmlFor = category;
@@ -164,4 +188,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Initialize categories on page load
     populateCategories();
+    updateSelectedDisplay();
 });
