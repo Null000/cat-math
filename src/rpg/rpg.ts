@@ -1,4 +1,34 @@
-import { Application, Sprite, Assets, Text, TextStyle } from 'pixi.js';
+import { Application, Sprite, Assets, Text, TextStyle, Graphics, Container } from 'pixi.js';
+
+class HealthBar extends Container {
+    private bg: Graphics;
+    private fill: Graphics;
+    private widthMax: number;
+    private heightBar: number;
+
+    constructor(width = 100, height = 10) {
+        super();
+        this.widthMax = width;
+        this.heightBar = height;
+
+        this.bg = new Graphics();
+        this.bg.rect(0, 0, width, height);
+        this.bg.fill(0x333333);
+        this.addChild(this.bg);
+
+        this.fill = new Graphics();
+        this.fill.rect(0, 0, width, height);
+        this.fill.fill(0x2ecc71);
+        this.addChild(this.fill);
+    }
+
+    setHealth(percent: number) {
+        const p = Math.max(0, Math.min(1, percent));
+        this.fill.clear();
+        this.fill.rect(0, 0, this.widthMax * p, this.heightBar);
+        this.fill.fill(p > 0.3 ? 0x2ecc71 : 0xe74c3c);
+    }
+}
 
 async function init() {
     const app = new Application();
@@ -28,9 +58,20 @@ async function init() {
     rat.x = app.screen.width * 0.75;
     rat.y = app.screen.height * 0.6;
     rat.scale.set(0.5);
-    // Flip rat to face wizard
-    rat.scale.x *= -1;
     app.stage.addChild(rat);
+
+    // Add Health Bars
+    const wizardHB = new HealthBar(120, 12);
+    wizardHB.pivot.set(60, 6);
+    wizardHB.x = wizard.x;
+    wizardHB.y = wizard.y - 120;
+    app.stage.addChild(wizardHB);
+
+    const ratHB = new HealthBar(100, 10);
+    ratHB.pivot.set(50, 5);
+    ratHB.x = rat.x;
+    ratHB.y = rat.y - 80;
+    app.stage.addChild(ratHB);
 
     // Add Battle Text
     const style = new TextStyle({
@@ -57,6 +98,13 @@ async function init() {
     app.ticker.add((time) => {
         wizard.y = (app.screen.height * 0.6) + Math.sin(time.lastTime / 500) * 10;
         rat.y = (app.screen.height * 0.6) + Math.cos(time.lastTime / 500) * 10;
+
+        wizardHB.y = wizard.y - 120;
+        ratHB.y = rat.y - 80;
+
+        // Visual test: health oscillates
+        wizardHB.setHealth(0.5 + Math.sin(time.lastTime / 1000) * 0.5);
+        ratHB.setHealth(0.5 + Math.cos(time.lastTime / 1000) * 0.5);
     });
 
     // Handle resize
@@ -66,6 +114,10 @@ async function init() {
         wizard.y = app.screen.height * 0.6;
         rat.x = app.screen.width * 0.75;
         rat.y = app.screen.height * 0.6;
+
+        wizardHB.x = wizard.x;
+        ratHB.x = rat.x;
+
         battleText.x = app.screen.width / 2;
     });
 }
