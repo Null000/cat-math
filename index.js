@@ -33,6 +33,9 @@ var categoryGroups = {
     "Division: 10 (missing facts)" /* Division_Ten_Missing */,
     "Division: 20" /* Division_Twenty */,
     "Division: 20 (missing facts)" /* Division_Twenty_Missing */
+  ],
+  Test: [
+    "test" /* Test */
   ]
 };
 var categoryToGroup = (() => {
@@ -380,19 +383,32 @@ function generate4(category) {
   return allProblems;
 }
 
+// src/test.ts
+function generate5(category) {
+  return [
+    { id: "test-1", text: "1", answer: 1 },
+    { id: "test-2", text: "2", answer: 2 },
+    { id: "test-3", text: "3", answer: 3 }
+  ];
+}
+
 // src/problem.ts
 var generateFnPerGroup = {
   Addition: (category) => generate(category),
   Subtraction: (category) => generate2(category),
   Multiplication: (category) => generate4(category),
-  Division: (category) => generate3(category)
+  Division: (category) => generate3(category),
+  Test: (category) => generate5(category)
 };
 var cache = {};
 function getCachedProblems(category) {
   if (!cache[category]) {
-    cache[category] = generateFnPerGroup[categoryToGroup[category]](category);
+    populateCache(category);
   }
   return cache[category];
+}
+function populateCache(category) {
+  cache[category] = generateFnPerGroup[categoryToGroup[category]](category);
 }
 function getRandomProblem(category) {
   const problems = getCachedProblems(category);
@@ -403,6 +419,11 @@ function removeSolvedProblem(category, problemId) {
   if (problems) {
     cache[category] = problems.filter((p) => p.id !== problemId);
   }
+  if (cache[category]?.length === 0) {
+    populateCache(category);
+    return true;
+  }
+  return false;
 }
 
 // src/app.ts
@@ -414,7 +435,7 @@ function generateProblem(category) {
   return getRandomProblem(category);
 }
 function solvedProblem(category, problemId) {
-  removeSolvedProblem(category, problemId);
+  return removeSolvedProblem(category, problemId);
 }
 function getCategories() {
   return categoryGroups;
@@ -437,6 +458,10 @@ var translations = {
     solved: "solved",
     selected_label: "Selected:",
     next_round: "Next Round",
+    perfect_round: "Perfect round! Great job! \uD83C\uDF1F",
+    review_header: "Problems to review:",
+    your_answers: "your answers:",
+    correct_answer: "Correct answer:",
     stat_correct: "Correct:",
     stat_incorrect: "Incorrect:",
     stat_accuracy: "Accuracy:",
@@ -444,6 +469,7 @@ var translations = {
     stat_best: "Best:",
     stat_time: "Time:",
     stat_avg: "Avg:",
+    stat_median: "Median:",
     ["Addition: 10" /* Addition_Ten */]: "Addition: 10",
     ["Addition: 10 (missing facts)" /* Addition_Ten_Missing */]: "Addition: 10 (missing facts)",
     ["Addition: 20 (without carry)" /* Addition_TwentyWithoutCarry */]: "Addition: 20 (without carry)",
@@ -490,6 +516,10 @@ var translations = {
     solved: "rešeno",
     selected_label: "Izbrano:",
     next_round: "Naslednji krog",
+    perfect_round: "Popoln krog! Odlično delo! \uD83C\uDF1F",
+    review_header: "Naloge za ponovitev:",
+    your_answers: "tvoji odgovori:",
+    correct_answer: "Pravilna odgovor:",
     stat_correct: "Pravilno:",
     stat_incorrect: "Nepravilno:",
     stat_accuracy: "Natančnost:",
@@ -497,6 +527,7 @@ var translations = {
     stat_best: "Najboljše:",
     stat_time: "Čas:",
     stat_avg: "Povpr:",
+    stat_median: "Med:",
     ["Addition: 10" /* Addition_Ten */]: "Seštevanje: 10",
     ["Addition: 10 (missing facts)" /* Addition_Ten_Missing */]: "Seštevanje: 10 (neznani člen)",
     ["Addition: 20 (without carry)" /* Addition_TwentyWithoutCarry */]: "Seštevanje: 20 (brez prehoda)",
@@ -621,6 +652,8 @@ document.addEventListener("DOMContentLoaded", () => {
     categoryGroups2.innerHTML = "";
     const savedCategories = JSON.parse(localStorage.getItem("selected_categories") || "[]");
     Object.entries(categories).forEach(([groupName, categoryList]) => {
+      if (groupName === "Test")
+        return;
       const groupDetails = document.createElement("details");
       groupDetails.className = "category-group";
       const groupSummary = document.createElement("summary");

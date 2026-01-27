@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cat Math</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
@@ -414,6 +415,96 @@
         gap: 8px 15px;
       }
     }
+
+    /* Feedback Summary */
+    #feedback-summary {
+      display: none;
+      text-align: left;
+      margin: 20px 0;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 16px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      max-height: 300px;
+      overflow-y: auto;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .feedback-perfect {
+      text-align: center;
+      font-size: 1.4em;
+      font-weight: 700;
+      color: #38a169;
+      padding: 20px;
+    }
+
+    .review-item {
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .review-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .review-problem {
+      font-weight: 700;
+      color: #2d3748;
+      font-size: 1.1em;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .review-details {
+      font-size: 0.9em;
+      color: #4a5568;
+    }
+
+    .review-incorrect {
+      color: #e53e3e;
+      font-weight: 500;
+    }
+
+    .review-correct {
+      color: #38a169;
+      font-weight: 500;
+    }
+
+    .review-header {
+      font-weight: 700;
+      font-size: 1.2em;
+      margin-bottom: 15px;
+      color: #1a202c;
+      display: block;
+      text-align: center;
+    }
+
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      font-size: 0.8em;
+      color: #718096;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .footer a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .footer a:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
   </style>
 </head>
 
@@ -431,6 +522,7 @@
         <button id="submit-btn" data-i18n="check_button">Check</button>
       </div>
       <p id="feedback"></p>
+      <div id="feedback-summary"></div>
       <button id="next-round-btn" data-i18n="next_round">Next Round</button>
     </div>
 
@@ -477,6 +569,15 @@
       <div class="stat-item"><span data-i18n="stat_best">Best:</span><span id="longest-streak">0</span></div>
       <div class="stat-item"><span data-i18n="stat_time">Time:</span><span id="total-time">0:00</span></div>
       <div class="stat-item"><span data-i18n="stat_avg">Avg:</span><span id="average-time">0.0s</span></div>
+      <div class="stat-item"><span data-i18n="stat_median">Median:</span><span id="median-time">0.0s</span></div>
+    </div>
+
+    <div class="footer">
+      <span><a href="mailto:damjan.kosir@gmail.com">Damjan Košir</a></span>
+      <span>•</span>
+      <a href="https://github.com/Null000/cat-math" target="_blank" rel="noopener noreferrer">
+        <i class="fa-brands fa-github"></i>
+      </a>
     </div>
   </div>
 

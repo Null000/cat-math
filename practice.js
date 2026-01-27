@@ -33,6 +33,9 @@ var categoryGroups = {
     "Division: 10 (missing facts)" /* Division_Ten_Missing */,
     "Division: 20" /* Division_Twenty */,
     "Division: 20 (missing facts)" /* Division_Twenty_Missing */
+  ],
+  Test: [
+    "test" /* Test */
   ]
 };
 var categoryToGroup = (() => {
@@ -380,19 +383,32 @@ function generate4(category) {
   return allProblems;
 }
 
+// src/test.ts
+function generate5(category) {
+  return [
+    { id: "test-1", text: "1", answer: 1 },
+    { id: "test-2", text: "2", answer: 2 },
+    { id: "test-3", text: "3", answer: 3 }
+  ];
+}
+
 // src/problem.ts
 var generateFnPerGroup = {
   Addition: (category) => generate(category),
   Subtraction: (category) => generate2(category),
   Multiplication: (category) => generate4(category),
-  Division: (category) => generate3(category)
+  Division: (category) => generate3(category),
+  Test: (category) => generate5(category)
 };
 var cache = {};
 function getCachedProblems(category) {
   if (!cache[category]) {
-    cache[category] = generateFnPerGroup[categoryToGroup[category]](category);
+    populateCache(category);
   }
   return cache[category];
+}
+function populateCache(category) {
+  cache[category] = generateFnPerGroup[categoryToGroup[category]](category);
 }
 function getRandomProblem(category) {
   const problems = getCachedProblems(category);
@@ -403,6 +419,11 @@ function removeSolvedProblem(category, problemId) {
   if (problems) {
     cache[category] = problems.filter((p) => p.id !== problemId);
   }
+  if (cache[category]?.length === 0) {
+    populateCache(category);
+    return true;
+  }
+  return false;
 }
 
 // src/app.ts
@@ -414,7 +435,7 @@ function generateProblem(category) {
   return getRandomProblem(category);
 }
 function solvedProblem(category, problemId) {
-  removeSolvedProblem(category, problemId);
+  return removeSolvedProblem(category, problemId);
 }
 function getCategories() {
   return categoryGroups;
@@ -437,6 +458,10 @@ var translations = {
     solved: "solved",
     selected_label: "Selected:",
     next_round: "Next Round",
+    perfect_round: "Perfect round! Great job! \uD83C\uDF1F",
+    review_header: "Problems to review:",
+    your_answers: "your answers:",
+    correct_answer: "Correct answer:",
     stat_correct: "Correct:",
     stat_incorrect: "Incorrect:",
     stat_accuracy: "Accuracy:",
@@ -444,6 +469,7 @@ var translations = {
     stat_best: "Best:",
     stat_time: "Time:",
     stat_avg: "Avg:",
+    stat_median: "Median:",
     ["Addition: 10" /* Addition_Ten */]: "Addition: 10",
     ["Addition: 10 (missing facts)" /* Addition_Ten_Missing */]: "Addition: 10 (missing facts)",
     ["Addition: 20 (without carry)" /* Addition_TwentyWithoutCarry */]: "Addition: 20 (without carry)",
@@ -490,6 +516,10 @@ var translations = {
     solved: "rešeno",
     selected_label: "Izbrano:",
     next_round: "Naslednji krog",
+    perfect_round: "Popoln krog! Odlično delo! \uD83C\uDF1F",
+    review_header: "Naloge za ponovitev:",
+    your_answers: "tvoji odgovori:",
+    correct_answer: "Pravilna odgovor:",
     stat_correct: "Pravilno:",
     stat_incorrect: "Nepravilno:",
     stat_accuracy: "Natančnost:",
@@ -497,6 +527,7 @@ var translations = {
     stat_best: "Najboljše:",
     stat_time: "Čas:",
     stat_avg: "Povpr:",
+    stat_median: "Med:",
     ["Addition: 10" /* Addition_Ten */]: "Seštevanje: 10",
     ["Addition: 10 (missing facts)" /* Addition_Ten_Missing */]: "Seštevanje: 10 (neznani člen)",
     ["Addition: 20 (without carry)" /* Addition_TwentyWithoutCarry */]: "Seštevanje: 20 (brez prehoda)",
@@ -593,9 +624,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const longestStreakElement = document.getElementById("longest-streak");
   const totalTimeElement = document.getElementById("total-time");
   const averageTimeElement = document.getElementById("average-time");
+  const medianTimeElement = document.getElementById("median-time");
   const gridParts = Array.from(document.querySelectorAll(".grid-part"));
   const rewardImage = document.getElementById("reward-image");
   const nextRoundBtn = document.getElementById("next-round-btn");
+  const feedbackSummary = document.getElementById("feedback-summary");
   const answerSection = document.querySelector(".answer-section");
   let currentProblem;
   let currentCategory;
@@ -623,12 +656,20 @@ document.addEventListener("DOMContentLoaded", () => {
     currentStreak: 0,
     longestStreak: 0,
     totalTime: 0,
-    problemStartTime: 0
+    problemStartTime: 0,
+    allTimes: [],
+    roundIncorrectProblems: new Map
   };
   function updateStatsDisplay() {
     const totalProblems = stats.correct + stats.incorrect;
     const accuracy = totalProblems > 0 ? (stats.correct / totalProblems * 100).toFixed(1) : "0.0";
     const averageTime = totalProblems > 0 ? (stats.totalTime / totalProblems / 1000).toFixed(1) : "0.0";
+    const medianTime = stats.allTimes.length > 0 ? (() => {
+      const sorted = [...stats.allTimes].sort((a, b) => a - b);
+      const mid = Math.floor(sorted.length / 2);
+      const median = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+      return (median / 1000).toFixed(1);
+    })() : "0.0";
     const totalSeconds = Math.floor(stats.totalTime / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
@@ -647,6 +688,8 @@ document.addEventListener("DOMContentLoaded", () => {
       totalTimeElement.textContent = formattedTime;
     if (averageTimeElement)
       averageTimeElement.textContent = `${averageTime}s`;
+    if (medianTimeElement)
+      medianTimeElement.textContent = `${medianTime}s`;
   }
   const urlParams = new URLSearchParams(window.location.search);
   const categoriesParam = urlParams.get("categories");
@@ -656,12 +699,16 @@ document.addEventListener("DOMContentLoaded", () => {
   if (selectedCategories.length === 0) {
     selectedCategories = ["Addition: 10"];
   }
-  selectedCategories.forEach((category) => {
+  for (const category of selectedCategories) {
     const solvedProblemIds = JSON.parse(localStorage.getItem(category) || "[]");
-    solvedProblemIds.forEach((problemId) => {
-      solvedProblem(category, problemId);
-    });
-  });
+    let flushCategoryCache = false;
+    for (const problemId of solvedProblemIds) {
+      flushCategoryCache = flushCategoryCache || solvedProblem(category, problemId);
+    }
+    if (flushCategoryCache) {
+      localStorage.removeItem(category);
+    }
+  }
   function revealRandomPart() {
     const coveredParts = gridParts.filter((part) => !part.classList.contains("revealed"));
     if (coveredParts.length > 0) {
@@ -704,11 +751,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const elapsed = Date.now() - stats.problemStartTime;
     stats.totalTime += elapsed;
+    stats.allTimes.push(elapsed);
     if (userAnswer === currentProblem.answer) {
       feedbackElement.textContent = t("correct");
       feedbackElement.className = "correct";
       revealRandomPart();
-      solvedProblem(currentCategory, currentProblem.id);
+      const flushCategoryCache = solvedProblem(currentCategory, currentProblem.id);
+      if (flushCategoryCache) {
+        localStorage.removeItem(currentCategory);
+      }
       const solvedProblemIds = JSON.parse(localStorage.getItem(currentCategory) || "[]");
       if (!solvedProblemIds.includes(currentProblem.id)) {
         solvedProblemIds.push(currentProblem.id);
@@ -738,6 +789,27 @@ document.addEventListener("DOMContentLoaded", () => {
           feedbackElement.style.display = "none";
         if (problemContainer)
           problemContainer.style.display = "none";
+        if (feedbackSummary) {
+          feedbackSummary.style.display = "block";
+          if (stats.roundIncorrectProblems.size === 0) {
+            feedbackSummary.innerHTML = `<div class="feedback-perfect">${t("perfect_round")}</div>`;
+          } else {
+            let html = `<span class="review-header">${t("review_header")}</span>`;
+            stats.roundIncorrectProblems.forEach((details, problemText) => {
+              html += `
+                                <div class="review-item">
+                                    <span class="review-problem">${problemText}</span>
+                                    <div class="review-details">
+                                        ${t("correct_answer")} <span class="review-correct">${details.correctAnswer}</span>,
+                                        ${t("your_answers")} <span class="review-incorrect">${details.givenAnswers.join(", ")}</span>
+                                    </div>
+                                </div>
+                            `;
+            });
+            feedbackSummary.innerHTML = html;
+            stats.roundIncorrectProblems.clear();
+          }
+        }
       } else {
         setTimeout(newProblem, 1000);
       }
@@ -748,6 +820,17 @@ document.addEventListener("DOMContentLoaded", () => {
       hideRandomPart();
       stats.incorrect++;
       stats.currentStreak = 0;
+      const problemText = currentProblem.text;
+      if (!stats.roundIncorrectProblems.has(problemText)) {
+        stats.roundIncorrectProblems.set(problemText, {
+          correctAnswer: currentProblem.answer,
+          givenAnswers: []
+        });
+      }
+      const record = stats.roundIncorrectProblems.get(problemText);
+      if (!record.givenAnswers.includes(userAnswer)) {
+        record.givenAnswers.push(userAnswer);
+      }
       updateStatsDisplay();
       if (submitButton)
         submitButton.disabled = true;
@@ -781,6 +864,11 @@ document.addEventListener("DOMContentLoaded", () => {
       feedbackElement.style.display = "flex";
     if (problemContainer)
       problemContainer.style.display = "block";
+    if (feedbackSummary) {
+      feedbackSummary.style.display = "none";
+      feedbackSummary.innerHTML = "";
+    }
+    stats.roundIncorrectProblems.clear();
     gridParts.forEach((part) => part.classList.remove("revealed"));
     chooseRandomRewardImage();
     newProblem();
