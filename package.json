@@ -2,6 +2,8 @@
   "name": "math",
   "packageManager": "yarn@4.10.3",
   "type": "module",
+  "author": "Damjan Košir",
+  "license": "AGPL-3.0-only",
   "scripts": {
     "build": "mkdir -p dist && cp src/*.html dist && cp -r src/rewardImages dist && bun build ./src/app.ts ./src/index.ts ./src/practice.ts --outdir dist",
     "dev": "mkdir -p dist && cp src/*.html dist && cp -r src/rewardImages dist && bun build ./src/app.ts ./src/index.ts ./src/practice.ts --outdir dist --watch",
