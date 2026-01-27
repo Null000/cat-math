@@ -1,4 +1,4 @@
-import { Application, Assets, Text, TextStyle, Texture } from 'pixi.js';
+import { Application, Assets, Sprite, Text, TextStyle, Texture } from 'pixi.js';
 import { Actor } from './Actor.js';
 
 class Wizard extends Actor {
@@ -88,8 +88,16 @@ async function init() {
     document.body.appendChild(app.canvas);
 
     // Load assets
+    const dungeonTexture = await Assets.load('assets/dungeon.png');
     const wizardTexture = await Assets.load('assets/wizard.png');
     const ratTexture = await Assets.load('assets/rat.png');
+
+    // Create Background
+    const background = new Sprite(dungeonTexture);
+    background.anchor.set(0.5);
+    background.x = app.screen.width / 2;
+    background.y = app.screen.height / 2;
+    app.stage.addChild(background);
 
     // Create Actors
     const wizard = new Wizard(wizardTexture);
@@ -133,6 +141,8 @@ async function init() {
     // Handle resize
     window.addEventListener('resize', () => {
         app.renderer.resize(window.innerWidth, window.innerHeight);
+        background.width = app.screen.width;
+        background.height = app.screen.height;
         wizard.x = app.screen.width * 0.25;
         wizard.y = app.screen.height * 0.6;
         rat.x = app.screen.width * 0.75;
