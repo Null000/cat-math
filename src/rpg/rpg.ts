@@ -46,6 +46,7 @@ class ProblemUI {
         // Create HTML Overlay for Input
         this.container = document.createElement('div');
         this.container.id = 'solution-container';
+        this.container.style.top = '50%';
 
         this.input = document.createElement('input');
         this.input.id = 'solution-input';
