@@ -47,6 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const gridParts = Array.from(document.querySelectorAll(".grid-part")) as HTMLElement[];
     const rewardImage = document.getElementById("reward-image") as HTMLImageElement;
     const nextRoundBtn = document.getElementById("next-round-btn") as HTMLButtonElement;
+    const feedbackSummary = document.getElementById("feedback-summary") as HTMLElement;
     const answerSection = document.querySelector(".answer-section") as HTMLElement;
 
     // State Variables
@@ -93,6 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
         totalTime: 0,
         problemStartTime: 0,
         allTimes: [] as number[],
+        roundIncorrectProblems: new Map<string, { correctAnswer: number, givenAnswers: number[] }>()
     };
 
     // Function to update statistics display
@@ -284,6 +286,29 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (answerSection) answerSection.style.display = "none";
                 if (feedbackElement) feedbackElement.style.display = "none";
                 if (problemContainer) problemContainer.style.display = "none";
+
+                // Show feedback summary
+                if (feedbackSummary) {
+                    feedbackSummary.style.display = "block";
+                    if (stats.roundIncorrectProblems.size === 0) {
+                        feedbackSummary.innerHTML = `<div class="feedback-perfect">${t("perfect_round")}</div>`;
+                    } else {
+                        let html = `<span class="review-header">${t("review_header")}</span>`;
+                        stats.roundIncorrectProblems.forEach((details, problemText) => {
+                            html += `
+                                <div class="review-item">
+                                    <span class="review-problem">${problemText}</span>
+                                    <div class="review-details">
+                                        ${t("correct_answer")} <span class="review-correct">${details.correctAnswer}</span>,
+                                        ${t("your_answers")} <span class="review-incorrect">${details.givenAnswers.join(", ")}</span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        feedbackSummary.innerHTML = html;
+                        stats.roundIncorrectProblems.clear();
+                    }
+                }
             } else {
                 setTimeout(newProblem, 1000);
             }
@@ -297,6 +322,19 @@ document.addEventListener("DOMContentLoaded", () => {
             // Update statistics for incorrect answer
             stats.incorrect++;
             stats.currentStreak = 0;
+
+            // Track incorrect answer for the round summary
+            const problemText = currentProblem.text;
+            if (!stats.roundIncorrectProblems.has(problemText)) {
+                stats.roundIncorrectProblems.set(problemText, {
+                    correctAnswer: currentProblem.answer,
+                    givenAnswers: []
+                });
+            }
+            const record = stats.roundIncorrectProblems.get(problemText)!;
+            if (!record.givenAnswers.includes(userAnswer)) {
+                record.givenAnswers.push(userAnswer);
+            }
 
             // Update statistics display
             updateStatsDisplay();
@@ -333,6 +371,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (answerSection) answerSection.style.display = "flex";
         if (feedbackElement) feedbackElement.style.display = "flex";
         if (problemContainer) problemContainer.style.display = "block";
+        if (feedbackSummary) {
+            feedbackSummary.style.display = "none";
+            feedbackSummary.innerHTML = "";
+        }
+
+        // Reset round stats
+        stats.roundIncorrectProblems.clear();
 
         // Reset grid
         gridParts.forEach((part) => part.classList.remove("revealed"));

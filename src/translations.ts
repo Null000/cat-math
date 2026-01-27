@@ -16,6 +16,10 @@ export const translations = {
         solved: "solved",
         selected_label: "Selected:",
         next_round: "Next Round",
+        perfect_round: "Perfect round! Great job! 🌟",
+        review_header: "Problems to review:",
+        your_answers: "your answers:",
+        correct_answer: "Correct answer:",
 
         // Stats
         stat_correct: "Correct:",
@@ -79,6 +83,10 @@ export const translations = {
         solved: "rešeno",
         selected_label: "Izbrano:",
         next_round: "Naslednji krog",
+        perfect_round: "Popoln krog! Odlično delo! 🌟",
+        review_header: "Naloge za ponovitev:",
+        your_answers: "tvoji odgovori:",
+        correct_answer: "Pravilna odgovor:",
 
         // Stats
         stat_correct: "Pravilno:",
