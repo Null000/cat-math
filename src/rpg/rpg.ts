@@ -211,8 +211,11 @@ async function init() {
             if (solution === '3') {
                 console.log('Correct!');
                 mathUI.clearInput();
+
+                rat.setHealth(rat.health - 10);
                 // We could add attack animation here later
             } else {
+                wizard.setHealth(wizard.health - 10);
                 console.log('Wrong!');
             }
         }
