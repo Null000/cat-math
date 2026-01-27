@@ -25,6 +25,7 @@ export const translations = {
         stat_best: "Best:",
         stat_time: "Time:",
         stat_avg: "Avg:",
+        stat_median: "Median:",
 
         // Categories
         [Category.Addition_Ten]: "Addition: 10",
@@ -87,6 +88,7 @@ export const translations = {
         stat_best: "Najboljše:",
         stat_time: "Čas:",
         stat_avg: "Povpr:",
+        stat_median: "Med:",
 
         // Categories
         [Category.Addition_Ten]: "Seštevanje: 10",

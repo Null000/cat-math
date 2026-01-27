@@ -41,6 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const longestStreakElement = document.getElementById("longest-streak");
     const totalTimeElement = document.getElementById("total-time");
     const averageTimeElement = document.getElementById("average-time");
+    const medianTimeElement = document.getElementById("median-time");
 
     // Reward Image Elements
     const gridParts = Array.from(document.querySelectorAll(".grid-part")) as HTMLElement[];
@@ -91,6 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
         longestStreak: 0,
         totalTime: 0,
         problemStartTime: 0,
+        allTimes: [] as number[],
     };
 
     // Function to update statistics display
@@ -103,6 +105,19 @@ document.addEventListener("DOMContentLoaded", () => {
         const averageTime =
             totalProblems > 0
                 ? (stats.totalTime / totalProblems / 1000).toFixed(1)
+                : "0.0";
+
+        const medianTime =
+            stats.allTimes.length > 0
+                ? (() => {
+                    const sorted = [...stats.allTimes].sort((a, b) => a - b);
+                    const mid = Math.floor(sorted.length / 2);
+                    const median =
+                        sorted.length % 2 !== 0
+                            ? sorted[mid]!
+                            : (sorted[mid - 1]! + sorted[mid]!) / 2;
+                    return (median / 1000).toFixed(1);
+                })()
                 : "0.0";
 
         // Format total time as minutes:seconds
@@ -119,6 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (longestStreakElement) longestStreakElement.textContent = stats.longestStreak.toString();
         if (totalTimeElement) totalTimeElement.textContent = formattedTime;
         if (averageTimeElement) averageTimeElement.textContent = `${averageTime}s`;
+        if (medianTimeElement) medianTimeElement.textContent = `${medianTime}s`;
     }
 
 
@@ -208,6 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Calculate time spent on this problem
         const elapsed = Date.now() - stats.problemStartTime;
         stats.totalTime += elapsed;
+        stats.allTimes.push(elapsed);
 
         if (userAnswer === currentProblem.answer) {
             feedbackElement.textContent = t("correct");
