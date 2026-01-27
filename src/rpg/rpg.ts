@@ -75,6 +75,70 @@ class Rat extends Actor {
     }
 }
 
+class ProblemUI {
+    private app: Application;
+    private problemText: Text;
+    private container: HTMLDivElement;
+    private input: HTMLInputElement;
+
+    constructor(app: Application) {
+        this.app = app;
+
+        // Create Pixi Text for the problem
+        const style = new TextStyle({
+            fontFamily: 'Inter, Arial',
+            fontSize: 48,
+            fontWeight: 'bold',
+            fill: '#ffffff',
+            dropShadow: {
+                alpha: 0.8,
+                angle: Math.PI / 6,
+                blur: 4,
+                color: '#000000',
+                distance: 6,
+            },
+        });
+
+        this.problemText = new Text({ text: '1 + 2 = ?', style });
+        this.problemText.anchor.set(0.5);
+        this.problemText.x = app.screen.width / 2;
+        this.problemText.y = app.screen.height * 0.4;
+        app.stage.addChild(this.problemText);
+
+        // Create HTML Overlay for Input
+        this.container = document.createElement('div');
+        this.container.id = 'solution-container';
+
+        this.input = document.createElement('input');
+        this.input.id = 'solution-input';
+        this.input.type = 'text';
+        this.input.placeholder = '?';
+        this.input.autocomplete = 'off';
+
+        this.container.appendChild(this.input);
+        document.body.appendChild(this.container);
+
+        this.input.focus();
+    }
+
+    resize() {
+        this.problemText.x = this.app.screen.width / 2;
+        this.problemText.y = this.app.screen.height * 0.4;
+    }
+
+    setProblem(text: string) {
+        this.problemText.text = text;
+    }
+
+    getSolution(): string {
+        return this.input.value;
+    }
+
+    clearInput() {
+        this.input.value = '';
+    }
+}
+
 async function init() {
     const app = new Application();
     await app.init({
@@ -100,25 +164,22 @@ async function init() {
     rat.y = app.screen.height * 0.6;
     app.stage.addChild(rat);
 
+    // Create Math UI
+    const mathUI = new ProblemUI(app);
+
     // Add Battle Text
     const style = new TextStyle({
-        fontFamily: 'Arial',
-        fontSize: 36,
+        fontFamily: 'Inter, Arial',
+        fontSize: 32,
         fontWeight: 'bold',
         fill: '#ffffff',
-        dropShadow: {
-            alpha: 0.8,
-            angle: Math.PI / 6,
-            blur: 4,
-            color: '#000000',
-            distance: 6,
-        },
     });
 
     const battleText = new Text({ text: 'WIZARD vs RAT', style });
+    battleText.alpha = 0.6;
     battleText.anchor.set(0.5);
     battleText.x = app.screen.width / 2;
-    battleText.y = 100;
+    battleText.y = 60;
     app.stage.addChild(battleText);
 
     // Basic animation
@@ -140,6 +201,21 @@ async function init() {
         rat.y = app.screen.height * 0.6;
 
         battleText.x = app.screen.width / 2;
+        mathUI.resize();
+    });
+
+    // Listen for entry to "submit"
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const solution = mathUI.getSolution();
+            if (solution === '3') {
+                console.log('Correct!');
+                mathUI.clearInput();
+                // We could add attack animation here later
+            } else {
+                console.log('Wrong!');
+            }
+        }
     });
 }
 

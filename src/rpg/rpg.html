@@ -6,14 +6,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RPG Battle - Wizard vs Rat</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
         body {
             margin: 0;
             overflow: hidden;
-            background: #000;
+            background: #1a1a2e;
+            font-family: 'Inter', sans-serif;
         }
 
         canvas {
             display: block;
+        }
+
+        #solution-container {
+            position: absolute;
+            left: 50%;
+            top: 75%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            pointer-events: none;
+        }
+
+        #solution-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            width: 120px;
+            text-align: center;
+            outline: none;
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+            pointer-events: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #solution-input:focus {
+            border-color: #2ecc71;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 25px rgba(46, 204, 113, 0.4);
+            transform: scale(1.05);
+        }
+
+        #solution-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
         }
     </style>
 </head>
