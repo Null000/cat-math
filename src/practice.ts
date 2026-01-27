@@ -154,14 +154,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Load solved problems from localStorage and mark them as solved
-    selectedCategories.forEach((category) => {
+
+    for (const category of selectedCategories) {
         const solvedProblemIds = JSON.parse(
             localStorage.getItem(category) || "[]",
         );
-        (solvedProblemIds as string[]).forEach((problemId) => {
-            solvedProblem(category as Category, problemId);
-        });
-    });
+
+        let flushCategoryCache = false;
+        for (const problemId of solvedProblemIds as string[]) {
+            flushCategoryCache = flushCategoryCache || solvedProblem(category as Category, problemId);
+        }
+        if (flushCategoryCache) {
+            localStorage.removeItem(category);
+        }
+    }
 
     // Function to reveal a random covered part of the reward image
     function revealRandomPart() {
@@ -232,7 +238,11 @@ document.addEventListener("DOMContentLoaded", () => {
             // Reveal a random part of the reward image
             revealRandomPart();
             // Remove the correctly solved problem from cache
-            solvedProblem(currentCategory, currentProblem.id);
+            const flushCategoryCache = solvedProblem(currentCategory, currentProblem.id);
+
+            if (flushCategoryCache) {
+                localStorage.removeItem(currentCategory);
+            }
             // Store the solved problem in localStorage
             const solvedProblemIds = JSON.parse(
                 localStorage.getItem(currentCategory) || "[]",

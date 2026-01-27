@@ -3,6 +3,7 @@ import * as addition from "./addition.js";
 import * as subtraction from "./subtraction.js";
 import * as division from "./division.js";
 import * as multiplication from "./multiplication.js";
+import * as test from "./test.js";
 import { categoryToGroup } from "./common.js";
 
 export type ProblemCache = Record<string, Problem[]>;
@@ -12,6 +13,7 @@ const generateFnPerGroup: Record<string, (category: Category) => Problem[]> = {
   Subtraction: (category) => subtraction.generate(category),
   Multiplication: (category) => multiplication.generate(category),
   Division: (category) => division.generate(category),
+  Test: (category) => test.generate(category),
 };
 
 const cache: ProblemCache = {};
@@ -21,9 +23,13 @@ const cache: ProblemCache = {};
  */
 function getCachedProblems(category: Category): Problem[] {
   if (!cache[category]) {
-    cache[category] = generateFnPerGroup[categoryToGroup[category]]!(category);
+    populateCache(category);
   }
   return cache[category]!;
+}
+
+function populateCache(category: Category): void {
+  cache[category] = generateFnPerGroup[categoryToGroup[category]]!(category);
 }
 
 /**
@@ -36,13 +42,19 @@ export function getRandomProblem(category: Category): Problem {
 
 /**
  * Remove a solved problem from the cache
+ * Returns true this was the last problem
  */
 export function removeSolvedProblem(
   category: Category,
   problemId: string,
-): void {
+): boolean {
   const problems = getCachedProblems(category);
   if (problems) {
     cache[category] = problems.filter((p) => p.id !== problemId);
   }
+  if (cache[category]?.length === 0) {
+    populateCache(category);
+    return true;
+  }
+  return false;
 }

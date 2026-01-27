@@ -30,7 +30,8 @@ export enum Category {
   Division_Ten = "Division: 10",
   Division_Ten_Missing = "Division: 10 (missing facts)",
   Division_Twenty = "Division: 20",
-  Division_Twenty_Missing = "Division: 20 (missing facts)"
+  Division_Twenty_Missing = "Division: 20 (missing facts)",
+  Test = "test"
 }
 
 export const categoryGroups: Record<string, Category[]> = {
@@ -67,6 +68,9 @@ export const categoryGroups: Record<string, Category[]> = {
     Category.Division_Ten_Missing,
     Category.Division_Twenty,
     Category.Division_Twenty_Missing
+  ],
+  Test: [
+    Category.Test
   ],
 };
 

@@ -13,8 +13,8 @@ function generateProblem(category: Category): Problem {
   return getRandomProblem(category);
 }
 
-export function solvedProblem(category: Category, problemId: string): void {
-  removeSolvedProblem(category, problemId);
+export function solvedProblem(category: Category, problemId: string): boolean {
+  return removeSolvedProblem(category, problemId);
 }
 
 export function getCategories(): Record<string, string[]> {

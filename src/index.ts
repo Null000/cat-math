@@ -81,6 +81,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const savedCategories = JSON.parse(localStorage.getItem("selected_categories") || "[]");
 
         Object.entries(categories).forEach(([groupName, categoryList]) => {
+            if (groupName === "Test") return;
+
             const groupDetails = document.createElement("details");
             groupDetails.className = "category-group";
 
