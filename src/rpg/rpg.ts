@@ -23,7 +23,7 @@ class HealthBar extends Container {
     }
 
     setHealth(percent: number) {
-        const p = Math.max(0, Math.min(1, percent));
+        const p = Math.max(0, Math.min(1, percent / 100));
         this.fill.clear();
         this.fill.rect(0, 0, this.widthMax * p, this.heightBar);
         this.fill.fill(p > 0.3 ? 0x2ecc71 : 0xe74c3c);
@@ -34,6 +34,7 @@ abstract class Actor extends Container {
     protected sprite: Sprite;
     protected healthBar: HealthBar;
     private initialY: number;
+    health = 100;
 
     constructor(texture: Texture, hbWidth: number, hbHeight: number, hbYOffset: number) {
         super();
@@ -51,6 +52,7 @@ abstract class Actor extends Container {
     }
 
     setHealth(percent: number) {
+        this.health = percent;
         this.healthBar.setHealth(percent);
     }
 
@@ -125,8 +127,8 @@ async function init() {
         rat.update(time.lastTime, false);
 
         // Visual test: health oscillates
-        wizard.setHealth(0.5 + Math.sin(time.lastTime / 1000) * 0.5);
-        rat.setHealth(0.5 + Math.cos(time.lastTime / 1000) * 0.5);
+        // wizard.setHealth(0.5 + Math.sin(time.lastTime / 1000) * 0.5);
+        // rat.setHealth(0.5 + Math.cos(time.lastTime / 1000) * 0.5);
     });
 
     // Handle resize
