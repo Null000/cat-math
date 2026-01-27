@@ -86,7 +86,7 @@ export const translations = {
         perfect_round: "Popoln krog! Odlično delo! 🌟",
         review_header: "Naloge za ponovitev:",
         your_answers: "tvoji odgovori:",
-        correct_answer: "Pravilna odgovor:",
+        correct_answer: "Pravilni odgovor:",
 
         // Stats
         stat_correct: "Pravilno:",
