@@ -5,12 +5,17 @@
   "author": "Damjan Košir",
   "license": "AGPL-3.0-only",
   "scripts": {
-    "build": "mkdir -p dist && cp src/*.html dist && cp -r src/rewardImages dist && bun build ./src/app.ts ./src/index.ts ./src/practice.ts --outdir dist",
-    "dev": "mkdir -p dist && cp src/*.html dist && cp -r src/rewardImages dist && bun build ./src/app.ts ./src/index.ts ./src/practice.ts --outdir dist --watch",
+    "build": "mkdir -p dist && cp src/*.html dist && cp -r src/rewardImages dist && cp -r src/rpg/*.html dist && cp -r src/rpg/assets dist && bun build ./src/app.ts ./src/index.ts ./src/practice.ts ./src/rpg/rpg.ts --outdir dist",
+    "build:rpg": "mkdir -p dist/rpg && cp src/rpg/*.html dist/rpg && cp -r src/rpg/assets dist/rpg && bun build ./src/rpg/rpg.ts --outdir dist/rpg",
+    "dev": "mkdir -p dist && cp src/*.html dist && cp -r src/rewardImages dist && cp -r src/rpg/*.html dist && cp -r src/rpg/assets dist && bun build ./src/app.ts ./src/index.ts ./src/practice.ts ./src/rpg/rpg.ts --outdir dist --watch",
+    "dev:rpg": "mkdir -p dist/rpg && cp src/rpg/*.html dist/rpg && cp -r src/rpg/assets dist/rpg && bun build ./src/rpg/rpg.ts --outdir dist/rpg --watch",
     "caddy": "cd dist && caddy file-server --listen :3000"
   },
   "devDependencies": {
     "prettier": "^3.6.2",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "pixi.js": "^8.15.0"
   }
 }
