@@ -1,4 +1,4 @@
-import { Application, Sprite, Assets, Text, TextStyle, Graphics, Container } from 'pixi.js';
+import { Application, Sprite, Assets, Text, TextStyle, Graphics, Container, Texture } from 'pixi.js';
 
 class HealthBar extends Container {
     private bg: Graphics;
@@ -30,6 +30,49 @@ class HealthBar extends Container {
     }
 }
 
+abstract class Actor extends Container {
+    protected sprite: Sprite;
+    protected healthBar: HealthBar;
+    private initialY: number;
+
+    constructor(texture: Texture, hbWidth: number, hbHeight: number, hbYOffset: number) {
+        super();
+        this.sprite = new Sprite(texture);
+        this.sprite.anchor.set(0.5);
+        this.sprite.scale.set(0.5);
+        this.addChild(this.sprite);
+
+        this.healthBar = new HealthBar(hbWidth, hbHeight);
+        this.healthBar.pivot.set(hbWidth / 2, hbHeight / 2);
+        this.healthBar.y = -hbYOffset;
+        this.addChild(this.healthBar);
+
+        this.initialY = 0;
+    }
+
+    setHealth(percent: number) {
+        this.healthBar.setHealth(percent);
+    }
+
+    update(time: number, isSine: boolean) {
+        const offset = isSine ? Math.sin(time / 500) : Math.cos(time / 500);
+        this.sprite.y = this.initialY + offset * 10;
+        this.healthBar.y = - (this.sprite.height / 2 + 20) + offset * 10;
+    }
+}
+
+class Wizard extends Actor {
+    constructor(texture: Texture) {
+        super(texture, 120, 12, 120);
+    }
+}
+
+class Rat extends Actor {
+    constructor(texture: Texture) {
+        super(texture, 100, 10, 80);
+    }
+}
+
 async function init() {
     const app = new Application();
     await app.init({
@@ -44,34 +87,16 @@ async function init() {
     const wizardTexture = await Assets.load('assets/wizard.png');
     const ratTexture = await Assets.load('assets/rat.png');
 
-    // Create Wizard
-    const wizard = new Sprite(wizardTexture);
-    wizard.anchor.set(0.5);
+    // Create Actors
+    const wizard = new Wizard(wizardTexture);
     wizard.x = app.screen.width * 0.25;
     wizard.y = app.screen.height * 0.6;
-    wizard.scale.set(0.5);
     app.stage.addChild(wizard);
 
-    // Create Rat
-    const rat = new Sprite(ratTexture);
-    rat.anchor.set(0.5);
+    const rat = new Rat(ratTexture);
     rat.x = app.screen.width * 0.75;
     rat.y = app.screen.height * 0.6;
-    rat.scale.set(0.5);
     app.stage.addChild(rat);
-
-    // Add Health Bars
-    const wizardHB = new HealthBar(120, 12);
-    wizardHB.pivot.set(60, 6);
-    wizardHB.x = wizard.x;
-    wizardHB.y = wizard.y - 120;
-    app.stage.addChild(wizardHB);
-
-    const ratHB = new HealthBar(100, 10);
-    ratHB.pivot.set(50, 5);
-    ratHB.x = rat.x;
-    ratHB.y = rat.y - 80;
-    app.stage.addChild(ratHB);
 
     // Add Battle Text
     const style = new TextStyle({
@@ -96,15 +121,12 @@ async function init() {
 
     // Basic animation
     app.ticker.add((time) => {
-        wizard.y = (app.screen.height * 0.6) + Math.sin(time.lastTime / 500) * 10;
-        rat.y = (app.screen.height * 0.6) + Math.cos(time.lastTime / 500) * 10;
-
-        wizardHB.y = wizard.y - 120;
-        ratHB.y = rat.y - 80;
+        wizard.update(time.lastTime, true);
+        rat.update(time.lastTime, false);
 
         // Visual test: health oscillates
-        wizardHB.setHealth(0.5 + Math.sin(time.lastTime / 1000) * 0.5);
-        ratHB.setHealth(0.5 + Math.cos(time.lastTime / 1000) * 0.5);
+        wizard.setHealth(0.5 + Math.sin(time.lastTime / 1000) * 0.5);
+        rat.setHealth(0.5 + Math.cos(time.lastTime / 1000) * 0.5);
     });
 
     // Handle resize
@@ -114,9 +136,6 @@ async function init() {
         wizard.y = app.screen.height * 0.6;
         rat.x = app.screen.width * 0.75;
         rat.y = app.screen.height * 0.6;
-
-        wizardHB.x = wizard.x;
-        ratHB.x = rat.x;
 
         battleText.x = app.screen.width / 2;
     });
