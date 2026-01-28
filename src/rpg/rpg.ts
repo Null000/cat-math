@@ -1,17 +1,7 @@
-import { Application, Assets, Sprite, Text, TextStyle, Texture } from 'pixi.js';
-import { Actor } from './Actor.js';
-
-class Wizard extends Actor {
-    constructor(texture: Texture) {
-        super(texture, 120, 12, 120);
-    }
-}
-
-class Rat extends Actor {
-    constructor(texture: Texture) {
-        super(texture, 100, 10, 80);
-    }
-}
+import { Application, Assets, Sprite, Text, TextStyle } from 'pixi.js';
+import { initWizard, Wizard } from './Wizard.js';
+import { initRat, Rat } from './initRat.js';
+import { standardHeight, standardWidth } from './constants.js';
 
 class ProblemUI {
     private app: Application;
@@ -78,37 +68,55 @@ class ProblemUI {
     }
 }
 
+function desiredSize() {
+    const desiredRatio = standardWidth / standardHeight;
+    const windowRatio = window.innerWidth / window.innerHeight;
+
+    if (windowRatio < desiredRatio) {
+        return {
+            width: window.innerWidth,
+            height: window.innerWidth / desiredRatio
+        }
+    } else {
+        return {
+            width: window.innerHeight * desiredRatio,
+            height: window.innerHeight
+        }
+    }
+}
+
 async function init() {
     const app = new Application();
+
+
+    const targetSize = desiredSize();
     await app.init({
-        width: window.innerWidth,
-        height: window.innerHeight,
-        backgroundColor: 0x1a1a2e,
+        width: targetSize.width,
+        height: targetSize.height,
+        backgroundColor: 0xFF0000,
         antialias: true
     });
     document.body.appendChild(app.canvas);
 
     // Load assets
     const dungeonTexture = await Assets.load('assets/dungeon.png');
-    const wizardTexture = await Assets.load('assets/wizard.png');
-    const ratTexture = await Assets.load('assets/rat.png');
 
     // Create Background
     const background = new Sprite(dungeonTexture);
-    background.anchor.set(0.5);
-    background.x = app.screen.width / 2;
-    background.y = app.screen.height / 2;
+    background.width = app.screen.width;
+    background.height = app.screen.height;
+    background.x = 0;
+    background.y = 0;
+
     app.stage.addChild(background);
 
     // Create Actors
-    const wizard = new Wizard(wizardTexture);
-    wizard.x = app.screen.width * 0.25;
-    wizard.y = app.screen.height * 0.6;
+    await initWizard();
+    const wizard = new Wizard(app, 150, 550);
     app.stage.addChild(wizard);
 
-    const rat = new Rat(ratTexture);
-    rat.x = app.screen.width * 0.75;
-    rat.y = app.screen.height * 0.6;
+    await initRat();
+    const rat = new Rat(app, 600, 550);
     app.stage.addChild(rat);
 
     // Create Math UI
@@ -141,13 +149,14 @@ async function init() {
 
     // Handle resize
     window.addEventListener('resize', () => {
-        app.renderer.resize(window.innerWidth, window.innerHeight);
+        const targetSize = desiredSize();
+        app.renderer.resize(targetSize.width, targetSize.height);
+
         background.width = app.screen.width;
         background.height = app.screen.height;
-        wizard.x = app.screen.width * 0.25;
-        wizard.y = app.screen.height * 0.6;
-        rat.x = app.screen.width * 0.75;
-        rat.y = app.screen.height * 0.6;
+
+        wizard.onResize(app);
+        rat.onResize(app);
 
         battleText.x = app.screen.width / 2;
         mathUI.resize();
