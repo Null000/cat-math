@@ -37,7 +37,6 @@ class ProblemUI {
         this.container = document.createElement('div');
         this.container.id = 'solution-container';
         this.container.style.position = 'absolute';
-        this.container.style.transformOrigin = '0 0'; // Important for scaling
 
         this.input = document.createElement('input');
         this.input.id = 'solution-input';
