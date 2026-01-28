@@ -1,6 +1,6 @@
 import { Application, Assets, Sprite, Text, TextStyle } from 'pixi.js';
 import { initWizard, Wizard } from './Wizard.js';
-import { initRat, Rat } from './initRat.js';
+import { initRat, Rat } from './Rat.js';
 import { standardHeight, standardWidth } from './constants.js';
 
 class ProblemUI {
@@ -75,12 +75,14 @@ function desiredSize() {
     if (windowRatio < desiredRatio) {
         return {
             width: window.innerWidth,
-            height: window.innerWidth / desiredRatio
+            height: window.innerWidth / desiredRatio,
+            ratio: window.innerWidth / standardWidth
         }
     } else {
         return {
             width: window.innerHeight * desiredRatio,
-            height: window.innerHeight
+            height: window.innerHeight,
+            ratio: window.innerHeight / standardHeight
         }
     }
 }
@@ -135,16 +137,13 @@ async function init() {
     battleText.anchor.set(0.5);
     battleText.x = app.screen.width / 2;
     battleText.y = 60;
+    battleText.scale.set(targetSize.ratio);
     app.stage.addChild(battleText);
 
     // Basic animation
     app.ticker.add((time) => {
         wizard.update(time.lastTime, true);
         rat.update(time.lastTime, false);
-
-        // Visual test: health oscillates
-        // wizard.setHealth(0.5 + Math.sin(time.lastTime / 1000) * 0.5);
-        // rat.setHealth(0.5 + Math.cos(time.lastTime / 1000) * 0.5);
     });
 
     // Handle resize
@@ -152,13 +151,18 @@ async function init() {
         const targetSize = desiredSize();
         app.renderer.resize(targetSize.width, targetSize.height);
 
+        console.log(targetSize.ratio);
         background.width = app.screen.width;
         background.height = app.screen.height;
 
+
+        console.log('background scale', background.scale.x);
         wizard.onResize(app);
         rat.onResize(app);
 
+        battleText.scale.set(targetSize.ratio);
         battleText.x = app.screen.width / 2;
+        battleText.y = app.screen.height * 0.1;
         mathUI.resize();
     });
 
@@ -170,11 +174,14 @@ async function init() {
                 console.log('Correct!');
                 mathUI.clearInput();
 
-                rat.setHealth(rat.health - 10);
+                if (rat.damage(20)) {
+                    console.log('Rat defeated!');
+                }
                 // We could add attack animation here later
             } else {
-                wizard.setHealth(wizard.health - 10);
-                console.log('Wrong!');
+                if (wizard.damage(10)) {
+                    console.log('Wizard defeated!');
+                }
             }
         }
     });

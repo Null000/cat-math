@@ -3,7 +3,7 @@ import { Actor } from './Actor.js';
 
 export class Wizard extends Actor {
     constructor(app: Application, x: number, y: number) {
-        super({ app, x, y, texture: wizardTexture, hbWidth: 100, hbHeight: 10, hbYOffset: 120 });
+        super({ app, x, y, texture: wizardTexture });
     }
 }
 let wizardTexture: Texture;

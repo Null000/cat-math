@@ -23,14 +23,13 @@ export class HealthBar extends Container {
         this.addChild(this.fill);
     }
 
-    setHealth(percent: number) {
-        const p = Math.max(0, Math.min(1, percent / 100));
+    setHealth(ratio: number) {
         this.fill.clear();
-        this.fill.rect(0, 0, this.widthMax * p, this.heightBar);
+        this.fill.rect(0, 0, this.widthMax * ratio, this.heightBar);
         let color = 0x2ecc71
-        if (p < 0.3) {
+        if (ratio < 0.3) {
             color = 0xe74c3c
-        } else if (p < 0.5) {
+        } else if (ratio < 0.5) {
             color = 0xe1cc71
         }
         this.fill.fill(color);

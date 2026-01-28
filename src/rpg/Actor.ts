@@ -6,7 +6,8 @@ export abstract class Actor extends Container {
     protected sprite: Sprite;
     protected healthBar: HealthBar;
 
-    health = 100;
+    health: number;
+    maxHealth: number;
 
     xx: number;
     yy: number;
@@ -14,45 +15,50 @@ export abstract class Actor extends Container {
 
     screenRatioFix!: number;
 
-    constructor({ app, x, y, texture }: { app: Application; x: number; y: number; texture: Texture; }) {
+    constructor({ app, x, y, texture, health = 100 }: { app: Application; x: number; y: number; texture: Texture; health?: number }) {
         super();
         this.xx = x;
         this.yy = y;
+
+        this.health = health;
+        this.maxHealth = health;
+
         this.sprite = new Sprite(texture);
         this.sprite.anchor.set(0.5, 1);
 
         this.addChild(this.sprite);
 
         this.healthBar = new HealthBar();
-        this.addChild(this.healthBar);
+        this.healthBar.pivot.set(this.healthBar.width / 2, 0);
 
+        this.addChild(this.healthBar);
 
         this.onResize(app);
     }
 
-    setHealth(percent: number) {
-        this.health = percent;
-        this.healthBar.setHealth(percent);
+    updateHealthBar() {
+        this.healthBar.setHealth(this.health / this.maxHealth);
     }
 
     update(time: number, isSine: boolean) {
-        const offset = isSine ? Math.sin(time / 500) : Math.cos(time / 500);
-        this.sprite.y = offset * 10 * this.screenRatioFix;
-        // this.healthBar.y = -(this.sprite.height / 2 + 20) + offset * 10;
-        this.healthBar.y = -this.sprite.height / 2 - 20;
-        console.log('sprite y', this.sprite.y);
-        console.log('health bar y', this.healthBar.y);
+        let offset = isSine ? Math.sin(time / 500) : Math.cos(time / 500);
+        offset *= this.screenRatioFix * 10;
+        this.sprite.y = offset;
+        this.healthBar.y = -this.sprite.height + offset - 20 * this.screenRatioFix;
     }
 
     onResize(app: Application) {
         this.screenRatioFix = app.screen.width / standardWidth;
         this.x = this.xx * this.screenRatioFix;
         this.y = this.yy * this.screenRatioFix;
+
         this.sprite?.scale.set(this.sscale * this.screenRatioFix);
+        this.healthBar?.scale.set(this.screenRatioFix);
+    }
 
-        // this.healthBar.y = -this.sprite.height;
-        // this.healthBar.x = this.sprite.width / 2;
-        // this.healthBar?.scale.set(this.screenRatioFix);
-
+    damage(amount: number): boolean {
+        this.health = Math.max(0, this.health - amount);
+        this.updateHealthBar();
+        return this.health === 0;
     }
 }
