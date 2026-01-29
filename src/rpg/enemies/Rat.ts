@@ -6,7 +6,7 @@ export class Rat extends Actor {
         super({
             x, y, texture: ratTexture,
             health: 12,
-            attackPower: 3,
+            attackPower: 4,
             defensePower: 0,
             speed: 4,
             xpDrop: 8

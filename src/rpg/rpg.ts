@@ -152,19 +152,22 @@ async function init() {
     resize(); // Initial resize
 
     // Listen for entry to "submit"
-    window.addEventListener('keydown', (e) => {
+    window.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter') {
             const solution = mathUI.getSolution();
             if (solution === '3') {
                 console.log('Correct!');
                 mathUI.clearInput();
 
-                battleManager.correctAnswer();
+                await battleManager.correctAnswer();
             } else {
-                battleManager.incorrectAnswer();
+                await battleManager.incorrectAnswer();
             }
         }
+        await battleManager.doTurns();
     });
+
+    await battleManager.doTurns();
 }
 
 init();

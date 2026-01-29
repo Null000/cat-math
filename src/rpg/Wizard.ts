@@ -6,8 +6,8 @@ export class Wizard extends Actor {
         super({
             x, y, texture: wizardTexture,
             health: 75,
-            attackPower: 9,
-            defensePower: 3,
+            attackPower: 5,
+            defensePower: 1,
             speed: 6,
             xpDrop: 0
         });
