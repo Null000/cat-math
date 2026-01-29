@@ -1,6 +1,6 @@
 import { Container } from 'pixi.js';
 import { Actor } from './Actor.js';
-import { initRat, Rat } from './Rat.js';
+import { initRat, Rat } from './enemies/Rat.js';
 import { initWizard, Wizard } from './Wizard.js';
 
 export class BattleManager {
