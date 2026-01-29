@@ -40,10 +40,14 @@ export abstract class Actor extends Container {
         this.healthBar.y = -this.sprite.height + offset - 20;
     }
 
-    damage(amount: number): boolean {
+    takeDamage(amount: number): boolean {
         this.health = Math.max(0, this.health - amount);
         this.updateHealthBar();
         return this.health === 0;
+    }
+
+    attack(): number {
+        return 10;
     }
 }
 

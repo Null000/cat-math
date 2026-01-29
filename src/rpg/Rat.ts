@@ -8,5 +8,6 @@ export class Rat extends Actor {
 }
 let ratTexture: Texture;
 export async function initRat() {
+    if (ratTexture) return;
     ratTexture = await Assets.load('assets/rat.png');
 }

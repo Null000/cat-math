@@ -2,6 +2,7 @@ import { Application, Assets, Container, Sprite, Text, TextStyle } from 'pixi.js
 import { initWizard, Wizard } from './Wizard.js';
 import { initRat, Rat } from './Rat.js';
 import { standardHeight, standardWidth } from './constants.js';
+import { Actor } from './Actor.js';
 
 class ProblemUI {
     private app: Application;
@@ -79,6 +80,78 @@ class ProblemUI {
     }
 }
 
+class BattleManager {
+    heroParty: Actor[] = [];
+    enemyParty: Actor[] = [];
+
+    app: Application;
+    stage: Container;
+
+    constructor(app: Application, stage: Container) {
+        this.app = app;
+        this.stage = stage;
+    }
+
+    async init() {
+        await initWizard();
+        await initRat();
+
+        this.heroParty = [new Wizard(this.app, 150, 550)];
+        this.enemyParty = [new Rat(this.app, 600, 550)];
+
+        for (const actor of this.heroParty) {
+            this.stage.addChild(actor);
+        }
+        for (const actor of this.enemyParty) {
+            this.stage.addChild(actor);
+        }
+    }
+
+    correctAnswer() {
+        const attacker = this.heroParty[0]!;
+        const defender = this.enemyParty[0]!;
+        if (defender.takeDamage(attacker.attack())) {
+            console.log('Enemy defeated!');
+            //remove defender
+            this.stage.removeChild(defender);
+            this.enemyParty.shift();
+
+            if (this.enemyParty.length === 0) {
+                console.log('Hero wins!');
+                //reset
+                this.init();
+            }
+        }
+    }
+
+    incorrectAnswer() {
+        const attacker = this.enemyParty[0]!;
+        const defender = this.heroParty[0]!;
+        if (defender.takeDamage(attacker.attack())) {
+            console.log('Hero defeated!');
+            //remove all
+            for (const actor of this.heroParty) {
+                this.stage.removeChild(actor);
+            }
+            for (const actor of this.enemyParty) {
+                this.stage.removeChild(actor);
+            }
+
+            //reset
+            this.init();
+        }
+    }
+
+    update(lastTime: number) {
+        for (const actor of this.heroParty) {
+            actor.update(lastTime, true);
+        }
+        for (const actor of this.enemyParty) {
+            actor.update(lastTime, false);
+        }
+    }
+}
+
 async function init() {
     const app = new Application();
 
@@ -102,14 +175,8 @@ async function init() {
     background.height = standardHeight;
     gameStage.addChild(background);
 
-    // Create Actors
-    await initWizard();
-    const wizard = new Wizard(app, 150, 550);
-    gameStage.addChild(wizard);
-
-    await initRat();
-    const rat = new Rat(app, 600, 550);
-    gameStage.addChild(rat);
+    const battleManager = new BattleManager(app, gameStage);
+    await battleManager.init();
 
     // Create Math UI
     const mathUI = new ProblemUI(app, gameStage);
@@ -131,8 +198,7 @@ async function init() {
 
     // Basic animation
     app.ticker.add((time) => {
-        wizard.update(time.lastTime, true);
-        rat.update(time.lastTime, false);
+        battleManager.update(time.lastTime);
     });
 
     // Handle resize
@@ -167,13 +233,9 @@ async function init() {
                 console.log('Correct!');
                 mathUI.clearInput();
 
-                if (rat.damage(20)) {
-                    console.log('Rat defeated!');
-                }
+                battleManager.correctAnswer();
             } else {
-                if (wizard.damage(10)) {
-                    console.log('Wizard defeated!');
-                }
+                battleManager.incorrectAnswer();
             }
         }
     });

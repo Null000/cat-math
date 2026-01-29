@@ -9,5 +9,6 @@ export class Wizard extends Actor {
 let wizardTexture: Texture;
 
 export async function initWizard() {
+    if (wizardTexture) return;
     wizardTexture = await Assets.load('assets/wizard.png');
 }
