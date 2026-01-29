@@ -1,8 +1,6 @@
 import { Application, Assets, Container, Sprite, Text, TextStyle } from 'pixi.js';
-import { initWizard, Wizard } from './Wizard.js';
-import { initRat, Rat } from './Rat.js';
 import { standardHeight, standardWidth } from './constants.js';
-import { Actor } from './Actor.js';
+import { BattleManager } from './BattleManager.js';
 
 class ProblemUI {
     private app: Application;
@@ -77,78 +75,6 @@ class ProblemUI {
 
     clearInput() {
         this.input.value = '';
-    }
-}
-
-class BattleManager {
-    heroParty: Actor[] = [];
-    enemyParty: Actor[] = [];
-
-    app: Application;
-    stage: Container;
-
-    constructor(app: Application, stage: Container) {
-        this.app = app;
-        this.stage = stage;
-    }
-
-    async init() {
-        await initWizard();
-        await initRat();
-
-        this.heroParty = [new Wizard(this.app, 150, 550)];
-        this.enemyParty = [new Rat(this.app, 600, 550)];
-
-        for (const actor of this.heroParty) {
-            this.stage.addChild(actor);
-        }
-        for (const actor of this.enemyParty) {
-            this.stage.addChild(actor);
-        }
-    }
-
-    correctAnswer() {
-        const attacker = this.heroParty[0]!;
-        const defender = this.enemyParty[0]!;
-        if (defender.takeDamage(attacker.attack())) {
-            console.log('Enemy defeated!');
-            //remove defender
-            this.stage.removeChild(defender);
-            this.enemyParty.shift();
-
-            if (this.enemyParty.length === 0) {
-                console.log('Hero wins!');
-                //reset
-                this.init();
-            }
-        }
-    }
-
-    incorrectAnswer() {
-        const attacker = this.enemyParty[0]!;
-        const defender = this.heroParty[0]!;
-        if (defender.takeDamage(attacker.attack())) {
-            console.log('Hero defeated!');
-            //remove all
-            for (const actor of this.heroParty) {
-                this.stage.removeChild(actor);
-            }
-            for (const actor of this.enemyParty) {
-                this.stage.removeChild(actor);
-            }
-
-            //reset
-            this.init();
-        }
-    }
-
-    update(lastTime: number) {
-        for (const actor of this.heroParty) {
-            actor.update(lastTime, true);
-        }
-        for (const actor of this.enemyParty) {
-            actor.update(lastTime, false);
-        }
     }
 }
 
