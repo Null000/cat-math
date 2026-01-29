@@ -5,10 +5,11 @@ export class Rat extends Actor {
     constructor(x: number, y: number) {
         super({
             x, y, texture: ratTexture,
-            health: 50,
-            attackPower: 5,
-            defensePower: 2,
-            speed: 5
+            health: 12,
+            attackPower: 3,
+            defensePower: 0,
+            speed: 4,
+            xpDrop: 8
         });
     }
 }

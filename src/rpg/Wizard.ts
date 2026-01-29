@@ -5,10 +5,11 @@ export class Wizard extends Actor {
     constructor(x: number, y: number) {
         super({
             x, y, texture: wizardTexture,
-            health: 100,
-            attackPower: 10,
-            defensePower: 5,
-            speed: 10
+            health: 75,
+            attackPower: 9,
+            defensePower: 3,
+            speed: 6,
+            xpDrop: 0
         });
     }
 }
