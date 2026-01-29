@@ -1,4 +1,4 @@
-import { Application, Container } from 'pixi.js';
+import { Container } from 'pixi.js';
 import { Actor } from './Actor.js';
 import { initRat, Rat } from './Rat.js';
 import { initWizard, Wizard } from './Wizard.js';
@@ -7,18 +7,16 @@ export class BattleManager {
     heroParty: Actor[] = [];
     enemyParty: Actor[] = [];
 
-    app: Application;
     stage: Container;
 
-    constructor(app: Application, stage: Container) {
-        this.app = app;
+    constructor(stage: Container) {
         this.stage = stage;
     }
 
     async init() {
         await initWizard();
 
-        this.heroParty = [new Wizard(this.app, 150, 550)];
+        this.heroParty = [new Wizard(150, 550)];
 
         for (const actor of this.heroParty) {
             this.stage.addChild(actor);
@@ -29,11 +27,11 @@ export class BattleManager {
 
     async initEnemy() {
         await initRat();
-        this.enemyParty = [new Rat(this.app, 600, 550)];
+        this.enemyParty = [new Rat(600, 550)];
 
         if (Math.random() < 0.5) {
             await initWizard();
-            this.enemyParty.push(new Rat(this.app, 500, 450));
+            this.enemyParty.push(new Rat(500, 450));
         }
 
         this.stage.addChild(this.enemyParty[0]!);

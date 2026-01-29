@@ -101,7 +101,7 @@ async function init() {
     background.height = standardHeight;
     gameStage.addChild(background);
 
-    const battleManager = new BattleManager(app, gameStage);
+    const battleManager = new BattleManager(gameStage);
     await battleManager.init();
 
     // Create Math UI

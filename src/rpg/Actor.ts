@@ -9,13 +9,22 @@ export abstract class Actor extends Container {
     health: number;
     maxHealth: number;
 
-    constructor({ app, x, y, texture, health = 100 }: { app: Application; x: number; y: number; texture: Texture; health?: number }) {
+    attackPower: number;
+    defensePower: number;
+    speed: number;
+
+
+    constructor({ x, y, texture, health, attackPower, defensePower, speed }: { x: number; y: number; texture: Texture; health: number; attackPower: number; defensePower: number; speed: number }) {
         super();
         this.x = x;
         this.y = y;
 
         this.health = health;
         this.maxHealth = health;
+
+        this.attackPower = attackPower;
+        this.defensePower = defensePower;
+        this.speed = speed;
 
         this.sprite = new Sprite(texture);
         this.sprite.anchor.set(0.5, 1);
@@ -41,13 +50,14 @@ export abstract class Actor extends Container {
     }
 
     takeDamage(amount: number): boolean {
-        this.health = Math.max(0, this.health - amount);
+        const damage = Math.max(0, amount - this.defensePower);
+        this.health = Math.max(0, this.health - damage);
         this.updateHealthBar();
         return this.health === 0;
     }
 
     attack(): number {
-        return 10;
+        return this.attackPower;
     }
 }
 

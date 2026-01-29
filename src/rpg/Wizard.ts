@@ -1,9 +1,15 @@
-import { Application, Texture, Assets } from 'pixi.js';
+import { Texture, Assets } from 'pixi.js';
 import { Actor } from './Actor.js';
 
 export class Wizard extends Actor {
-    constructor(app: Application, x: number, y: number) {
-        super({ app, x, y, texture: wizardTexture });
+    constructor(x: number, y: number) {
+        super({
+            x, y, texture: wizardTexture,
+            health: 100,
+            attackPower: 10,
+            defensePower: 5,
+            speed: 10
+        });
     }
 }
 let wizardTexture: Texture;
