@@ -16,10 +16,8 @@ export abstract class Actor extends Container {
     xpDrop: number;
 
 
-    constructor({ x, y, texture, health, attackPower, defensePower, speed, xpDrop }: { x: number; y: number; texture: Texture; health: number; attackPower: number; defensePower: number; speed: number; xpDrop: number }) {
+    constructor({ texture, health, attackPower, defensePower, speed, xpDrop }: { texture: Texture; health: number; attackPower: number; defensePower: number; speed: number; xpDrop: number }) {
         super();
-        this.x = x;
-        this.y = y;
 
         this.health = health;
         this.maxHealth = health;

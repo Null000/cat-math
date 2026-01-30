@@ -2,9 +2,9 @@ import { Texture, Assets } from 'pixi.js';
 import { Actor } from '../Actor.js';
 
 export class Zombie extends Actor {
-    constructor(x: number, y: number) {
+    constructor() {
         super({
-            x, y, texture: zombieTexture,
+            texture: zombieTexture,
             health: 42,
             attackPower: 7,
             defensePower: 4,

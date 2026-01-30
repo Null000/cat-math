@@ -2,9 +2,9 @@ import { Texture, Assets } from 'pixi.js';
 import { Actor } from '../Actor.js';
 
 export class Bat extends Actor {
-    constructor(x: number, y: number) {
+    constructor() {
         super({
-            x, y, texture: batTexture,
+            texture: batTexture,
             health: 16,
             attackPower: 4,
             defensePower: 1,

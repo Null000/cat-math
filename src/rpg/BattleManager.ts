@@ -2,11 +2,14 @@ import { Container } from 'pixi.js';
 import { Actor } from './Actor.js';
 import { initRat, Rat } from './enemies/Rat.js';
 import { initWizard, Wizard } from './Wizard.js';
+import { makeEnemy, EnemyType } from './enemies/enemyMaker.js';
 
 export class BattleManager {
     heroParty: Actor[] = [];
     enemyParty: Actor[] = [];
     turns: { actor: Actor, isHero: boolean, timeTillTurn: number }[] = [];
+
+    wave: number = 1;
 
     stage: Container;
 
@@ -17,7 +20,9 @@ export class BattleManager {
     async init() {
         await initWizard();
 
-        this.heroParty = [new Wizard(150, 550)];
+        this.heroParty = [new Wizard()];
+        this.heroParty[0]!.x = 150;
+        this.heroParty[0]!.y = 550;
 
         for (const actor of this.heroParty) {
             this.stage.addChild(actor);
@@ -28,20 +33,24 @@ export class BattleManager {
     }
 
     async initEnemy() {
-        await initRat();
-        this.enemyParty = [new Rat(600, 550)];
+        console.log('initEnemy');
+        this.enemyParty = [];
 
-        if (Math.random() < 0.5) {
-            this.enemyParty.push(new Rat(500, 450));
+        for (let i = 0; i < this.wave; i++) {
+            this.enemyParty.push(await makeEnemy(EnemyType.Rat));
         }
 
-        this.stage.addChild(this.enemyParty[0]!);
-        for (const actor of this.enemyParty) {
+        for (let i = 0; i < this.enemyParty.length; i++) {
+            const actor = this.enemyParty[i]!;
+            actor.x = 600 + i * 100;
+            actor.y = 550;
+
             this.stage.addChild(actor);
         }
     }
 
     initTurns() {
+        console.log('initTurns');
         this.turns = [];
         for (const actor of this.heroParty) {
             this.turns.push({ actor, isHero: true, timeTillTurn: 1 / actor.speed });
@@ -59,6 +68,7 @@ export class BattleManager {
             }
             return a.timeTillTurn - b.timeTillTurn;
         });
+        console.log('Turns sorted! ' + this.turns.map(t => t.actor.constructor.name).join(', '));
     }
 
     async doTurns() {
@@ -99,7 +109,8 @@ export class BattleManager {
             if (this.enemyParty.length === 0) {
                 console.log('Hero wins!');
                 //reset
-                this.initEnemy();
+                this.wave++;
+                await this.initEnemy();
                 this.initTurns();
             }
         } else {
@@ -124,12 +135,12 @@ export class BattleManager {
             }
 
             //reset
+            this.wave = 0;
             this.init();
         }
     }
 
     async incorrectAnswer() {
-        await this.enemyAttack(this.enemyParty[0]!);
         this.shiftTurns();
     }
 

@@ -2,9 +2,9 @@ import { Texture, Assets } from 'pixi.js';
 import { Actor } from '../Actor.js';
 
 export class Spider extends Actor {
-    constructor(x: number, y: number) {
+    constructor() {
         super({
-            x, y, texture: spiderTexture,
+            texture: spiderTexture,
             health: 20,
             attackPower: 5,
             defensePower: 1,

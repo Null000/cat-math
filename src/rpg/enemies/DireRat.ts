@@ -2,9 +2,9 @@ import { Texture, Assets } from 'pixi.js';
 import { Actor } from '../Actor.js';
 
 export class DireRat extends Actor {
-    constructor(x: number, y: number) {
+    constructor() {
         super({
-            x, y, texture: direRatTexture,
+            texture: direRatTexture,
             health: 24,
             attackPower: 5,
             defensePower: 2,

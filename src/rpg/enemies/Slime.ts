@@ -2,9 +2,9 @@ import { Texture, Assets } from 'pixi.js';
 import { Actor } from '../Actor.js';
 
 export class Slime extends Actor {
-    constructor(x: number, y: number) {
+    constructor() {
         super({
-            x, y, texture: slimeTexture,
+            texture: slimeTexture,
             health: 22,
             attackPower: 4,
             defensePower: 0,
