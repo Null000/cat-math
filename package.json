@@ -9,13 +9,15 @@
     "build:rpg": "mkdir -p dist/rpg && cp src/rpg/*.html dist/rpg && cp -r src/rpg/assets dist/rpg && bun build ./src/rpg/rpg.ts --outdir dist/rpg",
     "dev": "mkdir -p dist && cp src/*.html dist && cp -r src/rewardImages dist && cp -r src/rpg/*.html dist && cp -r src/rpg/assets dist && bun build ./src/app.ts ./src/index.ts ./src/practice.ts ./src/rpg/rpg.ts --outdir dist --watch",
     "dev:rpg": "mkdir -p dist/rpg && cp src/rpg/*.html dist/rpg && cp -r src/rpg/assets dist/rpg && bun build ./src/rpg/rpg.ts --outdir dist/rpg --watch",
-    "caddy": "cd dist && caddy file-server --listen :3000"
+    "caddy": "cd dist && caddy file-server --listen :3000",
+    "debug": "chromium --remote-debugging-port=9222 --user-data-dir=remote-debug-profile http://localhost:3000/rpg/rpg.html"
   },
   "devDependencies": {
     "prettier": "^3.6.2",
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "pixi-filters": "^6.1.5",
     "pixi.js": "^8.15.0"
   }
 }
