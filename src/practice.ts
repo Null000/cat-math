@@ -1,6 +1,7 @@
 import { getProblem, solvedProblem } from "./app.js";
 import { getCurrentLanguage, t, Language } from "./i18n.js";
 import { Category } from "./common.js";
+import { numberOfRewardImages } from "./constants.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     // Initialize Language
@@ -59,19 +60,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // Function to choose a random reward image
     function chooseRandomRewardImage() {
         if (!rewardImage) return;
-        const totalImages = 5; // We have 1.jpg to 5.jpg
 
         // Get completed images from localStorage
         let completedImages: number[] = JSON.parse(localStorage.getItem("completedRewardImages") || "[]");
 
         // Find available images
-        let availableImages = Array.from({ length: totalImages }, (_, i) => i + 1)
+        let availableImages = Array.from({ length: numberOfRewardImages }, (_, i) => i + 1)
             .filter(id => !completedImages.includes(id));
 
         // If all images have been shown, reset the list
         if (availableImages.length === 0) {
             completedImages = [];
-            availableImages = Array.from({ length: totalImages }, (_, i) => i + 1);
+            availableImages = Array.from({ length: numberOfRewardImages }, (_, i) => i + 1);
             localStorage.setItem("completedRewardImages", JSON.stringify(completedImages));
         }
 
