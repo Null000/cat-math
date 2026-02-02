@@ -620,6 +620,9 @@ function getCategoryDisplayName(category) {
   return translated || category;
 }
 
+// src/constants.ts
+var numberOfRewardImages = 5;
+
 // src/practice.ts
 document.addEventListener("DOMContentLoaded", () => {
   const currentLang = getCurrentLanguage();
@@ -665,12 +668,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function chooseRandomRewardImage() {
     if (!rewardImage)
       return;
-    const totalImages = 5;
     let completedImages = JSON.parse(localStorage.getItem("completedRewardImages") || "[]");
-    let availableImages = Array.from({ length: totalImages }, (_, i) => i + 1).filter((id) => !completedImages.includes(id));
+    let availableImages = Array.from({ length: numberOfRewardImages }, (_, i) => i + 1).filter((id) => !completedImages.includes(id));
     if (availableImages.length === 0) {
       completedImages = [];
-      availableImages = Array.from({ length: totalImages }, (_, i) => i + 1);
+      availableImages = Array.from({ length: numberOfRewardImages }, (_, i) => i + 1);
       localStorage.setItem("completedRewardImages", JSON.stringify(completedImages));
     }
     const randomIndex = Math.floor(Math.random() * availableImages.length);
