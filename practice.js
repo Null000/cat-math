@@ -338,6 +338,8 @@ function generate3(category) {
             id = `${category}_${dividend}_${divisor}_dividend`;
             break;
           case "divisor":
+            if (dividend === 0)
+              continue;
             text = `${dividend} / ? = ${answer}`;
             problemAnswer = divisor;
             id = `${category}_${dividend}_${divisor}_divisor`;
