@@ -16,12 +16,8 @@ import { Treant } from "./enemies/Treant.ts";
 import { Container } from "pixi.js";
 import { Wizard } from "./Wizard.ts";
 
-async function makeSimulatorEnemies(wave: number): Promise<Actor[]> {
-  let plan = waveEnemies[wave];
-
-  if (!plan) {
-    plan = waveEnemies[10]!;
-  }
+async function makeSimulatorEnemies(wave: number, waveDesign: Record<number, EnemyType[]>): Promise<Actor[]> {
+  let plan = waveDesign[wave]!;
 
   const enemies = [];
 
@@ -90,9 +86,9 @@ const waveEnemies: Record<number, EnemyType[]> = {
 // Main Simulation
 // ============================================================================
 
-async function runSimulation(): Promise<void> {
+async function runSimulation(waveDesign: Record<number, EnemyType[]>): Promise<number> {
   const battleManager = new BattleManager(new Container());
-  battleManager._makeEnemies = makeSimulatorEnemies;
+  battleManager._makeEnemies = (wave: number) => makeSimulatorEnemies(wave, waveDesign);
   battleManager._makeWizard = makeSimulatorWizard;
 
   await battleManager.init();
@@ -101,11 +97,28 @@ async function runSimulation(): Promise<void> {
     const dead = await battleManager.doTurns();
     if (dead) {
       console.log('hero died. wave: ' + battleManager.wave + ', turns: ' + battleManager.turnCounter + ', userInput: ' + i);
-      break;
+      return battleManager.wave;
     }
     await battleManager.correctAnswer();
   }
+  return -1;
+}
+
+async function runSimulations() {
+  for (let enemy of [EnemyType.Rat, EnemyType.DireRat, EnemyType.Goblin, EnemyType.Skeleton, EnemyType.Zombie, EnemyType.Bat, EnemyType.Wolf, EnemyType.Treant]) {
+    const waveDesign = [];
+    for (let i = 1; i <= 100; i++) {
+      waveDesign[i] = [enemy];
+    }
+    console.log('running simulation for ' + enemy);
+    const result = await runSimulation(waveDesign);
+    console.log('result: ' + result);
+  }
+
+  console.log('real simulation');
+  const result = await runSimulation(waveEnemies);
+  console.log('result: ' + result);
 }
 
 // Run the simulation
-await runSimulation();
+await runSimulations();
