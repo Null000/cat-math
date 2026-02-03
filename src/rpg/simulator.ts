@@ -1,185 +1,272 @@
-// Cat Wizard - Endless Math RPG (text-based simulation)
-// Run this in browser console, Node.js, or any JS environment
+// Cat Wizard - Text-based Battle Simulator
+// Uses same turn system as BattleManager
 
-const enemies = {
-    Slime: { hp: 22, attack: 4, speed: 3, xp: 15 },
-    Bat: { hp: 16, attack: 4, speed: 9, xp: 12 },
-    Spider: { hp: 20, attack: 5, speed: 6, xp: 18 },
-    Skeleton: { hp: 32, attack: 6, speed: 4, xp: 25 },
-    Goblin: { hp: 26, attack: 7, speed: 5, xp: 22 },
-    DireRat: { hp: 24, attack: 5, speed: 7, xp: 20 },
-    Wolf: { hp: 30, attack: 8, speed: 8, xp: 30 },
-    Zombie: { hp: 42, attack: 7, speed: 2, xp: 35 },
-    MimicChest: { hp: 38, attack: 10, speed: 3, xp: 45 },
-    ForestBoss_Treant: { hp: 140, attack: 12, speed: 3, xp: 300 }
+import { EnemyType } from './enemies/enemyMaker.js';
+
+// Stats matching the actual game enemies
+const enemyStats: Record<EnemyType, { name: string; hp: number; attack: number; defense: number; speed: number; xp: number }> = {
+    [EnemyType.Rat]: { name: 'Rat', hp: 20, attack: 5, defense: 1, speed: 4, xp: 10 },
+    [EnemyType.DireRat]: { name: 'Dire Rat', hp: 24, attack: 5, defense: 2, speed: 7, xp: 20 },
+    [EnemyType.Goblin]: { name: 'Goblin', hp: 26, attack: 7, defense: 2, speed: 5, xp: 22 },
+    [EnemyType.Skeleton]: { name: 'Skeleton', hp: 32, attack: 6, defense: 3, speed: 4, xp: 25 },
+    [EnemyType.Zombie]: { name: 'Zombie', hp: 42, attack: 7, defense: 4, speed: 2, xp: 35 },
+    [EnemyType.Bat]: { name: 'Bat', hp: 16, attack: 4, defense: 0, speed: 9, xp: 12 },
+    [EnemyType.Wolf]: { name: 'Wolf', hp: 30, attack: 8, defense: 2, speed: 8, xp: 30 },
+    [EnemyType.Treant]: { name: 'Treant', hp: 140, attack: 12, defense: 5, speed: 3, xp: 300 },
 };
 
-const enemyTypes = [
-    "Slime", "Bat", "Spider", "Skeleton", "Goblin", "DireRat",
-    "Wolf", "Zombie", "MimicChest"
-];
+interface SimActor {
+    name: string;
+    hp: number;
+    maxHp: number;
+    attack: number;
+    defense: number;
+    speed: number;
+    xp: number;
+    isHero: boolean;
+}
 
-// Player starts weak, grows stronger with levels
-let player = {
-    level: 1,
-    hpMax: 75,
-    hp: 75,
-    attack: 9,
-    speed: 6,
-    xp: 0,
-    xpToNextLevel: 100
-};
+interface Turn {
+    actor: SimActor;
+    timeTillTurn: number;
+}
 
-let wave = 1;
-let totalEnemiesDefeated = 0;
+class SimulatorBattleManager {
+    heroParty: SimActor[] = [];
+    enemyParty: SimActor[] = [];
+    turns: Turn[] = [];
+    wave = 1;
+    totalEnemiesDefeated = 0;
+
+    init() {
+        this.heroParty = [{
+            name: 'Cat Wizard',
+            hp: 75,
+            maxHp: 75,
+            attack: 12,
+            defense: 2,
+            speed: 6,
+            xp: 0,
+            isHero: true,
+        }];
+
+        this.initEnemies();
+        this.initTurns();
+    }
+
+    initEnemies() {
+        this.enemyParty = [];
+
+        // Wave determines enemy composition (similar to BattleManager)
+        const enemyCount = Math.min(1 + Math.floor(this.wave / 6), 5);
+
+        for (let i = 0; i < enemyCount; i++) {
+            const type = this.selectEnemyType();
+            const stats = enemyStats[type];
+            this.enemyParty.push({
+                name: stats.name,
+                hp: stats.hp,
+                maxHp: stats.hp,
+                attack: stats.attack,
+                defense: stats.defense,
+                speed: stats.speed,
+                xp: stats.xp,
+                isHero: false,
+            });
+        }
+    }
+
+    selectEnemyType(): EnemyType {
+        if (this.wave <= 3) {
+            return EnemyType.Rat;
+        } else if (this.wave <= 6) {
+            return Math.random() < 0.6 ? EnemyType.Bat : EnemyType.Rat;
+        } else if (this.wave <= 10) {
+            const roll = Math.random();
+            if (roll < 0.3) return EnemyType.DireRat;
+            if (roll < 0.6) return EnemyType.Goblin;
+            return EnemyType.Skeleton;
+        } else if (this.wave <= 20) {
+            const roll = Math.random();
+            if (roll < 0.2) return EnemyType.Wolf;
+            if (roll < 0.4) return EnemyType.Zombie;
+            if (roll < 0.6) return EnemyType.Skeleton;
+            if (roll < 0.8) return EnemyType.Goblin;
+            return EnemyType.DireRat;
+        } else {
+            // Late game: chance for boss
+            if (Math.random() < 0.1) return EnemyType.Treant;
+            const roll = Math.random();
+            if (roll < 0.25) return EnemyType.Wolf;
+            if (roll < 0.5) return EnemyType.Zombie;
+            if (roll < 0.75) return EnemyType.Skeleton;
+            return EnemyType.Goblin;
+        }
+    }
+
+    initTurns() {
+        this.turns = [];
+
+        for (const actor of this.heroParty) {
+            this.turns.push({ actor, timeTillTurn: 1 / actor.speed });
+        }
+        for (const actor of this.enemyParty) {
+            this.turns.push({ actor, timeTillTurn: 1 / actor.speed });
+        }
+
+        this.sortTurns();
+    }
+
+    sortTurns() {
+        this.turns.sort((a, b) => {
+            if (a.timeTillTurn === b.timeTillTurn) {
+                // Hero wins ties
+                return (a.actor.isHero ? 0 : 1) - (b.actor.isHero ? 0 : 1);
+            }
+            return a.timeTillTurn - b.timeTillTurn;
+        });
+    }
+
+    shiftTurns() {
+        const turn = this.turns.shift()!;
+        const timePassed = turn.timeTillTurn;
+
+        for (const otherTurn of this.turns) {
+            otherTurn.timeTillTurn -= timePassed;
+        }
+
+        turn.timeTillTurn = 1 / turn.actor.speed;
+        this.turns.push(turn);
+        this.sortTurns();
+    }
+
+    takeDamage(defender: SimActor, attackPower: number): boolean {
+        const damage = Math.max(0, attackPower - defender.defense);
+        defender.hp = Math.max(0, defender.hp - damage);
+        log(`  ${defender.name} takes ${damage} damage! (HP: ${defender.hp}/${defender.maxHp})`);
+        return defender.hp === 0;
+    }
+
+    heroAttack(): boolean {
+        const attacker = this.heroParty[0]!;
+        const defender = this.enemyParty[0]!;
+
+        log(`${attacker.name} casts Magic Missile!`);
+
+        if (this.takeDamage(defender, attacker.attack)) {
+            log(`  ${defender.name} was defeated!`);
+            attacker.xp += defender.xp;
+            this.totalEnemiesDefeated++;
+
+            // Remove defeated enemy
+            this.enemyParty.shift();
+            this.turns = this.turns.filter(t => t.actor !== defender);
+
+            if (this.enemyParty.length === 0) {
+                return true; // Wave cleared
+            }
+        }
+
+        this.shiftTurns();
+        return false;
+    }
+
+    enemyAttack(): boolean {
+        const turn = this.turns[0]!;
+        const attacker = turn.actor;
+        const defender = this.heroParty[0]!;
+
+        log(`${attacker.name} attacks!`);
+
+        if (this.takeDamage(defender, attacker.attack)) {
+            log(`  ${defender.name} has fallen!`);
+            return true; // Hero defeated
+        }
+
+        this.shiftTurns();
+        return false;
+    }
+
+    doEnemyTurns(): boolean {
+        while (this.turns[0] && !this.turns[0].actor.isHero) {
+            if (this.enemyAttack()) {
+                return true; // Hero defeated
+            }
+        }
+        return false;
+    }
+
+    simulateWave(): 'victory' | 'defeat' {
+        log(`\n${'='.repeat(50)}`);
+        log(`Wave ${this.wave}`);
+        log(`${this.heroParty[0]!.name} HP: ${this.heroParty[0]!.hp}/${this.heroParty[0]!.maxHp}`);
+        log(`Enemies: ${this.enemyParty.map(e => e.name).join(', ')}`);
+        log('');
+
+        while (this.enemyParty.length > 0 && this.heroParty[0]!.hp > 0) {
+            // Process enemy turns until hero's turn
+            if (this.doEnemyTurns()) {
+                return 'defeat';
+            }
+
+            // Hero attacks (simulating correct answer)
+            if (this.heroAttack()) {
+                log(`\nWave ${this.wave} cleared!`);
+                return 'victory';
+            }
+
+            // Process any enemy turns that became ready
+            if (this.doEnemyTurns()) {
+                return 'defeat';
+            }
+        }
+
+        return this.heroParty[0]!.hp > 0 ? 'victory' : 'defeat';
+    }
+
+    nextWave() {
+        this.wave++;
+        this.initEnemies();
+        this.initTurns();
+    }
+
+    reset() {
+        this.wave = 1;
+        this.totalEnemiesDefeated = 0;
+        this.init();
+    }
+}
 
 function log(text: string) {
     console.log(text);
-    // You could also append to a <pre> or <div> in HTML
 }
 
-function levelUp() {
-    player.level++;
-    player.hpMax = Math.floor(player.hpMax * 1.12) + 10;
-    player.attack = Math.floor(player.attack * 1.1) + 2;
-    player.speed = Math.floor(player.speed * 1.08) + 1;
-    player.xpToNextLevel = Math.floor(player.xpToNextLevel * 1.4) + 50;
+function runSimulation(maxWaves = 30) {
+    log('Cat Wizard - Battle Simulator');
+    log('Using BattleManager turn system\n');
 
-    log(`\n✨ LEVEL UP! Now Level ${player.level}`);
-    log(`HP: ${player.hpMax}  Attack: ${player.attack}  Speed: ${player.speed}`);
-    log(`Next level needs ${player.xpToNextLevel} XP\n`);
-}
+    const manager = new SimulatorBattleManager();
+    manager.init();
 
-function healPlayer() {
-    player.hp = player.hpMax;
-}
+    while (manager.wave <= maxWaves) {
+        const result = manager.simulateWave();
 
-function createEnemyGroup(waveNumber: number) {
-    const difficulty = Math.floor((waveNumber - 1) / 5) + 1;
-    const numEnemies = Math.min(1 + Math.floor(waveNumber / 6), 5); // 1 → 2 → 3 → 4 → 5 max
-
-    let group = [];
-
-    // Early waves: mostly weak enemies
-    if (waveNumber <= 5) {
-        group = Array(numEnemies).fill("Slime");
-    } else if (waveNumber <= 10) {
-        group = Array(numEnemies).fill(1).map(() =>
-            Math.random() < 0.6 ? "Bat" : "Slime"
-        );
-    } else {
-        // Mix of stronger enemies + occasional boss chance
-        for (let i = 0; i < numEnemies; i++) {
-            const roll = Math.random();
-            if (roll < 0.15 && waveNumber > 20) {
-                group.push("ForestBoss_Treant");
-            } else if (roll < 0.35) {
-                group.push(["Wolf", "Zombie", "MimicChest"][Math.floor(Math.random() * 3)]);
-            } else if (roll < 0.65) {
-                group.push(["Goblin", "Skeleton", "DireRat"][Math.floor(Math.random() * 3)]);
-            } else {
-                group.push(["Bat", "Spider", "Slime"][Math.floor(Math.random() * 3)]);
-            }
+        if (result === 'defeat') {
+            log(`\nGame Over at Wave ${manager.wave}`);
+            log(`Total enemies defeated: ${manager.totalEnemiesDefeated}`);
+            log(`XP earned: ${manager.heroParty[0]!.xp}`);
+            break;
         }
+
+        manager.nextWave();
     }
 
-    return group.map(type => ({
-        type,
-        ...enemies[type],
-        currentHp: enemies[type].hp
-    }));
-}
-
-function simulateBattle() {
-    log(`\n══════════════════════════════════════`);
-    log(`Attempt #${player.level} - Wave ${wave}`);
-    log(`Cat Wizard  HP: ${player.hp}/${player.hpMax}  ATK: ${player.attack}`);
-
-    const enemiesInWave = createEnemyGroup(wave);
-
-    enemiesInWave.forEach(e => {
-        log(`→ ${e.type} (HP: ${e.currentHp}/${e.hp}  ATK: ${e.attack})`);
-    });
-
-    let aliveEnemies = [...enemiesInWave];
-
-    while (player.hp > 0 && aliveEnemies.length > 0) {
-        // Sort by speed (higher = acts first), player wins ties
-        const turnOrder = [...aliveEnemies, { type: "Cat Wizard", speed: player.speed }]
-            .sort((a, b) => b.speed - a.speed);
-
-        for (const actor of turnOrder) {
-            if (player.hp <= 0) break;
-
-            if (actor.type === "Cat Wizard") {
-                if (aliveEnemies.length === 0) break;
-
-                // Player always hits (correct math answer)
-                const target = aliveEnemies[0]; // attacks first enemy
-                target.currentHp -= player.attack;
-
-                log(`You cast Magic Missile → ${target.type} takes ${player.attack} damage!`);
-
-                if (target.currentHp <= 0) {
-                    log(`${target.type} was defeated!`);
-                    player.xp += target.xp;
-                    totalEnemiesDefeated++;
-                    aliveEnemies = aliveEnemies.filter(e => e !== target);
-
-                    if (player.xp >= player.xpToNextLevel) {
-                        player.xp -= player.xpToNextLevel;
-                        levelUp();
-                    }
-                }
-            }
-            else {
-                // Enemy attacks player
-                player.hp -= actor.attack;
-                log(`${actor.type} attacks you for ${actor.attack} damage!`);
-
-                if (player.hp <= 0) {
-                    log("You have been defeated...");
-                    break;
-                }
-            }
-        }
-    }
-
-    if (player.hp <= 0) {
-        log(`\nYou fell after defeating ${totalEnemiesDefeated} enemies this run.`);
-        log(`Gained ${player.xp} XP this attempt.`);
-        player.xp += 30; // consolation XP even on loss
-        if (player.xp >= player.xpToNextLevel) {
-            player.xp -= player.xpToNextLevel;
-            levelUp();
-        }
-        healPlayer();
-        wave = 1;
-        totalEnemiesDefeated = 0;
-    } else {
-        wave++;
-        log(`Wave ${wave - 1} cleared! Moving deeper...`);
+    if (manager.wave > maxWaves) {
+        log(`\nSimulation complete! Reached wave ${maxWaves}`);
+        log(`Total enemies defeated: ${manager.totalEnemiesDefeated}`);
+        log(`Final XP: ${manager.heroParty[0]!.xp}`);
     }
 }
 
-// ──────────────────────────────────────
-// Run the game loop
-// ──────────────────────────────────────
-
-log("🐱✨  Welcome, Cat Wizard!  ✨🐱");
-log("You will face endless waves... grow stronger with each attempt!\n");
-
-function gameLoop() {
-    while (true) {
-        simulateBattle();
-        // In real game you'd wait for input / next math problem here
-        // For auto-simulation we just keep going
-        if (wave > 30) break; // safety to prevent infinite loop in console
-    }
-}
-
-// Start the adventure!
-gameLoop();
-
-// Want to make it interactive? Wrap simulateBattle() in a function
-// and call it after each "correct answer" prompt.
+// Run the simulation
+runSimulation();
