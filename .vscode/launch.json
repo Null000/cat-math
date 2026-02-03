@@ -15,7 +15,7 @@
       "type": "node-terminal",
       "name": "Run Script: build",
       "request": "launch",
-      "command": "yarn run build",
+      "command": "bun run build",
       "cwd": "${workspaceFolder}"
     }
   ]
