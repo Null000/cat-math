@@ -32976,7 +32976,6 @@ class Actor extends Container {
   }
   async takeDamage(amount) {
     const damage = Math.max(0, amount - this.defensePower);
-    console.log("Damage taken: " + damage);
     this.health = Math.max(0, this.health - damage);
     this.updateHealthBar();
     await this.shake();
@@ -33045,29 +33044,11 @@ class Actor extends Container {
     this.healthBar.x = shakeX;
   }
   attack() {
-    console.log("Attack power: " + this.attackPower);
     return this.attackPower;
   }
-}
-
-// src/rpg/Wizard.ts
-class Wizard extends Actor {
-  constructor() {
-    super({
-      texture: wizardTexture,
-      health: 75,
-      attackPower: 5,
-      defensePower: 1,
-      speed: 6,
-      xpDrop: 0
-    });
+  toString() {
+    return `${this.constructor.name} (HP: ${this.health}/${this.maxHealth}  ATK: ${this.attackPower}  DEF: ${this.defensePower}  SPD: ${this.speed})`;
   }
-}
-var wizardTexture;
-async function initWizard() {
-  if (wizardTexture)
-    return;
-  wizardTexture = await Assets.load("assets/wizard.png");
 }
 
 // src/rpg/enemies/Rat.ts
@@ -33231,35 +33212,65 @@ async function initTreant() {
 }
 
 // src/rpg/enemies/enemyMaker.ts
+var EnemyType = {
+  Rat: "rat",
+  DireRat: "dire_rat",
+  Goblin: "goblin",
+  Skeleton: "skeleton",
+  Zombie: "zombie",
+  Bat: "bat",
+  Wolf: "wolf",
+  Treant: "treant"
+};
 async function makeEnemy(type) {
   switch (type) {
-    case 0 /* Rat */:
+    case EnemyType.Rat:
       await initRat();
       return new Rat;
-    case 1 /* DireRat */:
+    case EnemyType.DireRat:
       await initDireRat();
       return new DireRat;
-    case 2 /* Goblin */:
+    case EnemyType.Goblin:
       await initGoblin();
       return new Goblin;
-    case 3 /* Skeleton */:
+    case EnemyType.Skeleton:
       await initSkeleton();
       return new Skeleton;
-    case 4 /* Zombie */:
+    case EnemyType.Zombie:
       await initZombie();
       return new Zombie;
-    case 5 /* Bat */:
+    case EnemyType.Bat:
       await initBat();
       return new Bat;
-    case 6 /* Wolf */:
+    case EnemyType.Wolf:
       await initWolf();
       return new Wolf;
-    case 7 /* Treant */:
+    case EnemyType.Treant:
       await initTreant();
       return new Treant;
     default:
       throw new Error("Unknown enemy type: " + type);
   }
+}
+
+// src/rpg/Wizard.ts
+class Wizard extends Actor {
+  constructor() {
+    super({
+      texture: wizardTexture,
+      health: 75,
+      attackPower: 5,
+      defensePower: 1,
+      speed: 6,
+      xpDrop: 0
+    });
+  }
+}
+var wizardTexture;
+
+// src/rpg/enemies/wizardMaker.ts
+async function makeWizard() {
+  return new Wizard;
 }
 
 // src/rpg/BattleManager.ts
@@ -33268,13 +33279,15 @@ class BattleManager {
   enemyParty = [];
   turns = [];
   wave = 1;
+  turnCounter = 0;
   stage;
+  _makeEnemy = makeEnemy;
+  _makeWizard = makeWizard;
   constructor(stage) {
     this.stage = stage;
   }
   async init() {
-    await initWizard();
-    this.heroParty = [new Wizard];
+    this.heroParty = [await this._makeWizard()];
     this.heroParty[0].x = 150;
     this.heroParty[0].y = 550;
     for (const actor of this.heroParty) {
@@ -33284,10 +33297,9 @@ class BattleManager {
     this.initTurns();
   }
   async initEnemy() {
-    console.log("initEnemy");
     this.enemyParty = [];
     for (let i2 = 0;i2 < this.wave; i2++) {
-      this.enemyParty.push(await makeEnemy(0 /* Rat */));
+      this.enemyParty.push(await this._makeEnemy(EnemyType.Rat));
     }
     for (let i2 = 0;i2 < this.enemyParty.length; i2++) {
       const actor = this.enemyParty[i2];
@@ -33297,7 +33309,6 @@ class BattleManager {
     }
   }
   initTurns() {
-    console.log("initTurns");
     this.turns = [];
     for (const actor of this.heroParty) {
       this.turns.push({ actor, isHero: true, timeTillTurn: 1 / actor.speed });
@@ -33314,14 +33325,17 @@ class BattleManager {
       }
       return a2.timeTillTurn - b2.timeTillTurn;
     });
-    console.log("Turns sorted! " + this.turns.map((t2) => t2.actor.constructor.name).join(", "));
   }
   async doTurns() {
     while (!this.turns[0]?.isHero) {
       const turn = this.turns[0];
-      await this.enemyAttack(turn.actor);
+      this.turnCounter++;
+      if (await this.enemyAttack(turn.actor)) {
+        return true;
+      }
       this.shiftTurns();
     }
+    return false;
   }
   shiftTurns() {
     const turn = this.turns.shift();
@@ -33332,19 +33346,17 @@ class BattleManager {
     turn.timeTillTurn = 1 / turn.actor.speed;
     this.turns.push(turn);
     this.sortTurns();
-    console.log("Turn shifted! " + this.turns.map((t2) => t2.actor.constructor.name).join(", "));
   }
   async correctAnswer() {
+    this.turnCounter++;
     const attacker = this.heroParty[0];
     const defender = this.enemyParty[0];
     if (await defender.takeDamage(attacker.attack())) {
-      console.log("Enemy defeated!");
       await defender.die();
       this.stage.removeChild(defender);
       this.enemyParty.shift();
       this.turns = this.turns.filter((turn) => turn.actor !== defender);
       if (this.enemyParty.length === 0) {
-        console.log("Hero wins!");
         this.wave++;
         await this.initEnemy();
         this.initTurns();
@@ -33354,10 +33366,8 @@ class BattleManager {
     }
   }
   async enemyAttack(attacker) {
-    console.log("Enemy attack!" + attacker.constructor.name);
     const defender = this.heroParty[0];
     if (await defender.takeDamage(attacker.attack())) {
-      console.log("Hero defeated!");
       await defender.die();
       for (const actor of this.heroParty) {
         this.stage.removeChild(actor);
@@ -33365,11 +33375,12 @@ class BattleManager {
       for (const actor of this.enemyParty) {
         this.stage.removeChild(actor);
       }
-      this.wave = 0;
-      this.init();
+      return true;
     }
+    return false;
   }
   async incorrectAnswer() {
+    this.turnCounter++;
     this.shiftTurns();
   }
   update(lastTime) {
