@@ -13,8 +13,7 @@
 ## Technology Stack
 
 - **Language**: TypeScript 5.9 (strict mode)
-- **Runtime/Bundler**: Bun
-- **Package Manager**: Yarn 4.10.3
+- **Runtime/Bundler/Package Manager**: Bun
 - **Graphics** (RPG only): Pixi.js 8.15, pixi-filters 6.1
 - **Code Formatting**: Prettier
 - **Dev Server**: Caddy

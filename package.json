@@ -1,6 +1,5 @@
 {
   "name": "math",
-  "packageManager": "yarn@4.10.3",
   "type": "module",
   "author": "Damjan Košir",
   "license": "AGPL-3.0-only",
