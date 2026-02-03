@@ -1,5 +1,5 @@
-import { translations } from "./translations.js";
-import { Category } from "./common.js";
+import { translations } from "./translations.ts";
+import { Category } from "./common.ts";
 
 export type Language = "en" | "sl";
 

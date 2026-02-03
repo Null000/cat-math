@@ -1,5 +1,5 @@
 import { Container, Graphics } from 'pixi.js';
-import { standardWidth, standardHeight } from './constants.js';
+import { standardWidth, standardHeight } from './constants.ts';
 
 export class HealthBar extends Container {
     private bg: Graphics;

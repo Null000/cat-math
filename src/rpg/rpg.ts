@@ -1,6 +1,6 @@
 import { Application, Assets, Container, Sprite, Text, TextStyle } from 'pixi.js';
-import { standardHeight, standardWidth } from './constants.js';
-import { BattleManager } from './BattleManager.js';
+import { standardHeight, standardWidth } from './constants.ts';
+import { BattleManager } from './BattleManager.ts';
 
 class ProblemUI {
     private app: Application;

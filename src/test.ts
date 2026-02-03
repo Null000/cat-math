@@ -1,4 +1,4 @@
-import { Category, Problem } from "./common.js";
+import { Category, Problem } from "./common.ts";
 
 export function generate(category: Category): Problem[] {
     return [

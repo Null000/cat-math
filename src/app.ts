@@ -1,5 +1,5 @@
-import { Category, Problem, categoryGroups } from "./common.js";
-import { getRandomProblem, removeSolvedProblem } from "./problem.js";
+import { Category, Problem, categoryGroups } from "./common.ts";
+import { getRandomProblem, removeSolvedProblem } from "./problem.ts";
 
 export function getProblem(categories: Category[]): {
   problem: Problem;
