@@ -164,7 +164,9 @@ async function init() {
                 await battleManager.incorrectAnswer();
             }
         }
-        await battleManager.doTurns();
+        if (await battleManager.doTurns()) {
+            await battleManager.init();
+        }
     });
 
     await battleManager.doTurns();

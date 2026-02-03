@@ -79,6 +79,18 @@ export abstract class Actor extends Container {
         });
     }
 
+    private isRunningLeft: boolean = false;
+    private resolveRunLeft: (() => void) | null = null;
+    private runSpeed: number = 400;
+
+    runLeft(): Promise<void> {
+        this.sprite.scale.x = -0.5;
+        this.isRunningLeft = true;
+        return new Promise((resolve) => {
+            this.resolveRunLeft = resolve;
+        });
+    }
+
     update(time: number, isSine: boolean) {
         if (this.lastTime === 0) {
             this.lastTime = time;
@@ -96,6 +108,17 @@ export abstract class Actor extends Container {
                 }
             }
             return; // Skip other updates if dying
+        }
+
+        if (this.isRunningLeft) {
+            this.x -= this.runSpeed * delta;
+            if (this.x < -this.sprite.width) {
+                if (this.resolveRunLeft) {
+                    this.resolveRunLeft();
+                    this.resolveRunLeft = null;
+                }
+            }
+            return; // Skip other updates if running
         }
 
         let shakeX = 0;

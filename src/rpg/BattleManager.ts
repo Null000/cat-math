@@ -22,12 +22,14 @@ export class BattleManager {
     }
 
     async init() {
+        this.wave = 1;
+        this.turnCounter = 0;
 
-        this.heroParty = [await this._makeWizard()];
+        const wiz = await this._makeWizard();
+        wiz.x = 150;
+        wiz.y = 550;
+        this.heroParty = [wiz];
 
-
-        this.heroParty[0]!.x = 150;
-        this.heroParty[0]!.y = 550;
 
         for (const actor of this.heroParty) {
             this.stage.addChild(actor);
@@ -79,6 +81,7 @@ export class BattleManager {
             const turn = this.turns[0]!;
             this.turnCounter++;
             if (await this.enemyAttack(turn.actor)) {
+                await turn.actor.runLeft();
                 return true;
             }
             this.shiftTurns();
@@ -124,7 +127,7 @@ export class BattleManager {
     private async enemyAttack(attacker: Actor): Promise<boolean> {
         const defender = this.heroParty[0]!;
         if (await defender.takeDamage(attacker.attack())) {
-            await defender.die();
+            await defender.runLeft();
 
             //remove all
             for (const actor of this.heroParty) {
