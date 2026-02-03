@@ -12,7 +12,9 @@ export abstract class Actor extends Container {
     defensePower: number;
     speed: number;
 
-    xpDrop: number;
+    xpDrop: number
+
+    xp: number = 0;
 
 
     constructor({ texture, health, attackPower, defensePower, speed, xpDrop }: { texture: Texture; health: number; attackPower: number; defensePower: number; speed: number; xpDrop: number }) {

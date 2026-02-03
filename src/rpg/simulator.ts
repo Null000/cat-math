@@ -16,38 +16,49 @@ import { Treant } from "./enemies/Treant.ts";
 import { Container } from "pixi.js";
 import { Wizard } from "./Wizard.ts";
 
-async function makeSimulatorEnemy(type: EnemyType): Promise<Actor> {
-  let enemy: Actor;
-  switch (type) {
-    case EnemyType.Rat:
-      enemy = new Rat();
-      break;
-    case EnemyType.DireRat:
-      enemy = new DireRat();
-      break;
-    case EnemyType.Goblin:
-      enemy = new Goblin();
-      break;
-    case EnemyType.Skeleton:
-      enemy = new Skeleton();
-      break;
-    case EnemyType.Zombie:
-      enemy = new Zombie();
-      break;
-    case EnemyType.Bat:
-      enemy = new Bat();
-      break;
-    case EnemyType.Wolf:
-      enemy = new Wolf();
-      break;
-    case EnemyType.Treant:
-      enemy = new Treant();
-      break;
-    default:
-      throw new Error('Unknown enemy type: ' + type);
+async function makeSimulatorEnemies(wave: number): Promise<Actor[]> {
+  let plan = waveEnemies[wave];
+
+  if (!plan) {
+    plan = waveEnemies[10]!;
   }
-  fakeAnimations(enemy);
-  return enemy;
+
+  const enemies = [];
+
+  for (const type of plan) {
+    let enemy: Actor;
+    switch (type) {
+      case EnemyType.Rat:
+        enemy = new Rat();
+        break;
+      case EnemyType.DireRat:
+        enemy = new DireRat();
+        break;
+      case EnemyType.Goblin:
+        enemy = new Goblin();
+        break;
+      case EnemyType.Skeleton:
+        enemy = new Skeleton();
+        break;
+      case EnemyType.Zombie:
+        enemy = new Zombie();
+        break;
+      case EnemyType.Bat:
+        enemy = new Bat();
+        break;
+      case EnemyType.Wolf:
+        enemy = new Wolf();
+        break;
+      case EnemyType.Treant:
+        enemy = new Treant();
+        break;
+      default:
+        throw new Error('Unknown enemy type: ' + type);
+    }
+    fakeAnimations(enemy);
+    enemies.push(enemy);
+  }
+  return enemies;
 }
 
 async function makeSimulatorWizard(): Promise<Actor> {
@@ -59,6 +70,20 @@ async function makeSimulatorWizard(): Promise<Actor> {
 function fakeAnimations(actor: Actor) {
   actor.shake = async () => { };
   actor.die = async () => { };
+  actor.runLeft = async () => { };
+}
+
+const waveEnemies: Record<number, EnemyType[]> = {
+  1: [EnemyType.Rat],
+  2: [EnemyType.Rat, EnemyType.Rat],
+  3: [EnemyType.DireRat],
+  4: [EnemyType.DireRat, EnemyType.Rat],
+  5: [EnemyType.DireRat, EnemyType.Rat, EnemyType.Rat],
+  6: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
+  7: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
+  8: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
+  9: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
+  10: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
 }
 
 // ============================================================================
@@ -67,7 +92,7 @@ function fakeAnimations(actor: Actor) {
 
 async function runSimulation(): Promise<void> {
   const battleManager = new BattleManager(new Container());
-  battleManager._makeEnemy = makeSimulatorEnemy;
+  battleManager._makeEnemies = makeSimulatorEnemies;
   battleManager._makeWizard = makeSimulatorWizard;
 
   await battleManager.init();

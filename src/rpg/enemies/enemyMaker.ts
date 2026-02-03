@@ -21,33 +21,68 @@ export const EnemyType = {
 
 export type EnemyType = typeof EnemyType[keyof typeof EnemyType];
 
-export async function makeEnemy(type: EnemyType): Promise<Actor> {
-    switch (type) {
-        case EnemyType.Rat:
-            await initRat();
-            return new Rat();
-        case EnemyType.DireRat:
-            await initDireRat();
-            return new DireRat();
-        case EnemyType.Goblin:
-            await initGoblin();
-            return new Goblin();
-        case EnemyType.Skeleton:
-            await initSkeleton();
-            return new Skeleton();
-        case EnemyType.Zombie:
-            await initZombie();
-            return new Zombie();
-        case EnemyType.Bat:
-            await initBat();
-            return new Bat();
-        case EnemyType.Wolf:
-            await initWolf();
-            return new Wolf();
-        case EnemyType.Treant:
-            await initTreant();
-            return new Treant();
-        default:
-            throw new Error('Unknown enemy type: ' + type);
+
+export async function makeEnemies(wave: number): Promise<Actor[]> {
+    let plan = waveEnemies[wave];
+
+    if (!plan) {
+        plan = waveEnemies[10]!;
     }
+
+    const enemies = [];
+
+    for (const type of plan) {
+        let enemy: Actor;
+        switch (type) {
+            case EnemyType.Rat:
+                await initRat();
+                enemy = new Rat();
+                break;
+            case EnemyType.DireRat:
+                await initDireRat();
+                enemy = new DireRat();
+                break;
+            case EnemyType.Goblin:
+                await initGoblin();
+                enemy = new Goblin();
+                break;
+            case EnemyType.Skeleton:
+                await initSkeleton();
+                enemy = new Skeleton();
+                break;
+            case EnemyType.Zombie:
+                await initZombie();
+                enemy = new Zombie();
+                break;
+            case EnemyType.Bat:
+                await initBat();
+                enemy = new Bat();
+                break;
+            case EnemyType.Wolf:
+                await initWolf();
+                enemy = new Wolf();
+                break;
+            case EnemyType.Treant:
+                await initTreant();
+                enemy = new Treant();
+                break;
+            default:
+                throw new Error('Unknown enemy type: ' + type);
+        }
+        enemies.push(enemy);
+    }
+    return enemies;
+}
+
+const waveEnemies: Record<number, EnemyType[]> = {
+    1: [EnemyType.Rat],
+    2: [EnemyType.Rat, EnemyType.Rat],
+    3: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
+    4: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
+    5: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
+    6: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
+    7: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
+    8: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
+    9: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
+    10: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
 }

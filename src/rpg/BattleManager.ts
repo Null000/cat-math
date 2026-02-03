@@ -1,6 +1,6 @@
 import { Container } from 'pixi.js';
 import { Actor } from './Actor.ts';
-import { makeEnemy, EnemyType } from './enemies/enemyMaker.ts';
+import { makeEnemies, EnemyType } from './enemies/enemyMaker.ts';
 import { makeWizard } from './enemies/wizardMaker.ts';
 
 export class BattleManager {
@@ -14,7 +14,7 @@ export class BattleManager {
     stage: Container;
 
     //for simulator
-    _makeEnemy = makeEnemy;
+    _makeEnemies = makeEnemies;
     _makeWizard = makeWizard;
 
     constructor(stage: Container) {
@@ -43,7 +43,7 @@ export class BattleManager {
         this.enemyParty = [];
 
         for (let i = 0; i < this.wave; i++) {
-            this.enemyParty.push(await this._makeEnemy(EnemyType.Rat));
+            this.enemyParty.push(...await this._makeEnemies(this.wave));
         }
 
         const count = this.enemyParty.length;
@@ -118,6 +118,8 @@ export class BattleManager {
         const defender = this.enemyParty[0]!;
         if (await defender.takeDamage(attacker.attack())) {
             await defender.die();
+
+            attacker.xp++;
 
             //remove defender
             this.stage.removeChild(defender);
