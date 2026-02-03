@@ -46,10 +46,22 @@ export class BattleManager {
             this.enemyParty.push(await this._makeEnemy(EnemyType.Rat));
         }
 
-        for (let i = 0; i < this.enemyParty.length; i++) {
+        const count = this.enemyParty.length;
+        const minX = 450;
+        const maxX = 750;
+        const minY = 480;
+        const maxY = 570;
+
+        for (let i = 0; i < count; i++) {
             const actor = this.enemyParty[i]!;
-            actor.x = 600 + i * 100;
-            actor.y = 550;
+
+            if (count === 1) {
+                actor.x = (minX + maxX) / 2;
+                actor.y = (minY + maxY) / 2;
+            } else {
+                actor.x = minX + (i / (count - 1)) * (maxX - minX);
+                actor.y = minY + (i % 2) * (maxY - minY);
+            }
 
             this.stage.addChild(actor);
         }
