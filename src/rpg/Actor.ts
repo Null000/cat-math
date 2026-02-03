@@ -1,6 +1,5 @@
-import { Application, Container, Sprite, Texture } from 'pixi.js';
-import { HealthBar } from './HealthBar.js';
-import { standardHeight, standardWidth } from './constants.js';
+import { Container, Sprite, Texture } from 'pixi.js';
+import { HealthBar } from './HealthBar.ts';
 
 export abstract class Actor extends Container {
     protected sprite: Sprite;
@@ -46,7 +45,6 @@ export abstract class Actor extends Container {
 
     async takeDamage(amount: number): Promise<boolean> {
         const damage = Math.max(0, amount - this.defensePower);
-        console.log('Damage taken: ' + damage);
         this.health = Math.max(0, this.health - damage);
         this.updateHealthBar();
         await this.shake();
@@ -128,8 +126,10 @@ export abstract class Actor extends Container {
     }
 
     attack(): number {
-        console.log('Attack power: ' + this.attackPower);
         return this.attackPower;
     }
-}
 
+    toString(): string {
+        return `${this.constructor.name} (HP: ${this.health}/${this.maxHealth}  ATK: ${this.attackPower}  DEF: ${this.defensePower}  SPD: ${this.speed})`;
+    }
+}

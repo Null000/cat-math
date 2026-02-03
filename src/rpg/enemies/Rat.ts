@@ -1,5 +1,5 @@
 import { Texture, Assets } from 'pixi.js';
-import { Actor } from '../Actor.js';
+import { Actor } from '../Actor.ts';
 
 export class Rat extends Actor {
     constructor() {

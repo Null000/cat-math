@@ -1,4 +1,4 @@
-import { Category } from "./common.js";
+import { Category } from "./common.ts";
 
 export const translations = {
     en: {

@@ -1,5 +1,5 @@
 import { Texture, Assets } from 'pixi.js';
-import { Actor } from '../Actor.js';
+import { Actor } from '../Actor.ts';
 
 export class Skeleton extends Actor {
     constructor() {
@@ -10,7 +10,7 @@ export class Skeleton extends Actor {
             defensePower: 3,
             speed: 4,
             xpDrop: 25
-        }); 
+        });
     }
 }
 let skeletonTexture: Texture;

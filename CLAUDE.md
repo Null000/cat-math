@@ -84,7 +84,7 @@ bun run debug
 
 ### TypeScript
 - **Strict mode enabled** with `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`
-- Use `.js` extension in imports (required for ESM): `import { foo } from "./bar.js"`
+- Use `.ts` extension in imports: `import { foo } from "./bar.ts"`
 - Target: ESNext with DOM lib
 - Module format: NodeNext
 

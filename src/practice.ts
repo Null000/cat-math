@@ -1,7 +1,7 @@
-import { getProblem, solvedProblem } from "./app.js";
-import { getCurrentLanguage, t, Language } from "./i18n.js";
-import { Category } from "./common.js";
-import { numberOfRewardImages } from "./constants.js";
+import { getProblem, solvedProblem } from "./app.ts";
+import { getCurrentLanguage, t, Language } from "./i18n.ts";
+import { Category } from "./common.ts";
+import { numberOfRewardImages } from "./constants.ts";
 
 document.addEventListener("DOMContentLoaded", () => {
     // Initialize Language

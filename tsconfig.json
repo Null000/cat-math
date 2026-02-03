@@ -1,6 +1,8 @@
 {
   // Visit https://aka.ms/tsconfig to read more about this file
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*"
+  ],
   "compilerOptions": {
     // File Layout
     "rootDir": "./src",
@@ -31,6 +33,8 @@
     // "noPropertyAccessFromIndexSignature": true,
     // Recommended Options
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    // custom
+    "allowImportingTsExtensions": true
   }
 }

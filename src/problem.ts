@@ -1,10 +1,10 @@
-import { Category, Problem } from "./common.js";
-import * as addition from "./addition.js";
-import * as subtraction from "./subtraction.js";
-import * as division from "./division.js";
-import * as multiplication from "./multiplication.js";
-import * as test from "./test.js";
-import { categoryToGroup } from "./common.js";
+import { Category, Problem } from "./common.ts";
+import * as addition from "./addition.ts";
+import * as subtraction from "./subtraction.ts";
+import * as division from "./division.ts";
+import * as multiplication from "./multiplication.ts";
+import * as test from "./test.ts";
+import { categoryToGroup } from "./common.ts";
 
 export type ProblemCache = Record<string, Problem[]>;
 

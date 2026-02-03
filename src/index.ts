@@ -1,7 +1,7 @@
-import { getCategories } from "./app.js";
-import { getRandomProblem } from "./problem.js";
-import { getCurrentLanguage, setLanguage, t, getCategoryDisplayName, Language } from "./i18n.js";
-import { Category } from "./common.js";
+import { getCategories } from "./app.ts";
+import { getRandomProblem } from "./problem.ts";
+import { getCurrentLanguage, setLanguage, t, getCategoryDisplayName, Language } from "./i18n.ts";
+import { Category } from "./common.ts";
 
 document.addEventListener("DOMContentLoaded", () => {
     // Initialize Language

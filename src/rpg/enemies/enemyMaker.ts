@@ -1,23 +1,25 @@
-import { Actor } from "../Actor.js";
-import { initRat, Rat } from "./Rat.js";
-import { initDireRat, DireRat } from "./DireRat.js";
-import { initGoblin, Goblin } from "./Goblin.js";
-import { initSkeleton, Skeleton } from "./Skeleton.js";
-import { initZombie, Zombie } from "./Zombie.js";
-import { initBat, Bat } from "./Bat.js";
-import { initWolf, Wolf } from "./Wolf.js";
-import { initTreant, Treant } from "./Treant.js";
+import { Actor } from "../Actor.ts";
+import { initRat, Rat } from "./Rat.ts";
+import { initDireRat, DireRat } from "./DireRat.ts";
+import { initGoblin, Goblin } from "./Goblin.ts";
+import { initSkeleton, Skeleton } from "./Skeleton.ts";
+import { initZombie, Zombie } from "./Zombie.ts";
+import { initBat, Bat } from "./Bat.ts";
+import { initWolf, Wolf } from "./Wolf.ts";
+import { initTreant, Treant } from "./Treant.ts";
 
-export enum EnemyType {
-    Rat,
-    DireRat,
-    Goblin,
-    Skeleton,
-    Zombie,
-    Bat,
-    Wolf,
-    Treant
-}
+export const EnemyType = {
+    Rat: "rat",
+    DireRat: "dire_rat",
+    Goblin: "goblin",
+    Skeleton: "skeleton",
+    Zombie: "zombie",
+    Bat: "bat",
+    Wolf: "wolf",
+    Treant: "treant"
+} as const;
+
+export type EnemyType = typeof EnemyType[keyof typeof EnemyType];
 
 export async function makeEnemy(type: EnemyType): Promise<Actor> {
     switch (type) {

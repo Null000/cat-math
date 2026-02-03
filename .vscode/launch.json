@@ -17,6 +17,13 @@
       "request": "launch",
       "command": "bun run build",
       "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "node-terminal",
+      "name": "Run Script: simulator",
+      "request": "launch",
+      "command": "bun run simulator",
+      "cwd": "${workspaceFolder}"
     }
   ]
 }

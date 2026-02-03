@@ -1,8 +1,7 @@
 import { Container } from 'pixi.js';
-import { Actor } from './Actor.js';
-import { initRat, Rat } from './enemies/Rat.js';
-import { initWizard, Wizard } from './Wizard.js';
-import { makeEnemy, EnemyType } from './enemies/enemyMaker.js';
+import { Actor } from './Actor.ts';
+import { makeEnemy, EnemyType } from './enemies/enemyMaker.ts';
+import { makeWizard } from './enemies/wizardMaker.ts';
 
 export class BattleManager {
     heroParty: Actor[] = [];
@@ -10,17 +9,23 @@ export class BattleManager {
     turns: { actor: Actor, isHero: boolean, timeTillTurn: number }[] = [];
 
     wave: number = 1;
+    turnCounter: number = 0;
 
     stage: Container;
+
+    //for simulator
+    _makeEnemy = makeEnemy;
+    _makeWizard = makeWizard;
 
     constructor(stage: Container) {
         this.stage = stage;
     }
 
     async init() {
-        await initWizard();
 
-        this.heroParty = [new Wizard()];
+        this.heroParty = [await this._makeWizard()];
+
+
         this.heroParty[0]!.x = 150;
         this.heroParty[0]!.y = 550;
 
@@ -32,12 +37,11 @@ export class BattleManager {
         this.initTurns();
     }
 
-    async initEnemy() {
-        console.log('initEnemy');
+    private async initEnemy() {
         this.enemyParty = [];
 
         for (let i = 0; i < this.wave; i++) {
-            this.enemyParty.push(await makeEnemy(EnemyType.Rat));
+            this.enemyParty.push(await this._makeEnemy(EnemyType.Rat));
         }
 
         for (let i = 0; i < this.enemyParty.length; i++) {
@@ -49,8 +53,7 @@ export class BattleManager {
         }
     }
 
-    initTurns() {
-        console.log('initTurns');
+    private initTurns() {
         this.turns = [];
         for (const actor of this.heroParty) {
             this.turns.push({ actor, isHero: true, timeTillTurn: 1 / actor.speed });
@@ -68,19 +71,22 @@ export class BattleManager {
             }
             return a.timeTillTurn - b.timeTillTurn;
         });
-        console.log('Turns sorted! ' + this.turns.map(t => t.actor.constructor.name).join(', '));
     }
 
-    async doTurns() {
+    //return true if hero is defeated
+    async doTurns(): Promise<boolean> {
         while (!this.turns[0]?.isHero) {
             const turn = this.turns[0]!;
-
-            await this.enemyAttack(turn.actor);
+            this.turnCounter++;
+            if (await this.enemyAttack(turn.actor)) {
+                return true;
+            }
             this.shiftTurns();
         }
+        return false;
     }
 
-    shiftTurns() {
+    private shiftTurns() {
         const turn = this.turns.shift()!;
         const timePassed = turn.timeTillTurn;
         for (const otherTurn of this.turns) {
@@ -89,16 +95,13 @@ export class BattleManager {
         turn.timeTillTurn = 1 / turn.actor.speed;
         this.turns.push(turn);
         this.sortTurns();
-
-        console.log('Turn shifted! ' + this.turns.map(t => t.actor.constructor.name).join(', '));
     }
 
     async correctAnswer() {
+        this.turnCounter++;
         const attacker = this.heroParty[0]!;
         const defender = this.enemyParty[0]!;
         if (await defender.takeDamage(attacker.attack())) {
-            console.log('Enemy defeated!');
-
             await defender.die();
 
             //remove defender
@@ -107,7 +110,6 @@ export class BattleManager {
             this.turns = this.turns.filter(turn => turn.actor !== defender);
 
             if (this.enemyParty.length === 0) {
-                console.log('Hero wins!');
                 //reset
                 this.wave++;
                 await this.initEnemy();
@@ -118,12 +120,10 @@ export class BattleManager {
         }
     }
 
-    async enemyAttack(attacker: Actor) {
-        console.log('Enemy attack!' + attacker.constructor.name);
+    //return true if hero is defeated
+    private async enemyAttack(attacker: Actor): Promise<boolean> {
         const defender = this.heroParty[0]!;
         if (await defender.takeDamage(attacker.attack())) {
-            console.log('Hero defeated!');
-
             await defender.die();
 
             //remove all
@@ -134,13 +134,13 @@ export class BattleManager {
                 this.stage.removeChild(actor);
             }
 
-            //reset
-            this.wave = 0;
-            this.init();
+            return true
         }
+        return false
     }
 
     async incorrectAnswer() {
+        this.turnCounter++;
         this.shiftTurns();
     }
 
