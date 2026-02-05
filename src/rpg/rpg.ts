@@ -151,21 +151,41 @@ async function init() {
     window.addEventListener('resize', resize);
     resize(); // Initial resize
 
-    // Listen for entry to "submit"
-    window.addEventListener('keydown', async (e) => {
-        if (e.key === 'Enter') {
-            const solution = mathUI.getSolution();
-            if (solution === '3') {
-                console.log('Correct!');
-                mathUI.clearInput();
+    // Queue for storing answers to prevent race conditions with doTurns
+    const answerQueue: boolean[] = [];
+    let isProcessingTurns = false;
 
+    async function processQueue() {
+        if (isProcessingTurns) return;
+        isProcessingTurns = true;
+
+        while (answerQueue.length > 0) {
+            const isCorrect = answerQueue.shift()!;
+            if (isCorrect) {
                 await battleManager.correctAnswer();
             } else {
                 await battleManager.incorrectAnswer();
             }
+
+            if (await battleManager.doTurns()) {
+                await battleManager.init();
+            }
         }
-        if (await battleManager.doTurns()) {
-            await battleManager.init();
+
+        isProcessingTurns = false;
+    }
+
+    // Listen for entry to "submit"
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const solution = mathUI.getSolution();
+            const isCorrect = solution === '3';
+            if (isCorrect) {
+                console.log('Correct!');
+                mathUI.clearInput();
+            }
+            answerQueue.push(isCorrect);
+            processQueue();
         }
     });
 
