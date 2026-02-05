@@ -13,19 +13,22 @@ export class BattleManager {
 
     stage: Container;
 
+    xp: number = 0;
+
     //for simulator
     _makeEnemies = makeEnemies;
     _makeWizard = makeWizard;
 
-    constructor(stage: Container) {
+    constructor(stage: Container, xp: number) {
         this.stage = stage;
+        this.xp = xp;
     }
 
     async init() {
         this.wave = 1;
         this.turnCounter = 0;
 
-        const wiz = await this._makeWizard();
+        const wiz = await this._makeWizard(this.xp);
         wiz.x = 150;
         wiz.y = 550;
         this.heroParty = [wiz];
@@ -112,13 +115,13 @@ export class BattleManager {
 
     async correctAnswer() {
         this.turnCounter++;
+
+        this.xp++;
+
         const attacker = this.heroParty[0]!;
         const defender = this.enemyParty[0]!;
         if (await defender.takeDamage(await attacker.attack())) {
             await defender.die();
-
-            attacker.xp++;
-
             //remove defender
             this.stage.removeChild(defender);
             this.enemyParty.shift();

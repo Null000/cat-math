@@ -1,6 +1,6 @@
 import { Wizard, initWizard } from "../Wizard.ts";
 
-export async function makeWizard(): Promise<Wizard> {
+export async function makeWizard(xp: number): Promise<Wizard> {
     await initWizard();
-    return new Wizard();
+    return new Wizard(xp);
 }

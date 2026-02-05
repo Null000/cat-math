@@ -17,7 +17,11 @@ import { Container } from "pixi.js";
 import { Wizard } from "./Wizard.ts";
 
 async function makeSimulatorEnemies(wave: number, waveDesign: Record<number, EnemyType[]>): Promise<Actor[]> {
-  let plan = waveDesign[wave]!;
+  let plan = waveDesign[wave];
+
+  if (!plan) {
+    plan = waveDesign[10]!;
+  }
 
   const enemies = [];
 
@@ -57,8 +61,8 @@ async function makeSimulatorEnemies(wave: number, waveDesign: Record<number, Ene
   return enemies;
 }
 
-async function makeSimulatorWizard(): Promise<Actor> {
-  const wizard = new Wizard();
+async function makeSimulatorWizard(xp: number): Promise<Actor> {
+  const wizard = new Wizard(xp);
   fakeAnimations(wizard);
   return wizard;
 }
@@ -69,6 +73,7 @@ function fakeAnimations(actor: Actor) {
   actor.runLeft = async () => { };
   actor.twitch = async () => { };
 }
+
 
 const waveEnemies: Record<number, EnemyType[]> = {
   1: [EnemyType.Rat],
@@ -87,8 +92,8 @@ const waveEnemies: Record<number, EnemyType[]> = {
 // Main Simulation
 // ============================================================================
 
-async function runSimulation(waveDesign: Record<number, EnemyType[]>): Promise<number> {
-  const battleManager = new BattleManager(new Container());
+async function runSimulation(waveDesign: Record<number, EnemyType[]>, xp: number = 0): Promise<number> {
+  const battleManager = new BattleManager(new Container(), xp);
   battleManager._makeEnemies = (wave: number) => makeSimulatorEnemies(wave, waveDesign);
   battleManager._makeWizard = makeSimulatorWizard;
 
@@ -97,8 +102,8 @@ async function runSimulation(waveDesign: Record<number, EnemyType[]>): Promise<n
   for (let i = 0; i < 200; i++) {
     const dead = await battleManager.doTurns();
     if (dead) {
-      console.log('hero died. wave: ' + battleManager.wave + ', turns: ' + battleManager.turnCounter + ', userInput: ' + i);
-      return battleManager.wave;
+      console.log('hero died. wave: ' + battleManager.wave + ', turns: ' + battleManager.turnCounter + ', userInput: ' + i + ', xp: ' + battleManager.xp);
+      return battleManager.xp;
     }
     await battleManager.correctAnswer();
   }
@@ -117,7 +122,11 @@ async function runSimulations() {
   }
 
   console.log('real simulation');
-  const result = await runSimulation(waveEnemies);
+  let result = await runSimulation(waveEnemies);
+  result += await runSimulation(waveEnemies, result);
+  result += await runSimulation(waveEnemies, result);
+  result += await runSimulation(waveEnemies, result);
+  result += await runSimulation(waveEnemies, result);
   console.log('result: ' + result);
 }
 

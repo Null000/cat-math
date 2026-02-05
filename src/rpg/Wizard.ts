@@ -2,13 +2,14 @@ import { Texture, Assets } from 'pixi.js';
 import { Actor } from './Actor.ts';
 
 export class Wizard extends Actor {
-    constructor() {
+    constructor(xp: number) {
+        const xpFactor = 1 + xp / 100;
         super({
             texture: wizardTexture,
-            health: 100,
-            attackPower: 5,
-            defensePower: 1,
-            speed: 6,
+            health: Math.floor(100 * xpFactor),
+            attackPower: Math.floor(5 * xpFactor),
+            defensePower: Math.floor(1 * xpFactor),
+            speed: Math.floor(6 * xpFactor),
             xpDrop: 0
         });
     }
