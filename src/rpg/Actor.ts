@@ -133,7 +133,6 @@ export abstract class Actor extends Container {
         if (this.isTwitching) {
             this.twitchProgress += delta;
             const halfDuration = this.twitchDuration / 2;
-            console.log('twitching', this.twitchProgress, 'sprite.x=', this.sprite.x);
 
             if (this.twitchProgress < halfDuration) {
                 // Moving forward
@@ -189,7 +188,6 @@ export abstract class Actor extends Container {
     }
 
     async twitch(): Promise<void> {
-        console.log('twitchForward called', this.constructor.name);
         this.isTwitching = true;
         this.twitchProgress = 0;
         this.twitchDirection = this.x < 400 ? 1 : -1;
