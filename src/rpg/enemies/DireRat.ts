@@ -8,7 +8,7 @@ export class DireRat extends Actor {
             health: 24,
             attackPower: 5,
             defensePower: 2,
-            speed: 7,
+            speed: 5,
             xpDrop: 20
         });
     }

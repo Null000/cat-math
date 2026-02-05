@@ -67,6 +67,7 @@ function fakeAnimations(actor: Actor) {
   actor.shake = async () => { };
   actor.die = async () => { };
   actor.runLeft = async () => { };
+  actor.twitch = async () => { };
 }
 
 const waveEnemies: Record<number, EnemyType[]> = {

@@ -188,7 +188,7 @@ export abstract class Actor extends Container {
         return this.attackPower;
     }
 
-    private twitch(): Promise<void> {
+    async twitch(): Promise<void> {
         console.log('twitchForward called', this.constructor.name);
         this.isTwitching = true;
         this.twitchProgress = 0;
