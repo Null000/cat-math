@@ -85,6 +85,13 @@ export abstract class Actor extends Container {
     private resolveRunLeft: (() => void) | null = null;
     private runSpeed: number = 400;
 
+    private isTwitching: boolean = false;
+    private resolveTwitch: (() => void) | null = null;
+    private twitchProgress: number = 0;
+    private twitchDuration: number = 0.25;
+    private twitchDistance: number = 30;
+    private twitchDirection: number = 1; // 1 = forward, -1 = backward
+
     runLeft(): Promise<void> {
         this.sprite.scale.x = -0.5;
         this.isRunningLeft = true;
@@ -123,6 +130,32 @@ export abstract class Actor extends Container {
             return; // Skip other updates if running
         }
 
+        if (this.isTwitching) {
+            this.twitchProgress += delta;
+            const halfDuration = this.twitchDuration / 2;
+            console.log('twitching', this.twitchProgress, 'sprite.x=', this.sprite.x);
+
+            if (this.twitchProgress < halfDuration) {
+                // Moving forward
+                const t = this.twitchProgress / halfDuration;
+                this.sprite.x = t * this.twitchDistance * this.twitchDirection;
+            } else if (this.twitchProgress < this.twitchDuration) {
+                // Moving back
+                const t = (this.twitchProgress - halfDuration) / halfDuration;
+                this.sprite.x = (1 - t) * this.twitchDistance * this.twitchDirection;
+            } else {
+                // Done
+                this.sprite.x = 0;
+                this.isTwitching = false;
+                this.twitchProgress = 0;
+                if (this.resolveTwitch) {
+                    this.resolveTwitch();
+                    this.resolveTwitch = null;
+                }
+            }
+            return; // Skip other updates while twitching
+        }
+
         let shakeX = 0;
         let shakeY = 0;
 
@@ -150,8 +183,22 @@ export abstract class Actor extends Container {
         this.healthBar.x = shakeX;
     }
 
-    attack(): number {
+    async attack(): Promise<number> {
+        await this.twitch();
         return this.attackPower;
+    }
+
+    private twitch(): Promise<void> {
+        console.log('twitchForward called', this.constructor.name);
+        this.isTwitching = true;
+        this.twitchProgress = 0;
+        this.twitchDirection = this.x < 400 ? 1 : -1;
+        return new Promise((resolve) => {
+            if (this.resolveTwitch) {
+                this.resolveTwitch();
+            }
+            this.resolveTwitch = resolve;
+        });
     }
 
     toString(): string {

@@ -29,6 +29,8 @@ export async function makeEnemies(wave: number): Promise<Actor[]> {
         plan = waveEnemies[10]!;
     }
 
+    console.log(plan.join(", "));
+
     const enemies = [];
 
     for (const type of plan) {
@@ -71,15 +73,16 @@ export async function makeEnemies(wave: number): Promise<Actor[]> {
         }
         enemies.push(enemy);
     }
+
     return enemies;
 }
 
 const waveEnemies: Record<number, EnemyType[]> = {
     1: [EnemyType.Rat],
     2: [EnemyType.Rat, EnemyType.Rat],
-    3: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
-    4: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
-    5: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
+    3: [EnemyType.DireRat],
+    4: [EnemyType.DireRat, EnemyType.Rat],
+    5: [EnemyType.DireRat, EnemyType.Rat, EnemyType.Rat],
     6: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
     7: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
     8: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],

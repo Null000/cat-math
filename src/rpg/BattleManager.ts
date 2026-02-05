@@ -42,9 +42,7 @@ export class BattleManager {
     private async initEnemy() {
         this.enemyParty = [];
 
-        for (let i = 0; i < this.wave; i++) {
-            this.enemyParty.push(...await this._makeEnemies(this.wave));
-        }
+        this.enemyParty.push(...await this._makeEnemies(this.wave));
 
         const count = this.enemyParty.length;
         const minX = 450;
@@ -116,7 +114,7 @@ export class BattleManager {
         this.turnCounter++;
         const attacker = this.heroParty[0]!;
         const defender = this.enemyParty[0]!;
-        if (await defender.takeDamage(attacker.attack())) {
+        if (await defender.takeDamage(await attacker.attack())) {
             await defender.die();
 
             attacker.xp++;
@@ -140,7 +138,7 @@ export class BattleManager {
     //return true if hero is defeated
     private async enemyAttack(attacker: Actor): Promise<boolean> {
         const defender = this.heroParty[0]!;
-        if (await defender.takeDamage(attacker.attack())) {
+        if (await defender.takeDamage(await attacker.attack())) {
             await defender.runLeft();
 
             //remove all
