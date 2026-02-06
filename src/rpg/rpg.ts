@@ -125,22 +125,7 @@ async function init() {
         mathUI.setProblem(currentProblem.problem.text);
     }
 
-    // Add Battle Text
-    const style = new TextStyle({
-        fontFamily: 'Inter, Arial',
-        fontSize: 32,
-        fontWeight: 'bold',
-        fill: '#ffffff',
-    });
-
-    const battleText = new Text({ text: 'WIZARD vs RAT', style });
-    battleText.alpha = 0.6;
-    battleText.anchor.set(0.5);
-    battleText.x = standardWidth / 2;
-    battleText.y = 60;
-    gameStage.addChild(battleText);
-
-    // Basic animation
+    // Basic animation runner
     app.ticker.add((time) => {
         battleManager.update(time.lastTime);
     });
