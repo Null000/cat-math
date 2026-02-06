@@ -104,16 +104,16 @@ async function init() {
     }
 
     // Listen for entry to "submit"
-    window.addEventListener('keydown', (e) => {
+    window.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter') {
             const solution = mathUI.getSolution();
             const isCorrect = parseInt(solution, 10) === currentProblem.problem.answer;
 
             if (isCorrect) {
-                mathUI.showSuccess();
+                await mathUI.showSuccess();
                 nextProblem();
             } else {
-                mathUI.showError();
+                await mathUI.showError();
             }
 
             mathUI.clearInput();

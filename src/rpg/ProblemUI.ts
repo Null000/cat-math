@@ -164,22 +164,28 @@ export class ProblemUI {
     }
 
     // New methods to trigger visual feedback
-    showSuccess() {
-        this.input.classList.add('input-correct');
-        this.problemText.style.fill = '#2ecc71'; // Green
-        setTimeout(() => {
-            this.input.classList.remove('input-correct');
-            this.problemText.style.fill = '#ffffff'; // Reset
-        }, 500);
+    showSuccess(): Promise<void> {
+        return new Promise((resolve) => {
+            this.input.classList.add('input-correct');
+            this.problemText.style.fill = '#2ecc71'; // Green
+            setTimeout(() => {
+                this.input.classList.remove('input-correct');
+                this.problemText.style.fill = '#ffffff'; // Reset
+                resolve();
+            }, 500);
+        });
     }
 
-    showError() {
-        this.input.classList.add('input-wrong');
-        this.problemText.style.fill = '#e74c3c'; // Red
-        setTimeout(() => {
-            this.input.classList.remove('input-wrong');
-            this.problemText.style.fill = '#ffffff'; // Reset
-        }, 500);
+    showError(): Promise<void> {
+        return new Promise((resolve) => {
+            this.input.classList.add('input-wrong');
+            this.problemText.style.fill = '#e74c3c'; // Red
+            setTimeout(() => {
+                this.input.classList.remove('input-wrong');
+                this.problemText.style.fill = '#ffffff'; // Reset
+                resolve();
+            }, 500);
+        });
     }
 }
 
