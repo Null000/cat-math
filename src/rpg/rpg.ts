@@ -49,7 +49,8 @@ async function init() {
     }
     let currentProblem = getProblem(selectedCategories);
 
-    const battleManager = new BattleManager(world, 0);
+    const startXp = parseInt(localStorage.getItem('xp') || '0');
+    const battleManager = new BattleManager(world, startXp);
     await battleManager.init();
 
     // Create Math UI
@@ -121,6 +122,7 @@ async function init() {
             const isCorrect = parseInt(solution, 10) === currentProblem.problem.answer;
 
             if (isCorrect) {
+                localStorage.setItem('xp', battleManager.xp.toString());
                 await mathUI.showSuccess();
                 nextProblem();
             } else {

@@ -93,7 +93,7 @@ export abstract class Actor extends Container {
     private twitchDirection: number = 1; // 1 = forward, -1 = backward
 
     runLeft(): Promise<void> {
-        this.sprite.scale.x = -0.5;
+        this.sprite.scale.x = this.sprite.scale.x * -1;
         this.isRunningLeft = true;
         return new Promise((resolve) => {
             this.resolveRunLeft = resolve;
