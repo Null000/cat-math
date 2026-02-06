@@ -1,4 +1,4 @@
-import { Application, Assets, Container, Sprite } from 'pixi.js';
+import { Application, Assets, Container, Sprite, Graphics } from 'pixi.js';
 import { standardHeight, standardWidth } from './constants.ts';
 import { BattleManager } from './BattleManager.ts';
 import { getProblem } from '../app.ts';
@@ -19,6 +19,17 @@ async function init() {
     const gameStage = new Container();
     app.stage.addChild(gameStage);
 
+    // Create a container for masked content (background + actors)
+    const world = new Container();
+    gameStage.addChild(world);
+
+    // Create a mask for the world
+    const mask = new Graphics()
+        .rect(0, 0, standardWidth, standardHeight)
+        .fill(0xffffff);
+    world.mask = mask;
+    world.addChild(mask);
+
     // Load assets
     const dungeonTexture = await Assets.load('assets/dungeon.png');
 
@@ -26,7 +37,7 @@ async function init() {
     const background = new Sprite(dungeonTexture);
     background.width = standardWidth;
     background.height = standardHeight;
-    gameStage.addChild(background);
+    world.addChild(background);
 
     const urlParams = new URLSearchParams(window.location.search);
     const categoriesParam = urlParams.get('categories');
@@ -38,7 +49,7 @@ async function init() {
     }
     let currentProblem = getProblem(selectedCategories);
 
-    const battleManager = new BattleManager(gameStage, 0);
+    const battleManager = new BattleManager(world, 0);
     await battleManager.init();
 
     // Create Math UI
