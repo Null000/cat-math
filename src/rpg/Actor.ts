@@ -17,7 +17,7 @@ export abstract class Actor extends Container {
     xp: number = 0;
 
 
-    constructor({ texture, health, attackPower, defensePower, speed, xpDrop }: { texture: Texture; health: number; attackPower: number; defensePower: number; speed: number; xpDrop: number }) {
+    constructor({ texture, textureScale = 0.5, health, attackPower, defensePower, speed, xpDrop }: { texture: Texture; textureScale: number; health: number; attackPower: number; defensePower: number; speed: number; xpDrop: number }) {
         super();
 
         this.health = health;
@@ -31,7 +31,7 @@ export abstract class Actor extends Container {
 
         this.sprite = new Sprite(texture);
         this.sprite.anchor.set(0.5, 1);
-        this.sprite.scale.set(0.5);
+        this.sprite.scale.set(textureScale);
 
         this.addChild(this.sprite);
 
