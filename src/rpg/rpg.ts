@@ -119,7 +119,8 @@ async function init() {
     window.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter') {
             const solution = mathUI.getSolution();
-            const isCorrect = parseInt(solution, 10) === currentProblem.problem.answer;
+            if (solution === '') return;
+            const isCorrect = solution.trim() === currentProblem.problem.answer.toString();
 
             if (isCorrect) {
                 localStorage.setItem('xp', battleManager.xp.toString());
