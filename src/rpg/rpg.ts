@@ -199,7 +199,9 @@ async function init() {
             const solution = mathUI.getSolution();
             const isCorrect = parseInt(solution, 10) === currentProblem.problem.answer;
             mathUI.clearInput();
-            nextProblem();
+            if (isCorrect) {
+                nextProblem();
+            }
             answerQueue.push(isCorrect);
             processQueue();
         }
