@@ -1,6 +1,8 @@
 import { Application, Assets, Container, Sprite, Text, TextStyle } from 'pixi.js';
 import { standardHeight, standardWidth } from './constants.ts';
 import { BattleManager } from './BattleManager.ts';
+import { getProblem } from '../app.ts';
+import { Category } from '../common.ts';
 
 class ProblemUI {
     private app: Application;
@@ -26,7 +28,7 @@ class ProblemUI {
             },
         });
 
-        this.problemText = new Text({ text: '1 + 2 = ?', style });
+        this.problemText = new Text({ text: '', style });
         this.problemText.anchor.set(0.5);
         this.problemText.x = standardWidth / 2;
         this.problemText.y = standardHeight * 0.4;
@@ -101,11 +103,27 @@ async function init() {
     background.height = standardHeight;
     gameStage.addChild(background);
 
-    const battleManager = new BattleManager(gameStage);
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoriesParam = urlParams.get('categories');
+    let selectedCategories: Category[];
+    if (categoriesParam) {
+        selectedCategories = categoriesParam.split(';').map(decodeURIComponent) as Category[];
+    } else {
+        selectedCategories = [Category.Addition_Ten];
+    }
+    let currentProblem = getProblem(selectedCategories);
+
+    const battleManager = new BattleManager(gameStage, 0);
     await battleManager.init();
 
     // Create Math UI
     const mathUI = new ProblemUI(app, gameStage);
+    mathUI.setProblem(currentProblem.problem.text);
+
+    function nextProblem() {
+        currentProblem = getProblem(selectedCategories);
+        mathUI.setProblem(currentProblem.problem.text);
+    }
 
     // Add Battle Text
     const style = new TextStyle({
@@ -179,11 +197,9 @@ async function init() {
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             const solution = mathUI.getSolution();
-            const isCorrect = solution === '3';
-            if (isCorrect) {
-                console.log('Correct!');
-                mathUI.clearInput();
-            }
+            const isCorrect = parseInt(solution, 10) === currentProblem.problem.answer;
+            mathUI.clearInput();
+            nextProblem();
             answerQueue.push(isCorrect);
             processQueue();
         }
