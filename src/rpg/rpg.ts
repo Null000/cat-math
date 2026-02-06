@@ -108,10 +108,15 @@ async function init() {
         if (e.key === 'Enter') {
             const solution = mathUI.getSolution();
             const isCorrect = parseInt(solution, 10) === currentProblem.problem.answer;
-            mathUI.clearInput();
+
             if (isCorrect) {
+                mathUI.showSuccess();
                 nextProblem();
+            } else {
+                mathUI.showError();
             }
+
+            mathUI.clearInput();
             answerQueue.push(isCorrect);
             processQueue();
         }
