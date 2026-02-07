@@ -3,6 +3,8 @@ import { getCurrentLanguage, t, Language } from "./i18n.ts";
 import { Category } from "./common.ts";
 import { numberOfRewardImages } from "./constants.ts";
 
+declare function gtag(...args: any[]): void;
+
 document.addEventListener("DOMContentLoaded", () => {
     // Initialize Language
     const currentLang = getCurrentLanguage();
@@ -234,7 +236,13 @@ document.addEventListener("DOMContentLoaded", () => {
         stats.totalTime += elapsed;
         stats.allTimes.push(elapsed);
 
-        if (userAnswer === currentProblem.answer) {
+        const isCorrect = userAnswer === currentProblem.answer;
+        gtag("event", "problem_answer", {
+            category: currentCategory,
+            correct: isCorrect,
+        });
+
+        if (isCorrect) {
             feedbackElement.textContent = t("correct");
             feedbackElement.className = "correct";
             // Reveal a random part of the reward image
