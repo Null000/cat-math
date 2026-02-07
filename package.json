@@ -4,10 +4,10 @@
   "author": "Damjan Košir",
   "license": "AGPL-3.0-only",
   "scripts": {
-    "build": "bun scripts/update-reward-count.ts && mkdir -p dist && cp src/*.html dist && cp -r src/rewardImages dist && cp -r src/rpg/*.html dist && cp -r src/rpg/assets dist && bun build ./src/app.ts ./src/index.ts ./src/practice.ts ./src/rpg/rpg.ts --outdir dist",
-    "build:rpg": "bun scripts/update-reward-count.ts && mkdir -p dist/rpg && cp src/rpg/*.html dist/rpg && cp -r src/rpg/assets dist/rpg && bun build ./src/rpg/rpg.ts --outdir dist/rpg",
-    "dev": "bun scripts/update-reward-count.ts && mkdir -p dist && cp src/*.html dist && cp -r src/rewardImages dist && cp -r src/rpg/*.html dist && cp -r src/rpg/assets dist && bun build ./src/app.ts ./src/index.ts ./src/practice.ts ./src/rpg/rpg.ts --outdir dist --watch",
-    "dev:rpg": "bun scripts/update-reward-count.ts && mkdir -p dist/rpg && cp src/rpg/*.html dist/rpg && cp -r src/rpg/assets dist/rpg && bun build ./src/rpg/rpg.ts --outdir dist/rpg --watch",
+    "build": "bun install && bun scripts/update-reward-count.ts && mkdir -p dist && cp src/*.html dist && cp -r src/rewardImages dist && cp -r src/rpg/*.html dist && cp -r src/rpg/assets dist && bun build ./src/app.ts ./src/index.ts ./src/practice.ts ./src/rpg/rpg.ts --outdir dist",
+    "build:rpg": "bun install && bun scripts/update-reward-count.ts && mkdir -p dist/rpg && cp src/rpg/*.html dist/rpg && cp -r src/rpg/assets dist/rpg && bun build ./src/rpg/rpg.ts --outdir dist/rpg",
+    "dev": "bun install && bun scripts/update-reward-count.ts && mkdir -p dist && cp src/*.html dist && cp -r src/rewardImages dist && cp -r src/rpg/*.html dist && cp -r src/rpg/assets dist && bun build ./src/app.ts ./src/index.ts ./src/practice.ts ./src/rpg/rpg.ts --outdir dist --watch",
+    "dev:rpg": "bun install && bun scripts/update-reward-count.ts && mkdir -p dist/rpg && cp src/rpg/*.html dist/rpg && cp -r src/rpg/assets dist/rpg && bun build ./src/rpg/rpg.ts --outdir dist/rpg --watch",
     "caddy": "cd dist && caddy file-server --listen :3000",
     "debug": "chromium --remote-debugging-port=9222 --user-data-dir=remote-debug-profile http://localhost:3000/rpg/rpg.html"
   },
