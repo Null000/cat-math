@@ -5,6 +5,8 @@ import { getProblem } from '../app.ts';
 import { Category } from '../common.ts';
 import { ProblemUI } from './ProblemUI.ts';
 
+declare function gtag(...args: any[]): void;
+
 async function init() {
     const app = new Application();
 
@@ -121,6 +123,11 @@ async function init() {
             const solution = mathUI.getSolution();
             if (solution === '') return;
             const isCorrect = solution.trim() === currentProblem.problem.answer.toString();
+
+            gtag("event", "problem_answer", {
+                category: currentProblem.category,
+                correct: isCorrect,
+            });
 
             if (isCorrect) {
                 localStorage.setItem('xp', battleManager.xp.toString());
