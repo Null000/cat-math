@@ -1,4 +1,4 @@
-import { Application, Assets, Container, Sprite, Graphics } from 'pixi.js';
+import { Application, Container, Graphics } from 'pixi.js';
 import { standardHeight, standardWidth } from './constants.ts';
 import { BattleManager } from './BattleManager.ts';
 import { getProblem } from '../app.ts';
@@ -31,15 +31,6 @@ async function init() {
         .fill(0xffffff);
     world.mask = mask;
     world.addChild(mask);
-
-    // Load assets
-    const dungeonTexture = await Assets.load('assets/dungeon.png');
-
-    // Create Background
-    const background = new Sprite(dungeonTexture);
-    background.width = standardWidth;
-    background.height = standardHeight;
-    world.addChild(background);
 
     const urlParams = new URLSearchParams(window.location.search);
     const categoriesParam = urlParams.get('categories');
