@@ -1,8 +1,8 @@
-import { Assets, Container, Sprite } from 'pixi.js';
-import { standardWidth, standardHeight } from './constants.ts';
+import { Container } from 'pixi.js';
 import { Actor } from './Actor.ts';
 import { makeEnemies, EnemyType } from './enemies/enemyMaker.ts';
 import { makeWizard } from './enemies/wizardMaker.ts';
+import { makeBackground } from './backgroundMaker.ts';
 
 export class BattleManager {
     heroParty: Actor[] = [];
@@ -29,10 +29,7 @@ export class BattleManager {
         this.wave = 1;
         this.turnCounter = 0;
 
-        const dungeonTexture = await Assets.load('assets/dungeon.png');
-        const background = new Sprite(dungeonTexture);
-        background.width = standardWidth;
-        background.height = standardHeight;
+        const background = await makeBackground(this.wave);
         this.stage.addChild(background);
 
         const wiz = await this._makeWizard(this.xp);
