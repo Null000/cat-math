@@ -10,6 +10,8 @@ declare function gtag(...args: any[]): void;
 async function init() {
     const app = new Application();
 
+    (globalThis as any).__PIXI_APP__ = app;
+
     await app.init({
         resizeTo: window,
         backgroundColor: 0x000000,

@@ -13,21 +13,20 @@ import { Zombie } from "./enemies/Zombie.ts";
 import { Bat } from "./enemies/Bat.ts";
 import { Wolf } from "./enemies/Wolf.ts";
 import { Treant } from "./enemies/Treant.ts";
-import { Container } from "pixi.js";
+import { Dummy } from "./enemies/Dummy.ts";
+import { Container, Sprite } from "pixi.js";
 import { Wizard } from "./Wizard.ts";
 
-async function makeSimulatorEnemies(wave: number, waveDesign: Record<number, EnemyType[]>): Promise<Actor[]> {
-  let plan = waveDesign[wave];
-
-  if (!plan) {
-    plan = waveDesign[10]!;
-  }
+async function makeSimulatorEnemies(plan: EnemyType[]): Promise<Actor[]> {
 
   const enemies = [];
 
   for (const type of plan) {
     let enemy: Actor;
     switch (type) {
+      case EnemyType.Dummy:
+        enemy = new Dummy();
+        break;
       case EnemyType.Rat:
         enemy = new Rat();
         break;
@@ -75,34 +74,22 @@ function fakeAnimations(actor: Actor) {
 }
 
 
-const waveEnemies: Record<number, EnemyType[]> = {
-  1: [EnemyType.Rat],
-  2: [EnemyType.Rat, EnemyType.Rat],
-  3: [EnemyType.DireRat],
-  4: [EnemyType.DireRat, EnemyType.Rat],
-  5: [EnemyType.DireRat, EnemyType.Rat, EnemyType.Rat],
-  6: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
-  7: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
-  8: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
-  9: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
-  10: [EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
-}
-
 // ============================================================================
 // Main Simulation
 // ============================================================================
 
-async function runSimulation(waveDesign: Record<number, EnemyType[]>, xp: number = 0): Promise<number> {
+async function runSimulation(xp: number = 0, planOverride?: EnemyType[]): Promise<number> {
   const battleManager = new BattleManager(new Container(), xp);
-  battleManager._makeEnemies = (wave: number) => makeSimulatorEnemies(wave, waveDesign);
+  battleManager._makeEnemies = (x) => makeSimulatorEnemies(planOverride ?? x);
   battleManager._makeWizard = makeSimulatorWizard;
+  battleManager._makeBackground = async () => new Sprite();
 
   await battleManager.init();
 
   for (let i = 0; i < 200; i++) {
     const dead = await battleManager.doTurns();
     if (dead) {
-      console.log('hero died. wave: ' + battleManager.wave + ', turns: ' + battleManager.turnCounter + ', userInput: ' + i + ', xp: ' + battleManager.xp);
+      console.log('hero died. area: ' + battleManager.area + ', wave: ' + battleManager.wave + ', turns: ' + battleManager.turnCounter + ', userInput: ' + i + ', xp: ' + battleManager.xp);
       return battleManager.xp;
     }
     await battleManager.correctAnswer();
@@ -111,22 +98,18 @@ async function runSimulation(waveDesign: Record<number, EnemyType[]>, xp: number
 }
 
 async function runSimulations() {
-  for (let enemy of [EnemyType.Rat, EnemyType.DireRat, EnemyType.Goblin, EnemyType.Skeleton, EnemyType.Zombie, EnemyType.Bat, EnemyType.Wolf, EnemyType.Treant]) {
-    const waveDesign = [];
-    for (let i = 1; i <= 100; i++) {
-      waveDesign[i] = [enemy];
-    }
-    console.log('running simulation for ' + enemy);
-    const result = await runSimulation(waveDesign);
-    console.log('result: ' + result);
-  }
+  // for (let enemy of [EnemyType.Rat, EnemyType.DireRat, EnemyType.Goblin, EnemyType.Skeleton, EnemyType.Zombie, EnemyType.Bat, EnemyType.Wolf, EnemyType.Treant]) {
+  //   console.log('running simulation for ' + enemy);
+  //   const result = await runSimulation(0, [enemy]);
+  //   console.log('result: ' + result);
+  // }
 
   console.log('real simulation');
-  let result = await runSimulation(waveEnemies);
-  result += await runSimulation(waveEnemies, result);
-  result += await runSimulation(waveEnemies, result);
-  result += await runSimulation(waveEnemies, result);
-  result += await runSimulation(waveEnemies, result);
+  let result = await runSimulation();
+  result += await runSimulation(result);
+  result += await runSimulation(result);
+  result += await runSimulation(result);
+  result += await runSimulation(result);
   console.log('result: ' + result);
 }
 
