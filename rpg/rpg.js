@@ -33364,6 +33364,9 @@ class HealthBar extends Container {
   fill;
   widthMax;
   heightBar;
+  currentRatio = 1;
+  targetRatio = 1;
+  animationSpeed = 1.5;
   constructor(width = standardWidth / 8, height = standardHeight / 60) {
     super();
     this.widthMax = width;
@@ -33378,12 +33381,27 @@ class HealthBar extends Container {
     this.addChild(this.fill);
   }
   setHealth(ratio) {
+    this.targetRatio = ratio;
+  }
+  update(delta) {
+    if (this.currentRatio === this.targetRatio)
+      return;
+    const diff = this.targetRatio - this.currentRatio;
+    const step = this.animationSpeed * delta;
+    if (Math.abs(diff) <= step) {
+      this.currentRatio = this.targetRatio;
+    } else {
+      this.currentRatio += Math.sign(diff) * step;
+    }
+    this.redraw();
+  }
+  redraw() {
     this.fill.clear();
-    this.fill.rect(0, 0, this.widthMax * ratio, this.heightBar);
+    this.fill.rect(0, 0, this.widthMax * this.currentRatio, this.heightBar);
     let color = 3066993;
-    if (ratio < 0.3) {
+    if (this.currentRatio < 0.3) {
       color = 15158332;
-    } else if (ratio < 0.5) {
+    } else if (this.currentRatio < 0.5) {
       color = 14797937;
     }
     this.fill.fill(color);
@@ -33454,6 +33472,12 @@ class Actor extends Container {
   isRunningLeft = false;
   resolveRunLeft = null;
   runSpeed = 400;
+  isEntering = false;
+  resolveEnter = null;
+  enterProgress = 0;
+  enterDuration = 0.6;
+  enterStartX = 0;
+  enterTargetX = 0;
   isTwitching = false;
   resolveTwitch = null;
   twitchProgress = 0;
@@ -33465,6 +33489,18 @@ class Actor extends Container {
     this.isRunningLeft = true;
     return new Promise((resolve) => {
       this.resolveRunLeft = resolve;
+    });
+  }
+  enter(fromX, duration = 0.6, delay = 0) {
+    this.isEntering = true;
+    this.enterStartX = fromX;
+    this.enterTargetX = this.x;
+    this.enterDuration = duration;
+    this.enterProgress = -delay;
+    this.x = fromX;
+    this.alpha = 0;
+    return new Promise((resolve) => {
+      this.resolveEnter = resolve;
     });
   }
   update(time, isSine) {
@@ -33493,6 +33529,25 @@ class Actor extends Container {
         }
       }
       return;
+    }
+    if (this.isEntering) {
+      this.enterProgress += delta;
+      if (this.enterProgress <= 0) {
+        return;
+      }
+      const t2 = Math.min(this.enterProgress / this.enterDuration, 1);
+      const eased = 1 - Math.pow(1 - t2, 3);
+      this.x = this.enterStartX + (this.enterTargetX - this.enterStartX) * eased;
+      this.alpha = eased;
+      if (t2 >= 1) {
+        this.x = this.enterTargetX;
+        this.alpha = 1;
+        this.isEntering = false;
+        if (this.resolveEnter) {
+          this.resolveEnter();
+          this.resolveEnter = null;
+        }
+      }
     }
     if (this.isTwitching) {
       this.twitchProgress += delta;
@@ -33532,6 +33587,7 @@ class Actor extends Container {
     offset *= 10;
     this.sprite.y = offset + shakeY;
     this.sprite.x = shakeX;
+    this.healthBar.update(delta);
     this.healthBar.y = -this.sprite.height + offset - 20 + shakeY;
     this.healthBar.x = shakeX;
   }
@@ -33560,6 +33616,7 @@ class Rat extends Actor {
   constructor() {
     super({
       texture: ratTexture,
+      textureScale: 0.5,
       health: 12,
       attackPower: 4,
       defensePower: 0,
@@ -33580,6 +33637,7 @@ class DireRat extends Actor {
   constructor() {
     super({
       texture: direRatTexture,
+      textureScale: 0.5,
       health: 24,
       attackPower: 5,
       defensePower: 2,
@@ -33600,6 +33658,7 @@ class Goblin extends Actor {
   constructor() {
     super({
       texture: goblinTexture,
+      textureScale: 0.5,
       health: 26,
       attackPower: 7,
       defensePower: 2,
@@ -33620,6 +33679,7 @@ class Skeleton extends Actor {
   constructor() {
     super({
       texture: skeletonTexture,
+      textureScale: 0.5,
       health: 32,
       attackPower: 6,
       defensePower: 3,
@@ -33640,6 +33700,7 @@ class Zombie extends Actor {
   constructor() {
     super({
       texture: zombieTexture,
+      textureScale: 0.5,
       health: 42,
       attackPower: 7,
       defensePower: 4,
@@ -33660,6 +33721,7 @@ class Bat extends Actor {
   constructor() {
     super({
       texture: batTexture,
+      textureScale: 0.5,
       health: 16,
       attackPower: 4,
       defensePower: 1,
@@ -33680,6 +33742,7 @@ class Wolf extends Actor {
   constructor() {
     super({
       texture: wolfTexture,
+      textureScale: 0.5,
       health: 30,
       attackPower: 8,
       defensePower: 3,
@@ -33700,6 +33763,7 @@ class Treant extends Actor {
   constructor() {
     super({
       texture: treantTexture,
+      textureScale: 0.5,
       health: 140,
       attackPower: 12,
       defensePower: 8,
@@ -33715,23 +33779,63 @@ async function initTreant() {
   treantTexture = await Assets.load("assets/treant.png");
 }
 
+// src/rpg/enemies/Dummy.ts
+class Dummy extends Actor {
+  constructor() {
+    super({
+      texture: dummyTexture,
+      textureScale: 0.2,
+      health: 1,
+      attackPower: 0,
+      defensePower: 0,
+      speed: 0.000000001,
+      xpDrop: 1
+    });
+  }
+}
+var dummyTexture;
+async function initDummy() {
+  if (dummyTexture)
+    return;
+  dummyTexture = await Assets.load("assets/dummy.png");
+}
+
+// src/rpg/enemies/Slime.ts
+class Slime extends Actor {
+  constructor() {
+    super({
+      texture: slimeTexture,
+      textureScale: 0.5,
+      health: 22,
+      attackPower: 4,
+      defensePower: 0,
+      speed: 3,
+      xpDrop: 15
+    });
+  }
+}
+var slimeTexture;
+async function initSlime() {
+  if (slimeTexture)
+    return;
+  slimeTexture = await Assets.load("assets/slime.png");
+}
+
 // src/rpg/enemies/enemyMaker.ts
 var EnemyType = {
   Rat: "rat",
   DireRat: "dire_rat",
+  Slime: "slime",
   Goblin: "goblin",
   Skeleton: "skeleton",
   Zombie: "zombie",
   Bat: "bat",
   Wolf: "wolf",
-  Treant: "treant"
+  Treant: "treant",
+  Dummy: "dummy",
+  Spider: "spider"
 };
-async function makeEnemies(wave) {
-  let plan = waveEnemies[wave];
-  if (!plan) {
-    plan = waveEnemies[10];
-  }
-  console.log(plan.join(", "));
+async function makeEnemies(plan) {
   const enemies = [];
   for (const type of plan) {
     let enemy;
@@ -33743,6 +33847,10 @@ async function makeEnemies(wave) {
       case EnemyType.DireRat:
         await initDireRat();
         enemy = new DireRat;
+        break;
+      case EnemyType.Slime:
+        await initSlime();
+        enemy = new Slime;
         break;
       case EnemyType.Goblin:
         await initGoblin();
@@ -33768,6 +33876,10 @@ async function makeEnemies(wave) {
         await initTreant();
         enemy = new Treant;
         break;
+      case EnemyType.Dummy:
+        await initDummy();
+        enemy = new Dummy;
+        break;
       default:
         throw new Error("Unknown enemy type: " + type);
     }
@@ -33775,18 +33887,6 @@ async function makeEnemies(wave) {
   }
   return enemies;
 }
-var waveEnemies = {
-  1: [EnemyType.Rat],
-  2: [EnemyType.Rat, EnemyType.Rat],
-  3: [EnemyType.DireRat],
-  4: [EnemyType.DireRat, EnemyType.Rat],
-  5: [EnemyType.DireRat, EnemyType.Rat, EnemyType.Rat],
-  6: [EnemyType.DireRat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
-  7: [EnemyType.DireRat, EnemyType.DireRat, EnemyType.DireRat],
-  8: [EnemyType.DireRat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
-  9: [EnemyType.DireRat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
-  10: [EnemyType.DireRat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat]
-};
 
 // src/rpg/Wizard.ts
 class Wizard extends Actor {
@@ -33801,6 +33901,10 @@ class Wizard extends Actor {
       speed: Math.floor(6 * xpFactor),
       xpDrop: 0
     });
+  }
+  updateHealthBar() {
+    const ratio = Math.max(this.health / this.maxHealth, 0.02);
+    this.healthBar.setHealth(ratio);
   }
 }
 var wizardTexture;
@@ -33822,24 +33926,97 @@ async function makeWizard(xp) {
   return new Wizard(xp);
 }
 
+// src/rpg/backgroundMaker.ts
+var BackgroundType = {
+  Village: "village",
+  Forest: "forest",
+  DarkForest: "darkForest",
+  Dungeon: "dungeon"
+};
+async function makeBackground(type) {
+  const asset = assetMap[type];
+  const texture = await Assets.load(asset);
+  const background = new Sprite(texture);
+  background.width = standardWidth;
+  background.height = standardHeight;
+  return background;
+}
+var assetMap = {
+  [BackgroundType.Village]: "assets/village.png",
+  [BackgroundType.Forest]: "assets/forest.png",
+  [BackgroundType.DarkForest]: "assets/darkForest.png",
+  [BackgroundType.Dungeon]: "assets/dungeon.png"
+};
+
+// src/rpg/areas.ts
+var areas = [
+  {
+    background: BackgroundType.Village,
+    waves: [
+      [EnemyType.Dummy],
+      [EnemyType.Dummy, EnemyType.Dummy]
+    ]
+  },
+  {
+    background: BackgroundType.Forest,
+    waves: [
+      [EnemyType.Rat],
+      [EnemyType.Rat, EnemyType.Rat],
+      [EnemyType.DireRat],
+      [EnemyType.DireRat, EnemyType.Rat],
+      [EnemyType.DireRat, EnemyType.Rat, EnemyType.Rat],
+      [EnemyType.DireRat, EnemyType.DireRat, EnemyType.Rat, EnemyType.Rat]
+    ]
+  },
+  {
+    background: BackgroundType.DarkForest,
+    waves: [
+      [EnemyType.Slime],
+      [EnemyType.Slime, EnemyType.Slime],
+      [EnemyType.Slime, EnemyType.Slime],
+      [EnemyType.Slime, EnemyType.Slime],
+      [EnemyType.Slime, EnemyType.Slime],
+      [EnemyType.Slime, EnemyType.Slime],
+      [EnemyType.Slime, EnemyType.Slime],
+      [EnemyType.Slime, EnemyType.Slime],
+      [EnemyType.Slime, EnemyType.Slime],
+      [EnemyType.Slime, EnemyType.Slime],
+      [EnemyType.Slime, EnemyType.Slime],
+      [EnemyType.Slime, EnemyType.Slime],
+      [EnemyType.Slime, EnemyType.Slime],
+      [EnemyType.Slime, EnemyType.Slime]
+    ]
+  }
+];
+
 // src/rpg/BattleManager.ts
 class BattleManager {
   heroParty = [];
   enemyParty = [];
   turns = [];
-  wave = 1;
+  wave = 0;
+  area = 0;
   turnCounter = 0;
   stage;
+  background;
   xp = 0;
   _makeEnemies = makeEnemies;
   _makeWizard = makeWizard;
+  _makeBackground = makeBackground;
   constructor(stage, xp) {
     this.stage = stage;
     this.xp = xp;
   }
   async init() {
-    this.wave = 1;
+    this.wave = 0;
     this.turnCounter = 0;
+    const area2 = areas[this.area];
+    if (this.background) {
+      this.stage.removeChild(this.background);
+    }
+    const background = await this._makeBackground(area2.background);
+    this.background = background;
+    this.stage.addChild(background);
     const wiz = await this._makeWizard(this.xp);
     wiz.x = 150;
     wiz.y = 550;
@@ -33852,12 +34029,15 @@ class BattleManager {
   }
   async initEnemy() {
     this.enemyParty = [];
-    this.enemyParty.push(...await this._makeEnemies(this.wave));
+    const area2 = areas[this.area];
+    this.enemyParty.push(...await this._makeEnemies(area2.waves[this.wave]));
     const count2 = this.enemyParty.length;
     const minX = 450;
     const maxX = 750;
     const minY = 480;
     const maxY = 570;
+    const enterPromises = [];
+    const enterFromX = standardWidth + 100;
     for (let i2 = 0;i2 < count2; i2++) {
       const actor = this.enemyParty[i2];
       if (count2 === 1) {
@@ -33868,6 +34048,7 @@ class BattleManager {
         actor.y = minY + i2 % 2 * (maxY - minY);
       }
       this.stage.addChild(actor);
+      enterPromises.push(actor.enter(enterFromX, 0.6, i2 * 0.15));
     }
   }
   initTurns() {
@@ -33922,8 +34103,14 @@ class BattleManager {
       this.turns = this.turns.filter((turn) => turn.actor !== defender);
       if (this.enemyParty.length === 0) {
         this.wave++;
-        await this.initEnemy();
-        this.initTurns();
+        const area2 = areas[this.area];
+        if (this.wave >= area2.waves.length) {
+          this.area++;
+          await this.init();
+        } else {
+          await this.initEnemy();
+          this.initTurns();
+        }
       }
     } else {
       this.shiftTurns();
@@ -34120,6 +34307,7 @@ class ProblemUI {
 // src/rpg/rpg.ts
 async function init2() {
   const app = new Application;
+  globalThis.__PIXI_APP__ = app;
   await app.init({
     resizeTo: window,
     backgroundColor: 0,
@@ -34133,11 +34321,6 @@ async function init2() {
   const mask = new Graphics().rect(0, 0, standardWidth, standardHeight).fill(16777215);
   world.mask = mask;
   world.addChild(mask);
-  const dungeonTexture = await Assets.load("assets/dungeon.png");
-  const background = new Sprite(dungeonTexture);
-  background.width = standardWidth;
-  background.height = standardHeight;
-  world.addChild(background);
   const urlParams = new URLSearchParams(window.location.search);
   const categoriesParam = urlParams.get("categories");
   let selectedCategories;
