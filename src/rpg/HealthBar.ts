@@ -25,9 +25,7 @@ export class HealthBar extends Container {
 
     setHealth(ratio: number) {
         this.fill.clear();
-        const minWidth = this.widthMax * 0.02;
-        const width = Math.max(this.widthMax * ratio, minWidth);
-        this.fill.rect(0, 0, width, this.heightBar);
+        this.fill.rect(0, 0, this.widthMax * ratio, this.heightBar);
         let color = 0x2ecc71
         if (ratio < 0.3) {
             color = 0xe74c3c

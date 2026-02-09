@@ -14,6 +14,11 @@ export class Wizard extends Actor {
             xpDrop: 0
         });
     }
+
+    updateHealthBar() {
+        const ratio = Math.max(this.health / this.maxHealth, 0.02);
+        this.healthBar.setHealth(ratio);
+    }
 }
 let wizardTexture: Texture;
 let wizardTextureLevel: number;
