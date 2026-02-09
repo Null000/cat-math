@@ -85,6 +85,13 @@ export abstract class Actor extends Container {
     private resolveRunLeft: (() => void) | null = null;
     private runSpeed: number = 400;
 
+    private isEntering: boolean = false;
+    private resolveEnter: (() => void) | null = null;
+    private enterProgress: number = 0;
+    private enterDuration: number = 0.6;
+    private enterStartX: number = 0;
+    private enterTargetX: number = 0;
+
     private isTwitching: boolean = false;
     private resolveTwitch: (() => void) | null = null;
     private twitchProgress: number = 0;
@@ -97,6 +104,19 @@ export abstract class Actor extends Container {
         this.isRunningLeft = true;
         return new Promise((resolve) => {
             this.resolveRunLeft = resolve;
+        });
+    }
+
+    enter(fromX: number, duration: number = 0.6, delay: number = 0): Promise<void> {
+        this.isEntering = true;
+        this.enterStartX = fromX;
+        this.enterTargetX = this.x;
+        this.enterDuration = duration;
+        this.enterProgress = -delay;
+        this.x = fromX;
+        this.alpha = 0;
+        return new Promise((resolve) => {
+            this.resolveEnter = resolve;
         });
     }
 
@@ -128,6 +148,28 @@ export abstract class Actor extends Container {
                 }
             }
             return; // Skip other updates if running
+        }
+
+        if (this.isEntering) {
+            this.enterProgress += delta;
+            if (this.enterProgress <= 0) {
+                return; // Still in delay period
+            }
+            const t = Math.min(this.enterProgress / this.enterDuration, 1);
+            // Ease-out cubic for smooth deceleration
+            const eased = 1 - Math.pow(1 - t, 3);
+            this.x = this.enterStartX + (this.enterTargetX - this.enterStartX) * eased;
+            this.alpha = eased;
+            if (t >= 1) {
+                this.x = this.enterTargetX;
+                this.alpha = 1;
+                this.isEntering = false;
+                if (this.resolveEnter) {
+                    this.resolveEnter();
+                    this.resolveEnter = null;
+                }
+            }
+            return; // Skip other updates while entering
         }
 
         if (this.isTwitching) {
