@@ -178,6 +178,7 @@ export abstract class Actor extends Container {
         this.sprite.y = offset + shakeY;
         this.sprite.x = shakeX;
 
+        this.healthBar.update(delta);
         this.healthBar.y = -this.sprite.height + offset - 20 + shakeY;
         this.healthBar.x = shakeX;
     }
