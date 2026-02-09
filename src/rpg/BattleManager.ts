@@ -1,42 +1,54 @@
-import { Container } from 'pixi.js';
+import { Container, Sprite } from 'pixi.js';
 import { Actor } from './Actor.ts';
 import { makeEnemies, EnemyType } from './enemies/enemyMaker.ts';
 import { makeWizard } from './enemies/wizardMaker.ts';
 import { makeBackground } from './backgroundMaker.ts';
+import { areas, Area } from './areas.ts';
 
 export class BattleManager {
     heroParty: Actor[] = [];
     enemyParty: Actor[] = [];
     turns: { actor: Actor, isHero: boolean, timeTillTurn: number }[] = [];
 
-    wave: number = 1;
+    areaIndex: number = 0;
+    wave: number = 0;
     turnCounter: number = 0;
 
     stage: Container;
+    background: Sprite | null = null;
 
     xp: number = 0;
 
     //for simulator
     _makeEnemies = makeEnemies;
     _makeWizard = makeWizard;
+    _areas: Area[] = areas;
 
     constructor(stage: Container, xp: number) {
         this.stage = stage;
         this.xp = xp;
     }
 
+    private get currentArea(): Area {
+        return this._areas[this.areaIndex] ?? this._areas[this._areas.length - 1]!;
+    }
+
+    private getWavePlan(): EnemyType[] {
+        const area = this.currentArea;
+        return area.waves[this.wave] ?? area.waves[area.waves.length - 1]!;
+    }
+
     async init() {
-        this.wave = 1;
+        this.areaIndex = 0;
+        this.wave = 0;
         this.turnCounter = 0;
 
-        const background = await makeBackground(this.wave);
-        this.stage.addChild(background);
+        await this.setBackground();
 
         const wiz = await this._makeWizard(this.xp);
         wiz.x = 150;
         wiz.y = 550;
         this.heroParty = [wiz];
-
 
         for (const actor of this.heroParty) {
             this.stage.addChild(actor);
@@ -46,10 +58,18 @@ export class BattleManager {
         this.initTurns();
     }
 
+    private async setBackground() {
+        if (this.background) {
+            this.stage.removeChild(this.background);
+        }
+        this.background = await makeBackground(this.currentArea.background);
+        this.stage.addChildAt(this.background, 0);
+    }
+
     private async initEnemy() {
         this.enemyParty = [];
 
-        this.enemyParty.push(...await this._makeEnemies(this.wave));
+        this.enemyParty.push(...await this._makeEnemies(this.getWavePlan()));
 
         const count = this.enemyParty.length;
         const minX = 450;
@@ -132,8 +152,13 @@ export class BattleManager {
             this.turns = this.turns.filter(turn => turn.actor !== defender);
 
             if (this.enemyParty.length === 0) {
-                //reset
                 this.wave++;
+                if (this.wave >= this.currentArea.waves.length) {
+                    // advance to next area
+                    this.areaIndex++;
+                    this.wave = 0;
+                    await this.setBackground();
+                }
                 await this.initEnemy();
                 this.initTurns();
             }

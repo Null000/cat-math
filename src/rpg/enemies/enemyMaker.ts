@@ -24,13 +24,7 @@ export const EnemyType = {
 export type EnemyType = typeof EnemyType[keyof typeof EnemyType];
 
 
-export async function makeEnemies(wave: number): Promise<Actor[]> {
-    let plan = waveEnemies[wave];
-
-    if (!plan) {
-        plan = waveEnemies[10]!;
-    }
-
+export async function makeEnemies(plan: EnemyType[]): Promise<Actor[]> {
     console.log(plan.join(", "));
 
     const enemies = [];
@@ -81,17 +75,4 @@ export async function makeEnemies(wave: number): Promise<Actor[]> {
     }
 
     return enemies;
-}
-
-const waveEnemies: Record<number, EnemyType[]> = {
-    1: [EnemyType.Dummy],
-    2: [EnemyType.Dummy, EnemyType.Dummy],
-    3: [EnemyType.Rat],
-    4: [EnemyType.Rat, EnemyType.Rat],
-    5: [EnemyType.DireRat],
-    6: [EnemyType.DireRat, EnemyType.Rat],
-    7: [EnemyType.DireRat, EnemyType.Rat, EnemyType.Rat],
-    8: [EnemyType.DireRat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
-    9: [EnemyType.DireRat, EnemyType.DireRat, EnemyType.DireRat],
-    10: [EnemyType.DireRat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat, EnemyType.Rat],
 }
