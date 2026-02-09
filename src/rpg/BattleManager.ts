@@ -76,7 +76,8 @@ export class BattleManager {
             enterPromises.push(actor.enter(enterFromX, 0.6, i * 0.15));
         }
 
-        await Promise.all(enterPromises);
+        // TODO this gets the game stuck
+        // await Promise.all(enterPromises);
     }
 
     private initTurns() {
