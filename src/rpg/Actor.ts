@@ -169,7 +169,6 @@ export abstract class Actor extends Container {
                     this.resolveEnter = null;
                 }
             }
-            return; // Skip other updates while entering
         }
 
         if (this.isTwitching) {
