@@ -5,6 +5,7 @@ export class DireRat extends Actor {
     constructor() {
         super({
             texture: direRatTexture,
+            textureScale: 0.5,
             health: 24,
             attackPower: 5,
             defensePower: 2,

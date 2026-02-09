@@ -5,6 +5,7 @@ export class Goblin extends Actor {
     constructor() {
         super({
             texture: goblinTexture,
+            textureScale: 0.5,
             health: 26,
             attackPower: 7,
             defensePower: 2,

@@ -5,6 +5,7 @@ export class Treant extends Actor {
     constructor() {
         super({
             texture: treantTexture,
+            textureScale: 0.5,
             health: 140,
             attackPower: 12,
             defensePower: 8,

@@ -5,6 +5,7 @@ export class Zombie extends Actor {
     constructor() {
         super({
             texture: zombieTexture,
+            textureScale: 0.5,
             health: 42,
             attackPower: 7,
             defensePower: 4,

@@ -4,33 +4,8 @@ import { makeEnemies, EnemyType } from './enemies/enemyMaker.ts';
 import { makeWizard } from './enemies/wizardMaker.ts';
 import { makeBackground, BackgroundType } from './backgroundMaker.ts';
 import { standardWidth } from './constants.ts';
+import { areas } from './areas.ts';
 
-interface Area {
-    background: BackgroundType;
-    waves: EnemyType[][];
-}
-
-const areas: Area[] = [
-    {
-        background: BackgroundType.Village,
-        waves: [
-            [EnemyType.Dummy],
-            [EnemyType.Dummy, EnemyType.Dummy],
-        ]
-    },
-    {
-        background: BackgroundType.Forest,
-        waves: [
-            [EnemyType.Rat],
-            [EnemyType.Rat, EnemyType.Rat],
-            [EnemyType.DireRat],
-            [EnemyType.DireRat, EnemyType.Rat],
-            [EnemyType.DireRat, EnemyType.Rat, EnemyType.Rat],
-            [EnemyType.DireRat, EnemyType.DireRat, EnemyType.Rat, EnemyType.Rat],
-        ]
-    },
-
-]
 
 export class BattleManager {
     heroParty: Actor[] = [];

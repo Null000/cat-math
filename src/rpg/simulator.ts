@@ -16,6 +16,8 @@ import { Treant } from "./enemies/Treant.ts";
 import { Dummy } from "./enemies/Dummy.ts";
 import { Container, Sprite } from "pixi.js";
 import { Wizard } from "./Wizard.ts";
+import { Spider } from "./enemies/Spider.ts";
+import { Slime } from "./enemies/Slime.ts";
 
 async function makeSimulatorEnemies(plan: EnemyType[]): Promise<Actor[]> {
 
@@ -50,6 +52,12 @@ async function makeSimulatorEnemies(plan: EnemyType[]): Promise<Actor[]> {
         break;
       case EnemyType.Treant:
         enemy = new Treant();
+        break;
+      case EnemyType.Spider:
+        enemy = new Spider();
+        break;
+      case EnemyType.Slime:
+        enemy = new Slime();
         break;
       default:
         throw new Error('Unknown enemy type: ' + type);

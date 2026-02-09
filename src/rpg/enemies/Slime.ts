@@ -5,6 +5,7 @@ export class Slime extends Actor {
     constructor() {
         super({
             texture: slimeTexture,
+            textureScale: 0.5,
             health: 22,
             attackPower: 4,
             defensePower: 0,

@@ -5,6 +5,7 @@ export class Wolf extends Actor {
     constructor() {
         super({
             texture: wolfTexture,
+            textureScale: 0.5,
             health: 30,
             attackPower: 8,
             defensePower: 3,
