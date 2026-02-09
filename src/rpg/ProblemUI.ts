@@ -7,8 +7,10 @@ export class ProblemUI {
     private input: HTMLInputElement;
 
     private styleTag: HTMLStyleElement;
+    private submitCallback: (solution: string) => void;
 
-    constructor(parentContainer: Container) {
+    constructor(parentContainer: Container, onSubmit: (solution: string) => void) {
+        this.submitCallback = onSubmit;
         // Create Pixi Text for the problem
         const style = new TextStyle({
             fontFamily: 'Inter, "Segoe UI", "Roboto", sans-serif',
@@ -130,7 +132,17 @@ export class ProblemUI {
         this.container.appendChild(this.input);
         document.body.appendChild(this.container);
 
+        this.input.addEventListener("keyup", (event: KeyboardEvent) => {
+            if (event.key === "Enter") {
+                this.onSubmit();
+            }
+        });
+
         this.input.focus();
+    }
+
+    onSubmit() {
+        this.submitCallback(this.getSolution());
     }
 
     updateTransform(scale: number, offsetX: number, offsetY: number) {

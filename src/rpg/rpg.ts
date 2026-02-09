@@ -49,7 +49,7 @@ async function init() {
     await battleManager.init();
 
     // Create Math UI
-    const mathUI = new ProblemUI(gameStage);
+    const mathUI = new ProblemUI(gameStage, onSubmit);
     mathUI.setProblem(currentProblem.problem.text);
 
     function nextProblem() {
@@ -110,31 +110,28 @@ async function init() {
         isProcessingTurns = false;
     }
 
-    // Listen for entry to "submit"
-    window.addEventListener('keydown', async (e) => {
-        if (e.key === 'Enter') {
-            const solution = mathUI.getSolution();
-            if (solution === '') return;
-            const isCorrect = solution.trim() === currentProblem.problem.answer.toString();
+    async function onSubmit(solution: string) {
+        if (solution === '') return;
+        const isCorrect = solution.trim() === currentProblem.problem.answer.toString();
 
-            gtag("event", "problem_answer", {
-                category: currentProblem.category,
-                correct: isCorrect,
-            });
+        gtag("event", "problem_answer", {
+            category: currentProblem.category,
+            correct: isCorrect,
+        });
 
-            if (isCorrect) {
-                localStorage.setItem('xp', battleManager.xp.toString());
-                await mathUI.showSuccess();
-                nextProblem();
-            } else {
-                await mathUI.showError();
-            }
-
-            mathUI.clearInput();
-            answerQueue.push(isCorrect);
-            processQueue();
+        if (isCorrect) {
+            localStorage.setItem('xp', battleManager.xp.toString());
+            await mathUI.showSuccess();
+            nextProblem();
+        } else {
+            await mathUI.showError();
         }
-    });
+
+        mathUI.clearInput();
+        answerQueue.push(isCorrect);
+        processQueue();
+    }
+
 
     await battleManager.doTurns();
 }
