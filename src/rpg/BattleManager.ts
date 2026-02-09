@@ -3,6 +3,7 @@ import { Actor } from './Actor.ts';
 import { makeEnemies, EnemyType } from './enemies/enemyMaker.ts';
 import { makeWizard } from './enemies/wizardMaker.ts';
 import { makeBackground } from './backgroundMaker.ts';
+import { standardWidth } from './constants.ts';
 
 export class BattleManager {
     heroParty: Actor[] = [];
@@ -57,6 +58,9 @@ export class BattleManager {
         const minY = 480;
         const maxY = 570;
 
+        const enterPromises: Promise<void>[] = [];
+        const enterFromX = standardWidth + 100;
+
         for (let i = 0; i < count; i++) {
             const actor = this.enemyParty[i]!;
 
@@ -69,7 +73,10 @@ export class BattleManager {
             }
 
             this.stage.addChild(actor);
+            enterPromises.push(actor.enter(enterFromX, 0.6, i * 0.15));
         }
+
+        await Promise.all(enterPromises);
     }
 
     private initTurns() {
