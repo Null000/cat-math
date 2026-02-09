@@ -4,6 +4,7 @@ import { standardWidth, standardHeight } from './constants.ts';
 export class ProblemUI {
     private problemText: Text;
     private container: HTMLDivElement;
+    private form: HTMLFormElement;
     private input: HTMLInputElement;
 
     private styleTag: HTMLStyleElement;
@@ -127,7 +128,10 @@ export class ProblemUI {
         this.input.placeholder = '?';
         this.input.autocomplete = 'off';
 
-        this.container.appendChild(this.input);
+        this.form = document.createElement('form');
+        this.form.addEventListener('submit', (e) => e.preventDefault());
+        this.form.appendChild(this.input);
+        this.container.appendChild(this.form);
         document.body.appendChild(this.container);
 
         this.input.focus();
@@ -164,6 +168,10 @@ export class ProblemUI {
     }
 
     // New methods to trigger visual feedback
+    onSubmit(callback: () => void) {
+        this.form.addEventListener('submit', callback);
+    }
+
     showSuccess(): Promise<void> {
         return new Promise((resolve) => {
             this.input.classList.add('input-correct');
