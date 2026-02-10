@@ -40,7 +40,7 @@ export class BattleManager {
         this.stage = stage;
         this.xp = xp;
         this.area = area;
-      
+
         this.fadeOverlay = new Graphics()
             .rect(0, 0, standardWidth, standardHeight)
             .fill(0x000000);
@@ -234,7 +234,11 @@ export class BattleManager {
                     this.area++;
                     this.onAreaChange?.(this.area);
                     await this.fadeOut();
-                    //TODO heal heros
+
+                    for (const actor of this.heroParty) {
+                        actor.healMax();
+                    }
+
                     await this.init();
                     await this.fadeIn();
                 } else {
