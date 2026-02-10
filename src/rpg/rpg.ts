@@ -45,7 +45,10 @@ async function init() {
     let currentProblem = getProblem(selectedCategories);
 
     const startXp = parseInt(localStorage.getItem('xp') || '0');
-    const battleManager = new BattleManager(world, startXp);
+    const startArea = parseInt(localStorage.getItem('rpg_area') || '0');
+    const battleManager = new BattleManager(world, startXp, startArea);
+    battleManager.onXpChange = (xp) => localStorage.setItem('xp', xp.toString());
+    battleManager.onAreaChange = (area) => localStorage.setItem('rpg_area', area.toString());
     await battleManager.init();
 
     // Create Math UI
@@ -120,7 +123,6 @@ async function init() {
         });
 
         if (isCorrect) {
-            localStorage.setItem('xp', battleManager.xp.toString());
             await mathUI.showSuccess();
             nextProblem();
         } else {
