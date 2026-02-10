@@ -5,10 +5,8 @@
   "license": "AGPL-3.0-only",
   "scripts": {
     "build": "bun install && bun scripts/update-reward-count.ts && mkdir -p dist/rpg && cp src/*.html dist && cp src/favicon-32x32.png dist && cp -r src/rewardImages dist && cp src/rpg/*.html dist/rpg && cp -r src/rpg/assets dist/rpg && bun build ./src/app.ts ./src/index.ts ./src/practice.ts ./src/rpg/rpg.ts --outdir dist",
-    "build:rpg": "bun install && bun scripts/update-reward-count.ts && mkdir -p dist/rpg && cp src/rpg/*.html dist/rpg && cp -r src/rpg/assets dist/rpg && bun build ./src/rpg/rpg.ts --outdir dist/rpg",
-    "dev": "bun install && bun scripts/update-reward-count.ts && mkdir -p dist/rpg && cp src/*.html dist && cp src/favicon-32x32.png dist && cp -r src/rewardImages dist && cp src/rpg/*.html dist/rpg && cp -r src/rpg/assets dist/rpg && bun build ./src/app.ts ./src/index.ts ./src/practice.ts ./src/rpg/rpg.ts --outdir dist --watch",
-    "dev:rpg": "bun install && bun scripts/update-reward-count.ts && mkdir -p dist/rpg && cp src/rpg/*.html dist/rpg && cp -r src/rpg/assets dist/rpg && bun build ./src/rpg/rpg.ts --outdir dist/rpg --watch",
-    "caddy": "cd dist && caddy file-server --listen :3000",
+    "dev": "bun run build --watch",
+    "caddy": "cmkdir -p dist/rpg && d dist && caddy file-server --listen :3000",
     "debug": "chromium --remote-debugging-port=9222 --user-data-dir=remote-debug-profile http://localhost:3000/rpg/rpg.html"
   },
   "devDependencies": {
@@ -16,7 +14,6 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "pixi-filters": "^6.1.5",
     "pixi.js": "^8.15.0"
   }
 }
