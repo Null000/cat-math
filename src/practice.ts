@@ -53,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const feedbackSummary = document.getElementById("feedback-summary") as HTMLElement;
     const answerSection = document.querySelector(".answer-section") as HTMLElement;
     const optionsSection = document.getElementById("options-section") as HTMLElement;
+    const endRoundBtn = document.getElementById("end-round-btn") as HTMLButtonElement;
 
     // State Variables
     let currentProblem: any;
@@ -337,8 +338,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 }
 
-                // Show "Next Round" button and hide answer section
+                // Show "Next Round" button, back button, and hide answer section
                 if (nextRoundBtn) nextRoundBtn.style.display = "block";
+                if (backBtn) backBtn.style.display = "inline-block";
+                if (endRoundBtn) endRoundBtn.style.display = "none";
                 if (answerSection) answerSection.style.display = "none";
                 if (optionsSection) optionsSection.style.display = "none";
                 if (feedbackElement) feedbackElement.style.display = "none";
@@ -435,6 +438,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Function to start a new round
     function startNextRound() {
         if (nextRoundBtn) nextRoundBtn.style.display = "none";
+        if (backBtn) backBtn.style.display = "none";
+        if (endRoundBtn) endRoundBtn.style.display = "inline-block";
         if (feedbackElement) feedbackElement.style.display = "flex";
         if (problemContainer) problemContainer.style.display = "block";
         if (feedbackSummary) {
@@ -453,6 +458,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Start new problem
         newProblem();
+    }
+
+    // Function to end the round early
+    function endRound() {
+        // Show "Next Round" button, back button, and hide answer section
+        if (nextRoundBtn) nextRoundBtn.style.display = "block";
+        if (backBtn) backBtn.style.display = "inline-block";
+        if (endRoundBtn) endRoundBtn.style.display = "none";
+        if (answerSection) answerSection.style.display = "none";
+        if (optionsSection) optionsSection.style.display = "none";
+        if (feedbackElement) feedbackElement.style.display = "none";
+        if (problemContainer) problemContainer.style.display = "none";
+
+        // Show feedback summary
+        if (feedbackSummary) {
+            feedbackSummary.style.display = "block";
+            if (stats.roundIncorrectProblems.size === 0) {
+                feedbackSummary.innerHTML = `<div class="feedback-perfect">${t("perfect_round")}</div>`;
+            } else {
+                let html = `<span class="review-header">${t("review_header")}</span>`;
+                stats.roundIncorrectProblems.forEach((details, problemText) => {
+                    html += `
+                        <div class="review-item">
+                            <span class="review-problem">${problemText}</span>
+                            <div class="review-details">
+                                ${t("correct_answer")} <span class="review-correct">${details.correctAnswer}</span>,
+                                ${t("your_answers")} <span class="review-incorrect">${details.givenAnswers.join(", ")}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                feedbackSummary.innerHTML = html;
+            }
+        }
     }
 
     // Event Listeners
@@ -477,6 +516,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (nextRoundBtn) {
         nextRoundBtn.addEventListener("click", startNextRound);
+    }
+
+    if (endRoundBtn) {
+        endRoundBtn.addEventListener("click", endRound);
     }
 
     // Generate the first problem

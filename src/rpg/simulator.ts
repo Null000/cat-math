@@ -98,7 +98,7 @@ async function runSimulation(xp: number = 0, planOverride?: EnemyType[]): Promis
 
   await battleManager.init();
 
-  for (let i = 0; i < 200; i++) {
+  for (let i = 0; i < 300; i++) {
     const dead = await battleManager.doTurns();
     if (dead) {
       console.log('hero died. area: ' + battleManager.area + ', wave: ' + battleManager.wave + ', turns: ' + battleManager.turnCounter + ', userInput: ' + i + ', xp: ' + battleManager.xp);
