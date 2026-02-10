@@ -37,7 +37,7 @@ export class Wizard extends Actor {
 
     override async attack(defender: Actor): Promise<number> {
         // return super.attack(defender);
-        const isCritical = Math.random() < 0.25;
+        const isCritical = false;
         await this.twitch();
         await this.castMagic(isCritical, defender);
         return isCritical ? this.attackPower * 2 : this.attackPower;
