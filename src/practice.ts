@@ -1,6 +1,6 @@
 import { getProblem, solvedProblem } from "./app.ts";
 import { getCurrentLanguage, t, Language } from "./i18n.ts";
-import { Category, categoryToGroup } from "./common.ts";
+import { Category, Problem } from "./common.ts";
 import { numberOfRewardImages } from "./constants.ts";
 
 declare function gtag(...args: any[]): void;
@@ -52,8 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const nextRoundBtn = document.getElementById("next-round-btn") as HTMLButtonElement;
     const feedbackSummary = document.getElementById("feedback-summary") as HTMLElement;
     const answerSection = document.querySelector(".answer-section") as HTMLElement;
-    const comparisonSection = document.getElementById("comparison-section") as HTMLElement;
-    const comparisonButtons = Array.from(document.querySelectorAll(".comparison-btn")) as HTMLButtonElement[];
+    const optionsSection = document.getElementById("options-section") as HTMLElement;
 
     // State Variables
     let currentProblem: any;
@@ -61,14 +60,13 @@ document.addEventListener("DOMContentLoaded", () => {
     let selectedCategories: string[] = [];
     let currentRewardImageId: number | null = null;
 
-    function isComparisonCategory(category: Category): boolean {
-        return categoryToGroup[category] === "Comparison";
+    function hasOptions(problem: Problem): problem is Problem & { options: { label: string; value: number }[] } {
+        return problem.options !== undefined && problem.options.length > 0;
     }
 
-    function formatComparisonAnswer(answer: number): string {
-        if (answer < 0) return "<";
-        if (answer > 0) return ">";
-        return "=";
+    function getOptionLabel(problem: Problem, value: number): string {
+        const option = problem.options?.find(o => o.value === value);
+        return option ? option.label : String(value);
     }
 
     // Function to choose a random reward image
@@ -108,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
         totalTime: 0,
         problemStartTime: 0,
         allTimes: [] as number[],
-        roundIncorrectProblems: new Map<string, { correctAnswer: number, givenAnswers: number[], isComparison: boolean }>()
+        roundIncorrectProblems: new Map<string, { correctAnswer: string, givenAnswers: string[] }>()
     };
 
     // Function to update statistics display
@@ -227,14 +225,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (problemElement) problemElement.textContent = currentProblem.text;
 
-        // Toggle between text input and comparison buttons
-        if (isComparisonCategory(currentCategory)) {
+        // Toggle between text input and option buttons
+        if (hasOptions(currentProblem)) {
             if (answerSection) answerSection.style.display = "none";
-            if (comparisonSection) comparisonSection.style.display = "flex";
-            resetComparisonButtons();
+            renderOptionButtons(currentProblem.options);
+            if (optionsSection) optionsSection.style.display = "flex";
         } else {
+            if (optionsSection) optionsSection.style.display = "none";
             if (answerSection) answerSection.style.display = "flex";
-            if (comparisonSection) comparisonSection.style.display = "none";
             resetState();
         }
 
@@ -242,13 +240,33 @@ document.addEventListener("DOMContentLoaded", () => {
         stats.problemStartTime = Date.now();
     }
 
+    // Dynamically create option buttons from problem data
+    function renderOptionButtons(options: { label: string; value: number }[]) {
+        if (!optionsSection) return;
+        optionsSection.innerHTML = "";
+        for (const option of options) {
+            const btn = document.createElement("button");
+            btn.className = "option-btn";
+            btn.textContent = option.label;
+            btn.addEventListener("click", () => checkAnswer(option.value));
+            optionsSection.appendChild(btn);
+        }
+    }
+
+    function setOptionButtonsDisabled(disabled: boolean) {
+        if (!optionsSection) return;
+        for (const btn of optionsSection.querySelectorAll(".option-btn")) {
+            (btn as HTMLButtonElement).disabled = disabled;
+        }
+    }
+
     // Function to check the user's answer
-    function checkAnswer(comparisonAnswer?: number) {
+    function checkAnswer(optionValue?: number) {
         if (!feedbackElement) return;
 
         let userAnswer: number;
-        if (comparisonAnswer !== undefined) {
-            userAnswer = comparisonAnswer;
+        if (optionValue !== undefined) {
+            userAnswer = optionValue;
         } else {
             if (!answerInput) return;
             userAnswer = parseInt(answerInput.value, 10);
@@ -307,7 +325,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (submitButton) submitButton.disabled = true;
             if (answerInput) answerInput.disabled = true;
-            disableComparisonButtons();
+            setOptionButtonsDisabled(true);
 
             if (isPictureComplete()) {
                 // Mark current image as completed in localStorage
@@ -322,7 +340,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Show "Next Round" button and hide answer section
                 if (nextRoundBtn) nextRoundBtn.style.display = "block";
                 if (answerSection) answerSection.style.display = "none";
-                if (comparisonSection) comparisonSection.style.display = "none";
+                if (optionsSection) optionsSection.style.display = "none";
                 if (feedbackElement) feedbackElement.style.display = "none";
                 if (problemContainer) problemContainer.style.display = "none";
 
@@ -334,17 +352,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     } else {
                         let html = `<span class="review-header">${t("review_header")}</span>`;
                         stats.roundIncorrectProblems.forEach((details, problemText) => {
-                            const isComparison = details.isComparison;
-                            const correctDisplay = isComparison ? formatComparisonAnswer(details.correctAnswer) : details.correctAnswer;
-                            const givenDisplay = isComparison
-                                ? details.givenAnswers.map(a => formatComparisonAnswer(a)).join(", ")
-                                : details.givenAnswers.join(", ");
                             html += `
                                 <div class="review-item">
                                     <span class="review-problem">${problemText}</span>
                                     <div class="review-details">
-                                        ${t("correct_answer")} <span class="review-correct">${correctDisplay}</span>,
-                                        ${t("your_answers")} <span class="review-incorrect">${givenDisplay}</span>
+                                        ${t("correct_answer")} <span class="review-correct">${details.correctAnswer}</span>,
+                                        ${t("your_answers")} <span class="review-incorrect">${details.givenAnswers.join(", ")}</span>
                                     </div>
                                 </div>
                             `;
@@ -371,14 +384,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const problemText = currentProblem.text;
             if (!stats.roundIncorrectProblems.has(problemText)) {
                 stats.roundIncorrectProblems.set(problemText, {
-                    correctAnswer: currentProblem.answer,
+                    correctAnswer: getOptionLabel(currentProblem, currentProblem.answer),
                     givenAnswers: [],
-                    isComparison: isComparisonCategory(currentCategory),
                 });
             }
             const record = stats.roundIncorrectProblems.get(problemText)!;
-            if (!record.givenAnswers.includes(userAnswer)) {
-                record.givenAnswers.push(userAnswer);
+            const userLabel = getOptionLabel(currentProblem, userAnswer);
+            if (!record.givenAnswers.includes(userLabel)) {
+                record.givenAnswers.push(userLabel);
             }
 
             // Update statistics display
@@ -386,12 +399,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (submitButton) submitButton.disabled = true;
             if (answerInput) answerInput.disabled = true;
-            disableComparisonButtons();
+            setOptionButtonsDisabled(true);
 
             // For incorrect answers, allow retry after a short delay
             setTimeout(() => {
-                if (isComparisonCategory(currentCategory)) {
-                    resetComparisonButtons();
+                if (hasOptions(currentProblem)) {
+                    setOptionButtonsDisabled(false);
                 } else {
                     resetState();
                 }
@@ -417,15 +430,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (submitButton) {
             submitButton.disabled = false;
         }
-    }
-
-    // Comparison button helpers
-    function disableComparisonButtons() {
-        comparisonButtons.forEach(btn => btn.disabled = true);
-    }
-
-    function resetComparisonButtons() {
-        comparisonButtons.forEach(btn => btn.disabled = false);
     }
 
     // Function to start a new round
@@ -470,28 +474,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
-    // Comparison button click handlers
-    comparisonButtons.forEach(btn => {
-        btn.addEventListener("click", () => {
-            const answer = parseInt(btn.getAttribute("data-answer")!, 10);
-            checkAnswer(answer);
-        });
-    });
-
-    // Keyboard shortcuts for comparison buttons
-    document.addEventListener("keyup", (event: KeyboardEvent) => {
-        if (!isComparisonCategory(currentCategory)) return;
-        if (comparisonButtons.some(btn => btn.disabled)) return;
-
-        if (event.key === "<" || event.key === ",") {
-            checkAnswer(-1);
-        } else if (event.key === "=" || event.key === "0") {
-            checkAnswer(0);
-        } else if (event.key === ">" || event.key === ".") {
-            checkAnswer(1);
-        }
-    });
 
     if (nextRoundBtn) {
         nextRoundBtn.addEventListener("click", startNextRound);

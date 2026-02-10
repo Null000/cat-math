@@ -2,6 +2,7 @@ export interface Problem {
   id: string;
   text: string;
   answer: number;
+  options?: { label: string; value: number }[];
 }
 
 export enum Category {

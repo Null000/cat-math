@@ -12,6 +12,12 @@ const generateProps: Record<
   [Category.Comparison_Hundred]: { max: 100, min: 10 },
 };
 
+const comparisonOptions: Problem["options"] = [
+  { label: "<", value: -1 },
+  { label: "=", value: 0 },
+  { label: ">", value: 1 },
+];
+
 export function generate(category: Category): Problem[] {
   const props = generateProps[category]!;
   const { max, min = 0 } = props;
@@ -25,6 +31,7 @@ export function generate(category: Category): Problem[] {
         id: `${category}_${x}_${y}`,
         text: `${x} ? ${y}`,
         answer,
+        options: comparisonOptions,
       });
     }
   }
