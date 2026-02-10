@@ -141,7 +141,6 @@ export abstract class Actor extends Container {
                     this.resolveDeath = null;
                 }
             }
-            return; // Skip other updates if dying
         }
 
         if (this.isRunningLeft) {
