@@ -10,6 +10,8 @@ export class Wizard extends Actor {
     private magicDuration: number = 0.4;
     private magicIsCritical: boolean = false;
     private magicLastTime: number = 0;
+    private magicTargetX: number = 0;
+    private magicTargetY: number = 0;
     private magicBurst: Graphics | null = null;
     private burstProgress: number = 0;
     private burstDuration: number = 0.2;
@@ -48,11 +50,14 @@ export class Wizard extends Actor {
         this.magicLastTime = 0;
         this.isBursting = false;
         this.magicTrails = [];
+        this.magicTargetX = defender.x - this.x;
+        this.magicTargetY = defender.y - this.y - 80;
 
         const orb = new Graphics();
         this.drawOrb(orb, isCritical);
         this.magicOrb = orb;
-        this.addChild(orb);
+        orb.zIndex = 100;
+        this.parent!.addChild(orb);
 
         return new Promise((resolve) => {
             if (this.resolveMagic) {
@@ -86,9 +91,10 @@ export class Wizard extends Actor {
         const color = this.magicIsCritical ? 0xffdd44 : 0x44aaff;
         trail.circle(0, 0, radius);
         trail.fill({ color, alpha: 0.5 });
-        trail.x = x;
-        trail.y = y;
-        this.addChild(trail);
+        trail.x = this.x + x;
+        trail.y = this.y + y;
+        trail.zIndex = 100;
+        this.parent!.addChild(trail);
         this.magicTrails.push({ graphic: trail, life: 0.3 });
     }
 
@@ -113,7 +119,7 @@ export class Wizard extends Actor {
             trail.graphic.alpha = Math.max(0, trail.life / 0.3) * 0.5;
             trail.graphic.scale.set(Math.max(0.01, trail.life / 0.3));
             if (trail.life <= 0) {
-                this.removeChild(trail.graphic);
+                this.parent!.removeChild(trail.graphic);
                 trail.graphic.destroy();
                 this.magicTrails.splice(i, 1);
             }
@@ -129,14 +135,14 @@ export class Wizard extends Actor {
 
             const startX = 30;
             const startY = -120;
-            const endX = 450;
-            const endY = -50;
+            const endX = this.magicTargetX;
+            const endY = this.magicTargetY;
 
             const orbX = startX + (endX - startX) * eased;
             const orbY = startY + (endY - startY) * eased - Math.sin(t * Math.PI) * 50;
 
-            this.magicOrb.x = orbX;
-            this.magicOrb.y = orbY;
+            this.magicOrb.x = this.x + orbX;
+            this.magicOrb.y = this.y + orbY;
 
             // Critical hit: pulsing glow
             if (this.magicIsCritical) {
@@ -152,7 +158,7 @@ export class Wizard extends Actor {
             if (t >= 1) {
                 const burstX = this.magicOrb.x;
                 const burstY = this.magicOrb.y;
-                this.removeChild(this.magicOrb);
+                this.parent!.removeChild(this.magicOrb);
                 this.magicOrb.destroy();
                 this.magicOrb = null;
                 this.isCastingMagic = false;
@@ -167,7 +173,8 @@ export class Wizard extends Actor {
                 burst.x = burstX;
                 burst.y = burstY;
                 this.magicBurst = burst;
-                this.addChild(burst);
+                burst.zIndex = 100;
+                this.parent!.addChild(burst);
             }
         }
 
@@ -180,7 +187,7 @@ export class Wizard extends Actor {
             this.magicBurst.alpha = (1 - t) * 0.6;
 
             if (t >= 1) {
-                this.removeChild(this.magicBurst);
+                this.parent!.removeChild(this.magicBurst);
                 this.magicBurst.destroy();
                 this.magicBurst = null;
                 this.isBursting = false;
