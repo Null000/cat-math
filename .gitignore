@@ -1,3 +1,4 @@
 node_modules
 dist
 remote-debug-profile
+package-lock.json
