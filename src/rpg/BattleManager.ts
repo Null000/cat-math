@@ -157,9 +157,27 @@ export class BattleManager {
                 const area = areas[this.area]!;
                 if (this.wave >= area.waves.length) {
                     this.area++;
-                    //TODO add area change animation
-                    //TODO heal heros
-                    await this.init();
+                    this.wave = 0;
+                    this.turnCounter = 0;
+
+                    // Change background
+                    const newArea = areas[this.area]!;
+                    if (this.background) {
+                        this.stage.removeChild(this.background);
+                    }
+                    const background = await this._makeBackground(newArea.background);
+                    this.background = background;
+                    this.stage.addChild(background);
+
+                    // Heal heroes and re-add above background for correct z-order
+                    for (const actor of this.heroParty) {
+                        this.stage.removeChild(actor);
+                        actor.healFull();
+                        this.stage.addChild(actor);
+                    }
+
+                    await this.initEnemy();
+                    this.initTurns();
                 } else {
                     await this.initEnemy();
                     this.initTurns();
