@@ -1,7 +1,20 @@
-import { Texture, Assets } from 'pixi.js';
+import { Texture, Assets, Graphics } from 'pixi.js';
 import { Actor } from './Actor.ts';
 
 export class Wizard extends Actor {
+    private isCastingMagic: boolean = false;
+    private resolveMagic: (() => void) | null = null;
+    private magicOrb: Graphics | null = null;
+    private magicTrails: { graphic: Graphics; life: number }[] = [];
+    private magicProgress: number = 0;
+    private magicDuration: number = 0.4;
+    private magicIsCritical: boolean = false;
+    private magicLastTime: number = 0;
+    private magicBurst: Graphics | null = null;
+    private burstProgress: number = 0;
+    private burstDuration: number = 0.2;
+    private isBursting: boolean = false;
+
     constructor(xp: number) {
         const xpFactor = 1 + xp / 100;
         super({
@@ -18,6 +31,165 @@ export class Wizard extends Actor {
     updateHealthBar() {
         const ratio = Math.max(this.health / this.maxHealth, 0.02);
         this.healthBar.setHealth(ratio);
+    }
+
+    override async attack(): Promise<number> {
+        const isCritical = Math.random() < 0.25;
+        await this.twitch();
+        await this.castMagic(isCritical);
+        return isCritical ? this.attackPower * 2 : this.attackPower;
+    }
+
+    private castMagic(isCritical: boolean): Promise<void> {
+        this.isCastingMagic = true;
+        this.magicProgress = 0;
+        this.magicIsCritical = isCritical;
+        this.magicLastTime = 0;
+        this.isBursting = false;
+        this.magicTrails = [];
+
+        const orb = new Graphics();
+        this.drawOrb(orb, isCritical);
+        this.magicOrb = orb;
+        this.addChild(orb);
+
+        return new Promise((resolve) => {
+            if (this.resolveMagic) {
+                this.resolveMagic();
+            }
+            this.resolveMagic = resolve;
+        });
+    }
+
+    private drawOrb(orb: Graphics, isCritical: boolean) {
+        const baseRadius = isCritical ? 14 : 8;
+        const color = isCritical ? 0xffdd44 : 0x44aaff;
+
+        // Outer glow
+        orb.circle(0, 0, baseRadius * 2.5);
+        orb.fill({ color, alpha: 0.15 });
+        // Middle glow
+        orb.circle(0, 0, baseRadius * 1.5);
+        orb.fill({ color, alpha: 0.3 });
+        // Inner glow
+        orb.circle(0, 0, baseRadius);
+        orb.fill({ color, alpha: 0.6 });
+        // Core
+        orb.circle(0, 0, baseRadius * 0.5);
+        orb.fill({ color: 0xffffff, alpha: 0.95 });
+    }
+
+    private spawnTrail(x: number, y: number) {
+        const trail = new Graphics();
+        const radius = this.magicIsCritical ? 4 : 3;
+        const color = this.magicIsCritical ? 0xffdd44 : 0x44aaff;
+        trail.circle(0, 0, radius);
+        trail.fill({ color, alpha: 0.5 });
+        trail.x = x;
+        trail.y = y;
+        this.addChild(trail);
+        this.magicTrails.push({ graphic: trail, life: 0.3 });
+    }
+
+    override update(time: number, isSine: boolean) {
+        super.update(time, isSine);
+
+        const hasWork = this.isCastingMagic || this.isBursting || this.magicTrails.length > 0;
+        if (!hasWork) return;
+
+        if (this.magicLastTime === 0) {
+            this.magicLastTime = time;
+            return;
+        }
+
+        const delta = (time - this.magicLastTime) / 1000;
+        this.magicLastTime = time;
+
+        // Update trail particles
+        for (let i = this.magicTrails.length - 1; i >= 0; i--) {
+            const trail = this.magicTrails[i]!;
+            trail.life -= delta;
+            trail.graphic.alpha = Math.max(0, trail.life / 0.3) * 0.5;
+            trail.graphic.scale.set(Math.max(0.01, trail.life / 0.3));
+            if (trail.life <= 0) {
+                this.removeChild(trail.graphic);
+                trail.graphic.destroy();
+                this.magicTrails.splice(i, 1);
+            }
+        }
+
+        // Orb flight animation
+        if (this.isCastingMagic && this.magicOrb) {
+            this.magicProgress += delta;
+            const t = Math.min(this.magicProgress / this.magicDuration, 1);
+
+            // Ease-in for accelerating projectile
+            const eased = t * t;
+
+            const startX = 30;
+            const startY = -120;
+            const endX = 450;
+            const endY = -50;
+
+            const orbX = startX + (endX - startX) * eased;
+            const orbY = startY + (endY - startY) * eased - Math.sin(t * Math.PI) * 50;
+
+            this.magicOrb.x = orbX;
+            this.magicOrb.y = orbY;
+
+            // Critical hit: pulsing glow
+            if (this.magicIsCritical) {
+                const pulse = 1 + Math.sin(t * Math.PI * 6) * 0.15;
+                this.magicOrb.scale.set(pulse);
+            }
+
+            // Spawn trail particles along the path
+            if (t > 0.05 && t < 0.9 && Math.random() < 0.5) {
+                this.spawnTrail(orbX, orbY);
+            }
+
+            if (t >= 1) {
+                const burstX = this.magicOrb.x;
+                const burstY = this.magicOrb.y;
+                this.removeChild(this.magicOrb);
+                this.magicOrb.destroy();
+                this.magicOrb = null;
+                this.isCastingMagic = false;
+
+                // Start impact burst
+                this.isBursting = true;
+                this.burstProgress = 0;
+                const burst = new Graphics();
+                const color = this.magicIsCritical ? 0xffdd44 : 0x44aaff;
+                burst.circle(0, 0, 1);
+                burst.fill({ color, alpha: 0.6 });
+                burst.x = burstX;
+                burst.y = burstY;
+                this.magicBurst = burst;
+                this.addChild(burst);
+            }
+        }
+
+        // Impact burst animation
+        if (this.isBursting && this.magicBurst) {
+            this.burstProgress += delta;
+            const t = Math.min(this.burstProgress / this.burstDuration, 1);
+            const maxScale = this.magicIsCritical ? 40 : 25;
+            this.magicBurst.scale.set(maxScale * t);
+            this.magicBurst.alpha = (1 - t) * 0.6;
+
+            if (t >= 1) {
+                this.removeChild(this.magicBurst);
+                this.magicBurst.destroy();
+                this.magicBurst = null;
+                this.isBursting = false;
+                this.magicLastTime = 0;
+                if (this.resolveMagic) {
+                    this.resolveMagic();
+                    this.resolveMagic = null;
+                }
+            }
+        }
     }
 }
 let wizardTexture: Texture;

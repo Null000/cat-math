@@ -68,7 +68,7 @@ async function makeSimulatorEnemies(plan: EnemyType[]): Promise<Actor[]> {
   return enemies;
 }
 
-async function makeSimulatorWizard(xp: number): Promise<Actor> {
+async function makeSimulatorWizard(xp: number): Promise<Wizard> {
   const wizard = new Wizard(xp);
   fakeAnimations(wizard);
   return wizard;
