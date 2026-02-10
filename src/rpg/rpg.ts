@@ -106,7 +106,9 @@ async function init() {
             }
 
             if (await battleManager.doTurns()) {
+                await battleManager.fadeOut();
                 await battleManager.init();
+                await battleManager.fadeIn();
             }
         }
 
