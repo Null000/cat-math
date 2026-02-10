@@ -21,14 +21,18 @@ export class BattleManager {
 
     xp: number = 0;
 
+    onXpChange?: (xp: number) => void;
+    onAreaChange?: (area: number) => void;
+
     //for simulator
     _makeEnemies = makeEnemies;
     _makeWizard = makeWizard;
     _makeBackground = makeBackground;
 
-    constructor(stage: Container, xp: number) {
+    constructor(stage: Container, xp: number, area: number = 0) {
         this.stage = stage;
         this.xp = xp;
+        this.area = area;
     }
 
     async init() {
@@ -141,6 +145,7 @@ export class BattleManager {
         this.turnCounter++;
 
         this.xp++;
+        this.onXpChange?.(this.xp);
 
         const attacker = this.heroParty[0]!;
         const defender = this.enemyParty[0]!;
@@ -157,6 +162,7 @@ export class BattleManager {
                 const area = areas[this.area]!;
                 if (this.wave >= area.waves.length) {
                     this.area++;
+                    this.onAreaChange?.(this.area);
                     //TODO add area change animation
                     //TODO heal heros
                     await this.init();
