@@ -161,6 +161,44 @@
       flex-wrap: wrap;
     }
 
+    .comparison-section {
+      display: none;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .comparison-btn {
+      width: 90px;
+      height: 90px;
+      font-size: 2.5em;
+      font-weight: 700;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      padding: 0;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .comparison-btn:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+    }
+
+    .comparison-btn:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .comparison-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     #answer-input {
       padding: 16px 20px;
       font-size: 1.3em;
@@ -378,6 +416,12 @@
         width: 100%;
         max-width: 180px;
       }
+
+      .comparison-btn {
+        width: 70px;
+        height: 70px;
+        font-size: 2em;
+      }
     }
 
     /* Focus states for accessibility */
@@ -526,10 +570,15 @@
       <div id="problem-container">
         <span id="problem"></span>
       </div>
-      <div class="answer-section">
+      <div class="answer-section" id="answer-section">
         <input type="number" id="answer-input" placeholder="Your answer" autocomplete="off"
           data-i18n="input_placeholder" />
         <button id="submit-btn" data-i18n="check_button">Check</button>
+      </div>
+      <div class="comparison-section" id="comparison-section">
+        <button class="comparison-btn" data-answer="-1">&lt;</button>
+        <button class="comparison-btn" data-answer="0">=</button>
+        <button class="comparison-btn" data-answer="1">&gt;</button>
       </div>
       <p id="feedback"></p>
       <div id="feedback-summary"></div>

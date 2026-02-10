@@ -1,6 +1,6 @@
 import { getProblem, solvedProblem } from "./app.ts";
 import { getCurrentLanguage, t, Language } from "./i18n.ts";
-import { Category } from "./common.ts";
+import { Category, categoryToGroup } from "./common.ts";
 import { numberOfRewardImages } from "./constants.ts";
 
 declare function gtag(...args: any[]): void;
@@ -52,12 +52,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const nextRoundBtn = document.getElementById("next-round-btn") as HTMLButtonElement;
     const feedbackSummary = document.getElementById("feedback-summary") as HTMLElement;
     const answerSection = document.querySelector(".answer-section") as HTMLElement;
+    const comparisonSection = document.getElementById("comparison-section") as HTMLElement;
+    const comparisonButtons = Array.from(document.querySelectorAll(".comparison-btn")) as HTMLButtonElement[];
 
     // State Variables
     let currentProblem: any;
     let currentCategory: Category;
     let selectedCategories: string[] = [];
     let currentRewardImageId: number | null = null;
+
+    function isComparisonCategory(category: Category): boolean {
+        return categoryToGroup[category] === "Comparison";
+    }
+
+    function formatComparisonAnswer(answer: number): string {
+        if (answer < 0) return "<";
+        if (answer > 0) return ">";
+        return "=";
+    }
 
     // Function to choose a random reward image
     function chooseRandomRewardImage() {
@@ -96,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
         totalTime: 0,
         problemStartTime: 0,
         allTimes: [] as number[],
-        roundIncorrectProblems: new Map<string, { correctAnswer: number, givenAnswers: number[] }>()
+        roundIncorrectProblems: new Map<string, { correctAnswer: number, givenAnswers: number[], isComparison: boolean }>()
     };
 
     // Function to update statistics display
@@ -214,21 +226,38 @@ document.addEventListener("DOMContentLoaded", () => {
         currentCategory = result.category;
 
         if (problemElement) problemElement.textContent = currentProblem.text;
-        resetState();
+
+        // Toggle between text input and comparison buttons
+        if (isComparisonCategory(currentCategory)) {
+            if (answerSection) answerSection.style.display = "none";
+            if (comparisonSection) comparisonSection.style.display = "flex";
+            resetComparisonButtons();
+        } else {
+            if (answerSection) answerSection.style.display = "flex";
+            if (comparisonSection) comparisonSection.style.display = "none";
+            resetState();
+        }
 
         // Start timing for this problem
         stats.problemStartTime = Date.now();
     }
 
     // Function to check the user's answer
-    function checkAnswer() {
-        if (!answerInput || !feedbackElement) return;
-        const userAnswer = parseInt(answerInput.value, 10);
+    function checkAnswer(comparisonAnswer?: number) {
+        if (!feedbackElement) return;
 
-        if (isNaN(userAnswer)) {
-            feedbackElement.textContent = t("nan_error");
-            feedbackElement.className = "incorrect";
-            return;
+        let userAnswer: number;
+        if (comparisonAnswer !== undefined) {
+            userAnswer = comparisonAnswer;
+        } else {
+            if (!answerInput) return;
+            userAnswer = parseInt(answerInput.value, 10);
+
+            if (isNaN(userAnswer)) {
+                feedbackElement.textContent = t("nan_error");
+                feedbackElement.className = "incorrect";
+                return;
+            }
         }
 
         // Calculate time spent on this problem
@@ -278,6 +307,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (submitButton) submitButton.disabled = true;
             if (answerInput) answerInput.disabled = true;
+            disableComparisonButtons();
 
             if (isPictureComplete()) {
                 // Mark current image as completed in localStorage
@@ -292,6 +322,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Show "Next Round" button and hide answer section
                 if (nextRoundBtn) nextRoundBtn.style.display = "block";
                 if (answerSection) answerSection.style.display = "none";
+                if (comparisonSection) comparisonSection.style.display = "none";
                 if (feedbackElement) feedbackElement.style.display = "none";
                 if (problemContainer) problemContainer.style.display = "none";
 
@@ -303,12 +334,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     } else {
                         let html = `<span class="review-header">${t("review_header")}</span>`;
                         stats.roundIncorrectProblems.forEach((details, problemText) => {
+                            const isComparison = details.isComparison;
+                            const correctDisplay = isComparison ? formatComparisonAnswer(details.correctAnswer) : details.correctAnswer;
+                            const givenDisplay = isComparison
+                                ? details.givenAnswers.map(a => formatComparisonAnswer(a)).join(", ")
+                                : details.givenAnswers.join(", ");
                             html += `
                                 <div class="review-item">
                                     <span class="review-problem">${problemText}</span>
                                     <div class="review-details">
-                                        ${t("correct_answer")} <span class="review-correct">${details.correctAnswer}</span>,
-                                        ${t("your_answers")} <span class="review-incorrect">${details.givenAnswers.join(", ")}</span>
+                                        ${t("correct_answer")} <span class="review-correct">${correctDisplay}</span>,
+                                        ${t("your_answers")} <span class="review-incorrect">${givenDisplay}</span>
                                     </div>
                                 </div>
                             `;
@@ -336,7 +372,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!stats.roundIncorrectProblems.has(problemText)) {
                 stats.roundIncorrectProblems.set(problemText, {
                     correctAnswer: currentProblem.answer,
-                    givenAnswers: []
+                    givenAnswers: [],
+                    isComparison: isComparisonCategory(currentCategory),
                 });
             }
             const record = stats.roundIncorrectProblems.get(problemText)!;
@@ -349,10 +386,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (submitButton) submitButton.disabled = true;
             if (answerInput) answerInput.disabled = true;
+            disableComparisonButtons();
 
             // For incorrect answers, allow retry after a short delay
             setTimeout(() => {
-                resetState();
+                if (isComparisonCategory(currentCategory)) {
+                    resetComparisonButtons();
+                } else {
+                    resetState();
+                }
+                if (feedbackElement) {
+                    feedbackElement.innerHTML = "&nbsp;";
+                    feedbackElement.className = "";
+                }
             }, 2000);
         }
     }
@@ -373,10 +419,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Comparison button helpers
+    function disableComparisonButtons() {
+        comparisonButtons.forEach(btn => btn.disabled = true);
+    }
+
+    function resetComparisonButtons() {
+        comparisonButtons.forEach(btn => btn.disabled = false);
+    }
+
     // Function to start a new round
     function startNextRound() {
         if (nextRoundBtn) nextRoundBtn.style.display = "none";
-        if (answerSection) answerSection.style.display = "flex";
         if (feedbackElement) feedbackElement.style.display = "flex";
         if (problemContainer) problemContainer.style.display = "block";
         if (feedbackSummary) {
@@ -405,7 +459,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (submitButton) {
-        submitButton.addEventListener("click", checkAnswer);
+        submitButton.addEventListener("click", () => checkAnswer());
     }
 
     // Allow pressing 'Enter' to check the answer
@@ -416,6 +470,28 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    // Comparison button click handlers
+    comparisonButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const answer = parseInt(btn.getAttribute("data-answer")!, 10);
+            checkAnswer(answer);
+        });
+    });
+
+    // Keyboard shortcuts for comparison buttons
+    document.addEventListener("keyup", (event: KeyboardEvent) => {
+        if (!isComparisonCategory(currentCategory)) return;
+        if (comparisonButtons.some(btn => btn.disabled)) return;
+
+        if (event.key === "<" || event.key === ",") {
+            checkAnswer(-1);
+        } else if (event.key === "=" || event.key === "0") {
+            checkAnswer(0);
+        } else if (event.key === ">" || event.key === ".") {
+            checkAnswer(1);
+        }
+    });
 
     if (nextRoundBtn) {
         nextRoundBtn.addEventListener("click", startNextRound);
