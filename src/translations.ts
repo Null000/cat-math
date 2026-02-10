@@ -62,11 +62,20 @@ export const translations = {
         [Category.Division_Twenty]: "Division: 20",
         [Category.Division_Twenty_Missing]: "Division: 20 (missing facts)",
 
+        [Category.Comparison_Ten]: "Comparison: 10",
+        [Category.Comparison_Twenty]: "Comparison: 20",
+        [Category.Comparison_Hundred]: "Comparison: 100",
+
         // Group Names
         group_Addition: "Addition",
         group_Subtraction: "Subtraction",
         group_Multiplication: "Multiplication",
-        group_Division: "Division"
+        group_Division: "Division",
+        group_Comparison: "Comparison",
+
+        // Grouping toggle
+        grouping_by_type: "By Type",
+        grouping_by_year: "By Year",
     },
     sl: {
         title: "Mačja Matematika",
@@ -129,10 +138,25 @@ export const translations = {
         [Category.Division_Twenty]: "Deljenje: 20",
         [Category.Division_Twenty_Missing]: "Deljenje: 20 (neznani člen)",
 
+        [Category.Comparison_Ten]: "Primerjanje: 10",
+        [Category.Comparison_Twenty]: "Primerjanje: 20",
+        [Category.Comparison_Hundred]: "Primerjanje: 100",
+
         // Group Names
         group_Addition: "Seštevanje",
         group_Subtraction: "Odštevanje",
         group_Multiplication: "Množenje",
-        group_Division: "Deljenje"
+        group_Division: "Deljenje",
+        group_Comparison: "Primerjanje",
+
+        // Year Group Names
+        "group_1. razred": "1. razred",
+        "group_2. razred": "2. razred",
+        "group_3. razred": "3. razred",
+        "group_4. razred": "4. razred",
+
+        // Grouping toggle
+        grouping_by_type: "Po vrsti",
+        grouping_by_year: "Po razredu",
     }
 };

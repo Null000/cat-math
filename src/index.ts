@@ -1,4 +1,4 @@
-import { getCategories } from "./app.ts";
+import { getCategories, getYearGroupsSl } from "./app.ts";
 import { getRandomProblem } from "./problem.ts";
 import { getCurrentLanguage, setLanguage, t, getCategoryDisplayName, Language } from "./i18n.ts";
 import { Category } from "./common.ts";
@@ -39,8 +39,29 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     document.title = t("title");
 
+    // Grouping toggle (only visible for Slovenian)
+    const groupingToggle = document.getElementById("grouping-toggle");
+    let currentGrouping: "type" | "year" = "type";
+
+    if (currentLang === "sl" && groupingToggle) {
+        groupingToggle.style.display = "flex";
+
+        document.querySelectorAll(".grouping-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const grouping = btn.getAttribute("data-grouping") as "type" | "year";
+                if (grouping && grouping !== currentGrouping) {
+                    currentGrouping = grouping;
+                    document.querySelectorAll(".grouping-btn").forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+                    populateCategories();
+                    updateSelectedDisplay();
+                }
+            });
+        });
+    }
+
     // DOM Elements
-    const categoryGroups = document.getElementById("category-groups");
+    const categoryGroupsEl = document.getElementById("category-groups");
     const startPracticeBtn = document.getElementById("start-practice-btn");
     const selectedTagsContainer = document.getElementById("selected-tags");
     const selectedCategoriesContainer = document.getElementById("selected-categories-container");
@@ -73,9 +94,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Populate category checkboxes
     function populateCategories() {
-        if (!categoryGroups) return;
-        const categories = getCategories();
-        categoryGroups.innerHTML = "";
+        if (!categoryGroupsEl) return;
+        const categories = currentGrouping === "year" ? getYearGroupsSl() : getCategories();
+        categoryGroupsEl.innerHTML = "";
 
         // Load from local storage
         const savedCategories = JSON.parse(localStorage.getItem("selected_categories") || "[]");
@@ -168,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             groupDetails.appendChild(checkboxGrid);
-            categoryGroups.appendChild(groupDetails);
+            categoryGroupsEl.appendChild(groupDetails);
         });
     }
 

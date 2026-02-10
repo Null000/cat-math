@@ -1,9 +1,9 @@
-import { Container } from 'pixi.js';
+import { Container, Graphics } from 'pixi.js';
 import { Actor } from './Actor.ts';
 import { makeEnemies, EnemyType } from './enemies/enemyMaker.ts';
 import { makeWizard } from './enemies/wizardMaker.ts';
 import { makeBackground, BackgroundType } from './backgroundMaker.ts';
-import { standardWidth } from './constants.ts';
+import { standardWidth, standardHeight } from './constants.ts';
 import { areas } from './areas.ts';
 
 
@@ -21,14 +21,88 @@ export class BattleManager {
 
     xp: number = 0;
 
+    private fadeOverlay: Graphics;
+    private isFading: boolean = false;
+    private fadeProgress: number = 0;
+    private fadeDuration: number = 0.5;
+    private fadeDirection: 1 | -1 = 1; // 1 = fade out (to black), -1 = fade in (from black)
+    private resolveFade: (() => void) | null = null;
+    private lastFadeTime: number = 0;
+    onXpChange?: (xp: number) => void;
+    onAreaChange?: (area: number) => void;
+
     //for simulator
     _makeEnemies = makeEnemies;
     _makeWizard = makeWizard;
     _makeBackground = makeBackground;
 
-    constructor(stage: Container, xp: number) {
+    constructor(stage: Container, xp: number, area: number = 0) {
         this.stage = stage;
         this.xp = xp;
+        this.area = area;
+
+        this.fadeOverlay = new Graphics()
+            .rect(0, 0, standardWidth, standardHeight)
+            .fill(0x000000);
+        this.fadeOverlay.alpha = 0;
+        this.fadeOverlay.zIndex = 9999;
+        this.stage.sortableChildren = true;
+    }
+
+    fadeOut(duration: number = 0.5): Promise<void> {
+        this.isFading = true;
+        this.fadeProgress = 0;
+        this.fadeDuration = duration;
+        this.fadeDirection = 1;
+        this.lastFadeTime = 0;
+        this.fadeOverlay.alpha = 0;
+        this.stage.addChild(this.fadeOverlay);
+        return new Promise((resolve) => {
+            this.resolveFade = resolve;
+        });
+    }
+
+    fadeIn(duration: number = 0.5): Promise<void> {
+        this.isFading = true;
+        this.fadeProgress = 0;
+        this.fadeDuration = duration;
+        this.fadeDirection = -1;
+        this.lastFadeTime = 0;
+        this.fadeOverlay.alpha = 1;
+        this.stage.addChild(this.fadeOverlay);
+        return new Promise((resolve) => {
+            this.resolveFade = resolve;
+        });
+    }
+
+    private updateFade(time: number) {
+        if (!this.isFading) return;
+
+        if (this.lastFadeTime === 0) {
+            this.lastFadeTime = time;
+        }
+        const delta = (time - this.lastFadeTime) / 1000;
+        this.lastFadeTime = time;
+
+        this.fadeProgress += delta;
+        const t = Math.min(this.fadeProgress / this.fadeDuration, 1);
+
+        if (this.fadeDirection === 1) {
+            this.fadeOverlay.alpha = t;
+        } else {
+            this.fadeOverlay.alpha = 1 - t;
+        }
+
+        if (t >= 1) {
+            this.isFading = false;
+            if (this.fadeDirection === -1) {
+                this.stage.removeChild(this.fadeOverlay);
+            }
+            if (this.resolveFade) {
+                this.resolveFade();
+                this.resolveFade = null;
+            }
+        }
     }
 
     async init() {
@@ -141,6 +215,7 @@ export class BattleManager {
         this.turnCounter++;
 
         this.xp++;
+        this.onXpChange?.(this.xp);
 
         const attacker = this.heroParty[0]!;
         const defender = this.enemyParty[0]!;
@@ -157,9 +232,15 @@ export class BattleManager {
                 const area = areas[this.area]!;
                 if (this.wave >= area.waves.length) {
                     this.area++;
-                    //TODO add area change animation
-                    //TODO heal heros
+                    this.onAreaChange?.(this.area);
+                    await this.fadeOut();
+
+                    for (const actor of this.heroParty) {
+                        actor.healMax();
+                    }
+
                     await this.init();
+                    await this.fadeIn();
                 } else {
                     await this.initEnemy();
                     this.initTurns();
@@ -195,6 +276,7 @@ export class BattleManager {
     }
 
     update(lastTime: number) {
+        this.updateFade(lastTime);
         for (const actor of this.heroParty) {
             actor.update(lastTime, true);
         }

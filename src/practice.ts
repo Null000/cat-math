@@ -1,6 +1,6 @@
 import { getProblem, solvedProblem } from "./app.ts";
 import { getCurrentLanguage, t, Language } from "./i18n.ts";
-import { Category } from "./common.ts";
+import { Category, Problem } from "./common.ts";
 import { numberOfRewardImages } from "./constants.ts";
 
 declare function gtag(...args: any[]): void;
@@ -52,12 +52,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const nextRoundBtn = document.getElementById("next-round-btn") as HTMLButtonElement;
     const feedbackSummary = document.getElementById("feedback-summary") as HTMLElement;
     const answerSection = document.querySelector(".answer-section") as HTMLElement;
+    const optionsSection = document.getElementById("options-section") as HTMLElement;
 
     // State Variables
     let currentProblem: any;
     let currentCategory: Category;
     let selectedCategories: string[] = [];
     let currentRewardImageId: number | null = null;
+
+    function hasOptions(problem: Problem): problem is Problem & { options: { label: string; value: number }[] } {
+        return problem.options !== undefined && problem.options.length > 0;
+    }
+
+    function getOptionLabel(problem: Problem, value: number): string {
+        const option = problem.options?.find(o => o.value === value);
+        return option ? option.label : String(value);
+    }
 
     // Function to choose a random reward image
     function chooseRandomRewardImage() {
@@ -96,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
         totalTime: 0,
         problemStartTime: 0,
         allTimes: [] as number[],
-        roundIncorrectProblems: new Map<string, { correctAnswer: number, givenAnswers: number[] }>()
+        roundIncorrectProblems: new Map<string, { correctAnswer: string, givenAnswers: string[] }>()
     };
 
     // Function to update statistics display
@@ -214,21 +224,58 @@ document.addEventListener("DOMContentLoaded", () => {
         currentCategory = result.category;
 
         if (problemElement) problemElement.textContent = currentProblem.text;
-        resetState();
+
+        // Toggle between text input and option buttons
+        if (hasOptions(currentProblem)) {
+            if (answerSection) answerSection.style.display = "none";
+            renderOptionButtons(currentProblem.options);
+            if (optionsSection) optionsSection.style.display = "flex";
+        } else {
+            if (optionsSection) optionsSection.style.display = "none";
+            if (answerSection) answerSection.style.display = "flex";
+            resetState();
+        }
 
         // Start timing for this problem
         stats.problemStartTime = Date.now();
     }
 
-    // Function to check the user's answer
-    function checkAnswer() {
-        if (!answerInput || !feedbackElement) return;
-        const userAnswer = parseInt(answerInput.value, 10);
+    // Dynamically create option buttons from problem data
+    function renderOptionButtons(options: { label: string; value: number }[]) {
+        if (!optionsSection) return;
+        optionsSection.innerHTML = "";
+        for (const option of options) {
+            const btn = document.createElement("button");
+            btn.className = "option-btn";
+            btn.textContent = option.label;
+            btn.addEventListener("click", () => checkAnswer(option.value));
+            optionsSection.appendChild(btn);
+        }
+    }
 
-        if (isNaN(userAnswer)) {
-            feedbackElement.textContent = t("nan_error");
-            feedbackElement.className = "incorrect";
-            return;
+    function setOptionButtonsDisabled(disabled: boolean) {
+        if (!optionsSection) return;
+        for (const btn of optionsSection.querySelectorAll(".option-btn")) {
+            (btn as HTMLButtonElement).disabled = disabled;
+        }
+    }
+
+    // Function to check the user's answer
+    function checkAnswer(optionValue?: number) {
+        if (!feedbackElement) return;
+
+        let userAnswer: number;
+        if (optionValue !== undefined) {
+            userAnswer = optionValue;
+        } else {
+            if (!answerInput) return;
+            userAnswer = parseInt(answerInput.value, 10);
+
+            if (isNaN(userAnswer)) {
+                feedbackElement.textContent = t("nan_error");
+                feedbackElement.className = "incorrect";
+                return;
+            }
         }
 
         // Calculate time spent on this problem
@@ -278,6 +325,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (submitButton) submitButton.disabled = true;
             if (answerInput) answerInput.disabled = true;
+            setOptionButtonsDisabled(true);
 
             if (isPictureComplete()) {
                 // Mark current image as completed in localStorage
@@ -292,6 +340,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Show "Next Round" button and hide answer section
                 if (nextRoundBtn) nextRoundBtn.style.display = "block";
                 if (answerSection) answerSection.style.display = "none";
+                if (optionsSection) optionsSection.style.display = "none";
                 if (feedbackElement) feedbackElement.style.display = "none";
                 if (problemContainer) problemContainer.style.display = "none";
 
@@ -335,13 +384,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const problemText = currentProblem.text;
             if (!stats.roundIncorrectProblems.has(problemText)) {
                 stats.roundIncorrectProblems.set(problemText, {
-                    correctAnswer: currentProblem.answer,
-                    givenAnswers: []
+                    correctAnswer: getOptionLabel(currentProblem, currentProblem.answer),
+                    givenAnswers: [],
                 });
             }
             const record = stats.roundIncorrectProblems.get(problemText)!;
-            if (!record.givenAnswers.includes(userAnswer)) {
-                record.givenAnswers.push(userAnswer);
+            const userLabel = getOptionLabel(currentProblem, userAnswer);
+            if (!record.givenAnswers.includes(userLabel)) {
+                record.givenAnswers.push(userLabel);
             }
 
             // Update statistics display
@@ -349,10 +399,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (submitButton) submitButton.disabled = true;
             if (answerInput) answerInput.disabled = true;
+            setOptionButtonsDisabled(true);
 
             // For incorrect answers, allow retry after a short delay
             setTimeout(() => {
-                resetState();
+                if (hasOptions(currentProblem)) {
+                    setOptionButtonsDisabled(false);
+                } else {
+                    resetState();
+                }
+                if (feedbackElement) {
+                    feedbackElement.innerHTML = "&nbsp;";
+                    feedbackElement.className = "";
+                }
             }, 2000);
         }
     }
@@ -376,7 +435,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Function to start a new round
     function startNextRound() {
         if (nextRoundBtn) nextRoundBtn.style.display = "none";
-        if (answerSection) answerSection.style.display = "flex";
         if (feedbackElement) feedbackElement.style.display = "flex";
         if (problemContainer) problemContainer.style.display = "block";
         if (feedbackSummary) {
@@ -405,7 +463,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (submitButton) {
-        submitButton.addEventListener("click", checkAnswer);
+        submitButton.addEventListener("click", () => checkAnswer());
     }
 
     // Allow pressing 'Enter' to check the answer

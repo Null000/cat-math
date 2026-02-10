@@ -4,6 +4,7 @@ import * as subtraction from "./subtraction.ts";
 import * as division from "./division.ts";
 import * as multiplication from "./multiplication.ts";
 import * as test from "./test.ts";
+import * as comparison from "./comparison.ts";
 import { categoryToGroup } from "./common.ts";
 
 export type ProblemCache = Record<string, Problem[]>;
@@ -13,6 +14,7 @@ const generateFnPerGroup: Record<string, (category: Category) => Problem[]> = {
   Subtraction: (category) => subtraction.generate(category),
   Multiplication: (category) => multiplication.generate(category),
   Division: (category) => division.generate(category),
+  Comparison: (category) => comparison.generate(category),
   Test: (category) => test.generate(category),
 };
 

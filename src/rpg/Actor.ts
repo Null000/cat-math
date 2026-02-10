@@ -45,6 +45,11 @@ export abstract class Actor extends Container {
         this.healthBar.setHealth(this.health / this.maxHealth);
     }
 
+    healMax() {
+        this.health = this.maxHealth;
+        this.updateHealthBar();
+    }
+
     async takeDamage(amount: number): Promise<boolean> {
         const damage = Math.max(0, amount - this.defensePower);
         this.health = Math.max(0, this.health - damage);
