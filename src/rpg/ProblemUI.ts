@@ -32,7 +32,7 @@ export class ProblemUI {
         this.problemText = new Text({ text: '', style });
         this.problemText.anchor.set(0.5);
         this.problemText.x = standardWidth / 2;
-        this.problemText.y = standardHeight * 0.35; // Moved up slightly for better spacing
+        this.problemText.y = 150;
 
         // Add a subtle scale pulse to the text (manual "animation" via styles isn't possible for Pixi text without update loop, 
         // but we can set initial scale)
@@ -150,7 +150,7 @@ export class ProblemUI {
         // The problemText is at (standardWidth / 2, standardHeight * 0.35)
         // We want the input below it.
         const gameX = 400;
-        const gameY = 330; // Below the text
+        const gameY = 250; // Below the text
 
         const screenX = gameX * scale + offsetX;
         const screenY = gameY * scale + offsetY;

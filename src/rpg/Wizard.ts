@@ -43,7 +43,7 @@ export class Wizard extends Actor {
         return isCritical ? this.attackPower * 2 : this.attackPower;
     }
 
-    private castMagic(isCritical: boolean, defender: Actor): Promise<void> {
+    castMagic(isCritical: boolean, defender: Actor): Promise<void> {
         this.isCastingMagic = true;
         this.magicProgress = 0;
         this.magicIsCritical = isCritical;

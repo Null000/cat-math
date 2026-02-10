@@ -20,9 +20,9 @@
     },
     {
       "type": "node-terminal",
-      "name": "Run Script: simulator",
+      "name": "Run Script: sim",
       "request": "launch",
-      "command": "bun run simulator",
+      "command": "bun run sim",
       "cwd": "${workspaceFolder}"
     }
   ]

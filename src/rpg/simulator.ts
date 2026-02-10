@@ -71,6 +71,7 @@ async function makeSimulatorEnemies(plan: EnemyType[]): Promise<Actor[]> {
 async function makeSimulatorWizard(xp: number): Promise<Wizard> {
   const wizard = new Wizard(xp);
   fakeAnimations(wizard);
+  wizard.castMagic = async () => { };
   return wizard;
 }
 
@@ -91,6 +92,9 @@ async function runSimulation(xp: number = 0, planOverride?: EnemyType[]): Promis
   battleManager._makeEnemies = (x) => makeSimulatorEnemies(planOverride ?? x);
   battleManager._makeWizard = makeSimulatorWizard;
   battleManager._makeBackground = async () => new Sprite();
+
+  battleManager.fadeIn = async () => { };
+  battleManager.fadeOut = async () => { };
 
   await battleManager.init();
 
