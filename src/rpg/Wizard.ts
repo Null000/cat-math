@@ -68,7 +68,7 @@ export class Wizard extends Actor {
     }
 
     private drawOrb(orb: Graphics, isCritical: boolean) {
-        const baseRadius = isCritical ? 28 : 16;
+        const baseRadius = isCritical ? 28 : 10;
         const color = isCritical ? 0xffdd44 : 0x44aaff;
 
         // Outer glow
