@@ -28,16 +28,19 @@ export class BattleManager {
     private fadeDirection: 1 | -1 = 1; // 1 = fade out (to black), -1 = fade in (from black)
     private resolveFade: (() => void) | null = null;
     private lastFadeTime: number = 0;
+    onXpChange?: (xp: number) => void;
+    onAreaChange?: (area: number) => void;
 
     //for simulator
     _makeEnemies = makeEnemies;
     _makeWizard = makeWizard;
     _makeBackground = makeBackground;
 
-    constructor(stage: Container, xp: number) {
+    constructor(stage: Container, xp: number, area: number = 0) {
         this.stage = stage;
         this.xp = xp;
-
+        this.area = area;
+      
         this.fadeOverlay = new Graphics()
             .rect(0, 0, standardWidth, standardHeight)
             .fill(0x000000);
@@ -212,6 +215,7 @@ export class BattleManager {
         this.turnCounter++;
 
         this.xp++;
+        this.onXpChange?.(this.xp);
 
         const attacker = this.heroParty[0]!;
         const defender = this.enemyParty[0]!;
@@ -228,6 +232,7 @@ export class BattleManager {
                 const area = areas[this.area]!;
                 if (this.wave >= area.waves.length) {
                     this.area++;
+                    this.onAreaChange?.(this.area);
                     await this.fadeOut();
                     //TODO heal heros
                     await this.init();
