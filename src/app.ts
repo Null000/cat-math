@@ -1,4 +1,4 @@
-import { Category, Problem, categoryGroups } from "./common.ts";
+import { Category, Problem, categoryGroups, yearGroupsSl } from "./common.ts";
 import { getRandomProblem, removeSolvedProblem } from "./problem.ts";
 
 export function getProblem(categories: Category[]): {
@@ -19,4 +19,8 @@ export function solvedProblem(category: Category, problemId: string): boolean {
 
 export function getCategories(): Record<string, string[]> {
   return categoryGroups;
+}
+
+export function getYearGroupsSl(): Record<string, string[]> {
+  return yearGroupsSl;
 }

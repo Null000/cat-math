@@ -83,6 +83,46 @@ export const categoryGroups: Record<string, Category[]> = {
   ],
 };
 
+export const yearGroupsSl: Record<string, Category[]> = {
+  "1. razred": [
+    Category.Addition_Ten,
+    Category.Addition_Ten_Missing,
+    Category.Subtraction_Ten,
+    Category.Subtraction_Ten_Missing,
+    Category.Comparison_Ten,
+  ],
+  "2. razred": [
+    Category.Addition_TwentyWithoutCarry,
+    Category.Addition_TwentyWithCarry,
+    Category.Addition_Twenty,
+    Category.Addition_Twenty_Missing,
+    Category.Subtraction_Twenty,
+    Category.Subtraction_Twenty_Missing,
+    Category.Comparison_Twenty,
+  ],
+  "3. razred": [
+    Category.Addition_HundredWithoutCarry,
+    Category.Addition_HundredWithCarry,
+    Category.Addition_Hundred,
+    Category.Addition_Hundred_Missing,
+    Category.Subtraction_HundredWithoutBorrow,
+    Category.Subtraction_HundredWithBorrow,
+    Category.Subtraction_Hundred,
+    Category.Subtraction_Hundred_Missing,
+    Category.Multiplication_Ten,
+    Category.Multiplication_Ten_Missing,
+    Category.Division_Ten,
+    Category.Division_Ten_Missing,
+    Category.Comparison_Hundred,
+  ],
+  "4. razred": [
+    Category.Multiplication_Twenty,
+    Category.Multiplication_Twenty_Missing,
+    Category.Division_Twenty,
+    Category.Division_Twenty_Missing,
+  ],
+};
+
 export const categoryToGroup: Record<Category, string> = (() => {
   const dict: any = {};
   for (const group in categoryGroups) {
