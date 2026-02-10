@@ -229,7 +229,7 @@ export abstract class Actor extends Container {
         this.healthBar.x = shakeX;
     }
 
-    async attack(): Promise<number> {
+    async attack(target: Actor): Promise<number> {
         await this.twitch();
         return this.attackPower;
     }

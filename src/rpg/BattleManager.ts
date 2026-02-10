@@ -219,7 +219,7 @@ export class BattleManager {
 
         const attacker = this.heroParty[0]!;
         const defender = this.enemyParty[0]!;
-        if (await defender.takeDamage(await attacker.attack())) {
+        if (await defender.takeDamage(await attacker.attack(defender))) {
             await defender.die();
             //remove defender
             this.stage.removeChild(defender);
@@ -254,7 +254,7 @@ export class BattleManager {
     //return true if hero is defeated
     private async enemyAttack(attacker: Actor): Promise<boolean> {
         const defender = this.heroParty[0]!;
-        if (await defender.takeDamage(await attacker.attack())) {
+        if (await defender.takeDamage(await attacker.attack(defender))) {
             await defender.runLeft();
 
             //remove all

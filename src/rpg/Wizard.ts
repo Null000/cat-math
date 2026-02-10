@@ -33,14 +33,15 @@ export class Wizard extends Actor {
         this.healthBar.setHealth(ratio);
     }
 
-    override async attack(): Promise<number> {
+    override async attack(defender: Actor): Promise<number> {
+        // return super.attack(defender);
         const isCritical = Math.random() < 0.25;
         await this.twitch();
-        await this.castMagic(isCritical);
+        await this.castMagic(isCritical, defender);
         return isCritical ? this.attackPower * 2 : this.attackPower;
     }
 
-    private castMagic(isCritical: boolean): Promise<void> {
+    private castMagic(isCritical: boolean, defender: Actor): Promise<void> {
         this.isCastingMagic = true;
         this.magicProgress = 0;
         this.magicIsCritical = isCritical;
@@ -62,7 +63,7 @@ export class Wizard extends Actor {
     }
 
     private drawOrb(orb: Graphics, isCritical: boolean) {
-        const baseRadius = isCritical ? 14 : 8;
+        const baseRadius = isCritical ? 28 : 16;
         const color = isCritical ? 0xffdd44 : 0x44aaff;
 
         // Outer glow
