@@ -79,6 +79,12 @@ export const translations = {
         // Grouping toggle
         grouping_by_type: "By Type",
         grouping_by_year: "By Year",
+
+        // RPG Index Page
+        rpg_title: "Choose Your Spells",
+        rpg_subtitle: "Select the math spells you wish to master",
+        rpg_select_categories: "Spell Book",
+        rpg_start_battle: "Enter Battle",
     },
     sl: {
         title: "Mačja Matematika",
@@ -164,5 +170,11 @@ export const translations = {
         // Grouping toggle
         grouping_by_type: "Po vrsti",
         grouping_by_year: "Po razredu",
+
+        // RPG Index Page
+        rpg_title: "Izberi Uroke",
+        rpg_subtitle: "Izberi matematične uroke za vadbo",
+        rpg_select_categories: "Knjiga Urokov",
+        rpg_start_battle: "Vstopi v Bitko",
     }
 };
