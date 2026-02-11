@@ -5,6 +5,7 @@ if [ -n "$(git status --porcelain)" ]; then
   exit 1
 fi
 
+rm -rf dist
 bun run build
 
 rm -rf /tmp/cat-math
