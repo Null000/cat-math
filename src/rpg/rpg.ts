@@ -53,11 +53,11 @@ async function init() {
 
     // Create Math UI
     const mathUI = new ProblemUI(gameStage, onSubmit);
-    mathUI.setProblem(currentProblem.problem.text);
+    mathUI.setProblem(currentProblem.problem.text, currentProblem.problem.options);
 
     function nextProblem() {
         currentProblem = getProblem(selectedCategories);
-        mathUI.setProblem(currentProblem.problem.text);
+        mathUI.setProblem(currentProblem.problem.text, currentProblem.problem.options);
     }
 
     // Basic animation runner

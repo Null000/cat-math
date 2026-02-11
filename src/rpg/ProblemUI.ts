@@ -5,6 +5,7 @@ export class ProblemUI {
     private problemText: Text;
     private container: HTMLDivElement;
     private input: HTMLInputElement;
+    private optionsContainer: HTMLDivElement;
 
     private styleTag: HTMLStyleElement;
     private submitCallback: (solution: string) => void;
@@ -113,6 +114,67 @@ export class ProblemUI {
                 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
                 40%, 60% { transform: translate3d(4px, 0, 0); }
             }
+
+            #options-container {
+                display: none;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.75rem;
+                pointer-events: auto;
+                max-width: 500px;
+            }
+
+            .rpg-option-btn {
+                background: rgba(20, 20, 35, 0.6);
+                border: 2px solid rgba(255, 255, 255, 0.15);
+                border-radius: 20px;
+                color: #ffffff;
+                font-family: 'Inter', sans-serif;
+                font-size: 1.8rem;
+                font-weight: 800;
+                padding: 0.7rem 1.5rem;
+                min-width: 80px;
+                text-align: center;
+                outline: none;
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                box-shadow:
+                    0 10px 30px rgba(0, 0, 0, 0.5),
+                    0 0 0 1px rgba(255, 255, 255, 0.1),
+                    inset 0 0 20px rgba(255, 255, 255, 0.05);
+                transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                letter-spacing: 2px;
+                text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                cursor: pointer;
+            }
+
+            .rpg-option-btn:hover:not(:disabled) {
+                background: rgba(30, 30, 50, 0.8);
+                border-color: #667eea;
+                box-shadow:
+                    0 15px 40px rgba(0, 0, 0, 0.6),
+                    0 0 0 2px rgba(102, 126, 234, 0.5),
+                    0 0 30px rgba(102, 126, 234, 0.3),
+                    inset 0 0 20px rgba(102, 126, 234, 0.1);
+                transform: translateY(-2px) scale(1.05);
+            }
+
+            .rpg-option-btn:disabled {
+                opacity: 0.5;
+                cursor: default;
+            }
+
+            .rpg-option-btn.option-correct {
+                border-color: #2ecc71 !important;
+                color: #2ecc71 !important;
+                animation: correctPulse 0.5s ease-out;
+            }
+
+            .rpg-option-btn.option-wrong {
+                border-color: #e74c3c !important;
+                color: #e74c3c !important;
+                animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+            }
         `;
         document.head.appendChild(this.styleTag);
 
@@ -129,7 +191,11 @@ export class ProblemUI {
         this.input.placeholder = '?';
         this.input.autocomplete = 'off';
 
+        this.optionsContainer = document.createElement('div');
+        this.optionsContainer.id = 'options-container';
+
         this.container.appendChild(this.input);
+        this.container.appendChild(this.optionsContainer);
         document.body.appendChild(this.container);
 
         this.input.addEventListener("keyup", (event: KeyboardEvent) => {
@@ -161,9 +227,29 @@ export class ProblemUI {
         this.container.style.transform = `translate(-50%, -50%) scale(${scale})`;
     }
 
-    setProblem(text: string) {
+    setProblem(text: string, options?: { label: string; value: number }[]) {
         this.problemText.text = text;
         this.problemText.style.fill = '#ffffff'; // Reset color if changed
+
+        if (options && options.length > 0) {
+            this.input.style.display = 'none';
+            this.optionsContainer.style.display = 'flex';
+            this.optionsContainer.innerHTML = '';
+            for (const option of options) {
+                const btn = document.createElement('button');
+                btn.className = 'rpg-option-btn';
+                btn.textContent = option.label;
+                btn.addEventListener('click', () => {
+                    this.submitCallback(option.value.toString());
+                });
+                this.optionsContainer.appendChild(btn);
+            }
+        } else {
+            this.optionsContainer.style.display = 'none';
+            this.optionsContainer.innerHTML = '';
+            this.input.style.display = '';
+            this.input.focus();
+        }
     }
 
     getSolution(): string {
@@ -175,9 +261,22 @@ export class ProblemUI {
         this.input.className = ''; // Reset classes
     }
 
+    private setOptionButtonsDisabled(disabled: boolean) {
+        for (const btn of this.optionsContainer.querySelectorAll('.rpg-option-btn')) {
+            (btn as HTMLButtonElement).disabled = disabled;
+        }
+    }
+
+    private get isOptionsMode(): boolean {
+        return this.optionsContainer.style.display === 'flex';
+    }
+
     // New methods to trigger visual feedback
     showSuccess(): Promise<void> {
         return new Promise((resolve) => {
+            if (this.isOptionsMode) {
+                this.setOptionButtonsDisabled(true);
+            }
             this.input.classList.add('input-correct');
             this.problemText.style.fill = '#2ecc71'; // Green
             setTimeout(() => {
@@ -190,11 +289,17 @@ export class ProblemUI {
 
     showError(): Promise<void> {
         return new Promise((resolve) => {
+            if (this.isOptionsMode) {
+                this.setOptionButtonsDisabled(true);
+            }
             this.input.classList.add('input-wrong');
             this.problemText.style.fill = '#e74c3c'; // Red
             setTimeout(() => {
                 this.input.classList.remove('input-wrong');
                 this.problemText.style.fill = '#ffffff'; // Reset
+                if (this.isOptionsMode) {
+                    this.setOptionButtonsDisabled(false);
+                }
                 resolve();
             }, 500);
         });
