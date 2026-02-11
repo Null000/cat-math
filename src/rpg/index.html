@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V3EVS49T8Y"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-V3EVS49T8Y');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cat Math RPG</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family:
+        "Inter",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      background-attachment: fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+      color: #e2e8f0;
+    }
+
+    .container {
+      background: rgba(26, 26, 46, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 30px;
+      border-radius: 24px;
+      box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(46, 204, 113, 0.1);
+      text-align: center;
+      width: 100%;
+      max-width: 800px;
+      position: relative;
+      border: 1px solid rgba(46, 204, 113, 0.15);
+      animation: slideIn 0.6s ease-out;
+      margin-bottom: 80px;
+    }
+
+    /* Language Switcher */
+    .language-switcher {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .lang-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 0.8em;
+      font-weight: 600;
+      color: #a0aec0;
+      transition: all 0.2s ease;
+      min-width: auto;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    .lang-btn.active {
+      background: #2ecc71;
+      color: white;
+      border-color: #2ecc71;
+    }
+
+    .lang-btn:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .lang-btn::before {
+      display: none;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Wizard Canvas */
+    .wizard-canvas-container {
+      width: 200px;
+      height: 250px;
+      margin: 0 auto 20px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow:
+        0 0 30px rgba(46, 204, 113, 0.2),
+        0 0 60px rgba(46, 204, 113, 0.1);
+      border: 1px solid rgba(46, 204, 113, 0.3);
+      background: #1a1a2e;
+    }
+
+    .wizard-canvas-container canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #2ecc71 0%, #f1c40f 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: none;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: #a0aec0;
+      font-size: 1em;
+      font-weight: 400;
+      margin-top: 0;
+      margin-bottom: 30px;
+    }
+
+    button {
+      padding: 14px 28px;
+      font-size: 0.9em;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      color: white;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    button::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(255, 255, 255, 0.15),
+          transparent);
+      transition: left 0.5s;
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    .category-selection {
+      margin-bottom: 35px;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      animation: slideIn 0.6s ease-out 0.2s both;
+    }
+
+    .category-selection h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-size: 1.4em;
+      font-weight: 600;
+      color: #f7fafc;
+      text-align: center;
+    }
+
+    .grouping-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .grouping-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-size: 0.85em;
+      font-weight: 600;
+      color: #a0aec0;
+      transition: all 0.2s ease;
+      min-width: auto;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    .grouping-btn.active {
+      background: #2ecc71;
+      color: white;
+      border-color: #2ecc71;
+    }
+
+    .grouping-btn:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .grouping-btn::before {
+      display: none;
+    }
+
+    .category-group {
+      margin-bottom: 12px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .category-group summary {
+      padding: 12px 20px;
+      font-size: 0.9em;
+      font-weight: 700;
+      color: #e2e8f0;
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      user-select: none;
+      background: rgba(255, 255, 255, 0.05);
+      transition: background 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .category-group summary:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .category-group[open] summary {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 15px;
+    }
+
+    .category-group summary::marker {
+      color: #2ecc71;
+    }
+
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 10px;
+      padding: 0 15px 15px 15px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .checkbox-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .checkbox-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      margin: 0;
+      width: 18px;
+      height: 18px;
+      accent-color: #2ecc71;
+      cursor: pointer;
+    }
+
+    .checkbox-item label {
+      font-size: 0.85em;
+      font-weight: 600;
+      color: #e2e8f0;
+      cursor: pointer;
+      margin: 0;
+      flex: 1;
+      text-align: left;
+    }
+
+    .category-examples {
+      width: 100%;
+      padding-top: 4px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .examples-list {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .example-problem {
+      font-family: "Courier New", monospace;
+      font-size: 0.75em;
+      color: #a0aec0;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .action-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(26, 26, 46, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 15px;
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 100;
+    }
+
+    .selected-categories-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 90%;
+    }
+
+    .selected-label {
+      font-size: 0.85em;
+      font-weight: 700;
+      color: #a0aec0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .selected-tag {
+      background: rgba(46, 204, 113, 0.15);
+      color: #2ecc71;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.8em;
+      font-weight: 600;
+      border: 1px solid rgba(46, 204, 113, 0.2);
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .start-battle-btn {
+      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+      box-shadow: 0 8px 25px rgba(46, 204, 113, 0.4);
+      font-size: 1em;
+      padding: 14px 40px;
+      min-width: 250px;
+      margin: 0;
+    }
+
+    .start-battle-btn:hover {
+      box-shadow: 0 12px 35px rgba(46, 204, 113, 0.5);
+      transform: translateY(-2px);
+    }
+
+    /* Responsive design */
+    @media (max-width: 600px) {
+      .container {
+        padding: 30px 20px;
+        margin: 10px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .checkbox-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .wizard-canvas-container {
+        width: 160px;
+        height: 200px;
+      }
+    }
+
+    /* Focus states for accessibility */
+    button:focus,
+    input:focus,
+    .checkbox-item:focus-within {
+      outline: 2px solid #2ecc71;
+      outline-offset: 2px;
+    }
+
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.8em;
+      color: #718096;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .footer a {
+      color: #2ecc71;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .footer a:hover {
+      color: #27ae60;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="language-switcher">
+      <button class="lang-btn" data-lang="en">EN</button>
+      <button class="lang-btn" data-lang="sl">SL</button>
+    </div>
+
+    <div id="wizard-canvas-container" class="wizard-canvas-container"></div>
+
+    <h1 data-i18n="rpg_title">Choose Your Spells</h1>
+    <p class="subtitle" data-i18n="rpg_subtitle">Select the math spells you wish to master</p>
+
+    <div class="category-selection" id="category-selection">
+      <h2 data-i18n="rpg_select_categories">Spell Book</h2>
+      <div id="grouping-toggle" class="grouping-toggle" style="display: none;">
+        <button class="grouping-btn active" data-grouping="type" data-i18n="grouping_by_type">By Type</button>
+        <button class="grouping-btn" data-grouping="year" data-i18n="grouping_by_year">By Year</button>
+      </div>
+      <div id="category-groups"></div>
+    </div>
+
+    <div class="footer">
+      <span><a href="mailto:damjan.kosir@gmail.com">Damjan Košir</a></span>
+      <span>&bull;</span>
+      <a href="https://github.com/Null000/cat-math" target="_blank" rel="noopener noreferrer">
+        <i class="fa-brands fa-github"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="action-bar">
+    <div id="selected-categories-container" class="selected-categories-container">
+      <span class="selected-label" data-i18n="selected_label">Selected:</span>
+      <div id="selected-tags" class="selected-categories-container"></div>
+    </div>
+    <button id="start-battle-btn" class="start-battle-btn" data-i18n="rpg_start_battle">
+      Enter Battle
+    </button>
+  </div>
+
+  <script type="module" src="./rpgIndex.js"></script>
+</body>
+
+</html>
