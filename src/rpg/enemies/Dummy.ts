@@ -5,7 +5,7 @@ export class Dummy extends Actor {
     constructor() {
         super({
             texture: dummyTexture,
-            textureScale: 0.2,
+            textureScale: 0.15,
             health: 1,
             attackPower: 0,
             defensePower: 0,

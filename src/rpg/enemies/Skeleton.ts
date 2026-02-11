@@ -5,7 +5,7 @@ export class Skeleton extends Actor {
     constructor() {
         super({
             texture: skeletonTexture,
-            textureScale: 0.5,
+            textureScale: 0.25,
             health: 32,
             attackPower: 6,
             defensePower: 3,
