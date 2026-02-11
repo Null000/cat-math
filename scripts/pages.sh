@@ -13,6 +13,7 @@ cp -r dist /tmp/cat-math
 
 git switch pages
 
+rm -rf node_modules
 git rm -rf .
 cp -r /tmp/cat-math/* .
 

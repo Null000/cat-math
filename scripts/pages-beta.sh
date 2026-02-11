@@ -14,6 +14,7 @@ cp -r dist /tmp/cat-math-beta
 
 git switch pages
 
+rm -rf node_modules
 git rm -rf beta
 mkdir -p beta
 cp -r /tmp/cat-math-beta/* beta/
