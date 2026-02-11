@@ -5,6 +5,9 @@ const generateProps: Record<
   {
     xMax: number;
     yMax: number;
+    xMin?: number;
+    yMin?: number;
+    step?: number;
     borrowAllowed?: boolean;
     borrowForced?: boolean;
     missingFact?: ("first" | "second" | "result") | ("first" | "second" | "result")[];
@@ -53,11 +56,21 @@ const generateProps: Record<
     borrowForced: false,
     missingFact: ["first", "second"],
   },
+  [Category.Subtraction_Tens]: {
+    xMax: 100,
+    yMax: 90,
+    xMin: 10,
+    yMin: 10,
+    step: 10,
+  },
 };
 
 export function generate(category: Category): Problem[] {
   const props = generateProps[category]!;
-  let { xMax, yMax, borrowAllowed, borrowForced, missingFact } = props;
+  let { xMax, yMax, xMin, yMin, step, borrowAllowed, borrowForced, missingFact } = props;
+  xMin = xMin ?? 0;
+  yMin = yMin ?? 0;
+  step = step ?? 1;
   borrowAllowed = borrowAllowed ?? true;
   borrowForced = borrowForced ?? false;
   missingFact = missingFact ?? "result";
@@ -65,8 +78,8 @@ export function generate(category: Category): Problem[] {
   const allProblems: Problem[] = [];
   const missingFacts = Array.isArray(missingFact) ? missingFact : [missingFact];
 
-  for (let i = 0; i <= xMax; i++) {
-    for (let j = 0; j <= yMax; j++) {
+  for (let i = xMin; i <= xMax; i += step) {
+    for (let j = yMin; j <= yMax; j += step) {
       if (i < j) continue; // Can't subtract to get negative
       const hasBorrow = borrowAllowed && i % 10 < j % 10;
       if (hasBorrow && !borrowForced) {

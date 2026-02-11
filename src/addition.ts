@@ -7,6 +7,7 @@ const generateProps: Record<
     yMax: number;
     xMin?: number;
     yMin?: number;
+    step?: number;
     maxResult?: number;
     carryAllowed?: boolean;
     carryForced?: boolean;
@@ -83,6 +84,14 @@ const generateProps: Record<
     carryForced: false,
     missingFact: ["first", "second"],
   },
+  [Category.Addition_Tens]: {
+    xMax: 90,
+    yMax: 90,
+    xMin: 10,
+    yMin: 10,
+    step: 10,
+    maxResult: 100,
+  },
 };
 
 export function generate(category: Category): Problem[] {
@@ -92,6 +101,7 @@ export function generate(category: Category): Problem[] {
     yMax,
     xMin,
     yMin,
+    step,
     maxResult,
     carryAllowed,
     carryForced,
@@ -99,6 +109,7 @@ export function generate(category: Category): Problem[] {
   } = props;
   xMin = xMin ?? 0;
   yMin = yMin ?? 0;
+  step = step ?? 1;
   carryAllowed = carryAllowed ?? true;
   carryForced = carryForced ?? false;
   missingFact = missingFact ?? "result";
@@ -106,8 +117,8 @@ export function generate(category: Category): Problem[] {
   const allProblems: Problem[] = [];
   const missingFacts = Array.isArray(missingFact) ? missingFact : [missingFact];
 
-  for (let i = xMin; i <= xMax; i++) {
-    for (let j = yMin; j <= yMax; j++) {
+  for (let i = xMin; i <= xMax; i += step) {
+    for (let j = yMin; j <= yMax; j += step) {
       const hasCarry = carryAllowed && (i % 10) + (j % 10) >= 10;
       if (hasCarry && !carryForced) {
         continue;

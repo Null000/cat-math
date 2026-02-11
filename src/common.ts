@@ -16,6 +16,7 @@ export enum Category {
   Addition_HundredWithCarry = "Addition: 100 (with carry)",
   Addition_Hundred = "Addition: 100",
   Addition_Hundred_Missing = "Addition: 100 (missing facts)",
+  Addition_Tens = "Addition: Tens",
   Subtraction_Ten = "Subtraction: 10",
   Subtraction_Ten_Missing = "Subtraction: 10 (missing facts)",
   Subtraction_Twenty = "Subtraction: 20",
@@ -24,6 +25,7 @@ export enum Category {
   Subtraction_HundredWithBorrow = "Subtraction: 100 (with borrow)",
   Subtraction_Hundred = "Subtraction: 100",
   Subtraction_Hundred_Missing = "Subtraction: 100 (missing facts)",
+  Subtraction_Tens = "Subtraction: Tens",
   Multiplication_Ten = "Multiplication: 10",
   Multiplication_Ten_Missing = "Multiplication: 10 (missing facts)",
   Multiplication_Twenty = "Multiplication: 20",
@@ -50,6 +52,7 @@ export const categoryGroups: Record<string, Category[]> = {
     Category.Addition_HundredWithCarry,
     Category.Addition_Hundred,
     Category.Addition_Hundred_Missing,
+    Category.Addition_Tens,
   ],
   Subtraction: [
     Category.Subtraction_Ten,
@@ -60,6 +63,7 @@ export const categoryGroups: Record<string, Category[]> = {
     Category.Subtraction_HundredWithBorrow,
     Category.Subtraction_Hundred,
     Category.Subtraction_Hundred_Missing,
+    Category.Subtraction_Tens,
   ],
   Multiplication: [
     Category.Multiplication_Ten,
@@ -96,8 +100,10 @@ export const yearGroupsSl: Record<string, Category[]> = {
     Category.Addition_TwentyWithCarry,
     Category.Addition_Twenty,
     Category.Addition_Twenty_Missing,
+    Category.Addition_Tens,
     Category.Subtraction_Twenty,
     Category.Subtraction_Twenty_Missing,
+    Category.Subtraction_Tens,
     Category.Comparison_Twenty,
   ],
   "3. razred": [
