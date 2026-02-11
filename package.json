@@ -4,7 +4,7 @@
   "author": "Damjan Košir",
   "license": "AGPL-3.0-only",
   "scripts": {
-    "build": "bun install && bun scripts/update-reward-count.ts && mkdir -p dist/rpg && cp src/*.html dist && cp src/favicon-32x32.png dist && cp -r src/rewardImages dist && cp src/rpg/*.html dist/rpg && cp -r src/rpg/assets dist/rpg && bun build ./src/app.ts ./src/index.ts ./src/practice.ts ./src/rpg/rpg.ts ./src/rpg/actors.ts --outdir dist",
+    "build": "bun install && bun scripts/update-reward-count.ts && mkdir -p dist/rpg && cp src/*.html dist && cp src/favicon-32x32.png dist && cp -r src/rewardImages dist && cp src/rpg/*.html dist/rpg && cp -r src/rpg/assets dist/rpg && bun build ./src/app.ts ./src/index.ts ./src/practice.ts ./src/rpg/rpg.ts ./src/rpg/actors.ts ./src/rpg/index.ts --outdir dist",
     "dev": "bun run build --watch",
     "caddy": "mkdir -p dist/rpg && cd dist && caddy file-server --listen :3000",
     "debug": "chromium --remote-debugging-port=9222 --user-data-dir=remote-debug-profile http://localhost:3000/rpg/rpg.html",

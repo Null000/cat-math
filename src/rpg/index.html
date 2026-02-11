@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Math Adventure</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-V3EVS49T8Y"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-V3EVS49T8Y');
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #1a1a2e;
+            font-family: 'Inter', sans-serif;
+            color: #fff;
+        }
+
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        #ui-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        /* Language Switcher - positioned similarly to main index */
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            pointer-events: auto;
+            z-index: 20;
+        }
+
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 6px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .lang-btn.active,
+        .lang-btn:hover {
+            background: rgba(167, 139, 250, 0.5);
+            color: #fff;
+            border-color: rgba(167, 139, 250, 0.8);
+        }
+
+        .content-box {
+            background: rgba(26, 26, 46, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            pointer-events: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.5s ease-out;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            margin: 0 0 20px 0;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #a78bfa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+            text-align: center;
+        }
+
+        .category-scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 25px;
+            padding-right: 15px;
+            /* space for scrollbar */
+        }
+
+        .category-scroll-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .category-scroll-area::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .category-scroll-area::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        .category-scroll-area::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .category-group {
+            margin-bottom: 25px;
+        }
+
+        .category-group h3 {
+            color: #a78bfa;
+            font-size: 1.1rem;
+            margin: 0 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
+        }
+
+        .checkbox-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .checkbox-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            border-color: rgba(167, 139, 250, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .checkbox-item.checked {
+            background: rgba(167, 139, 250, 0.15);
+            border-color: rgba(167, 139, 250, 0.6);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #a78bfa;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            font-size: 0.95rem;
+            flex: 1;
+            color: #e2e8f0;
+            font-weight: 500;
+            user-select: none;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border-radius: 12px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #a78bfa 0%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(59, 130, 246, 0.6);
+        }
+
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.4);
+            color: #fff;
+        }
+
+        .grouping-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .grouping-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .grouping-btn.active {
+            background: #a78bfa;
+            color: white;
+            border-color: #a78bfa;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="language-switcher">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="sl">SL</button>
+    </div>
+
+    <div id="ui-container">
+        <div class="content-box">
+            <h1 data-i18n="rpg_title">RPG Math Adventure</h1>
+
+            <div id="grouping-toggle-container" class="grouping-toggle" style="display: none;">
+                <button class="grouping-btn active" data-grouping="type" data-i18n="grouping_by_type">By Type</button>
+                <button class="grouping-btn" data-grouping="year" data-i18n="grouping_by_year">By Year</button>
+            </div>
+
+            <div class="category-scroll-area" id="category-container">
+                <!-- Categories will be injected here -->
+            </div>
+
+            <div class="action-bar">
+                <button class="btn btn-secondary" id="back-btn" data-i18n="back_home">Back</button>
+                <button class="btn btn-primary" id="start-btn" data-i18n="start_adventure">Start Adventure</button>
+            </div>
+        </div>
+    </div>
+    <!-- The main script -->
+    <script src="index.js"></script>
+</body>
+
+</html>

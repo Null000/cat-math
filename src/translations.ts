@@ -3,9 +3,12 @@ import { Category } from "./common.ts";
 export const translations = {
     en: {
         title: "Cat Math",
+        rpg_title: "RPG Math Adventure",
         select_categories: "Select Practice Categories",
         start_practice: "Start Practice",
         back_to_categories: "← Back to Categories",
+        start_adventure: "Start Adventure",
+        back_home: "Back",
         check_button: "Check",
         correct: "Correct! 🎉",
         incorrect: "Incorrect. 😢",
@@ -80,9 +83,12 @@ export const translations = {
     },
     sl: {
         title: "Mačja Matematika",
+        rpg_title: "RPG Matematična Dogodivščina",
         select_categories: "Izberi Kategorije",
         start_practice: "Začni Vajo",
         back_to_categories: "← Nazaj na Kategorije",
+        start_adventure: "Začni Dogodivščino",
+        back_home: "Nazaj",
         check_button: "Preveri",
         correct: "Pravilno! 🎉",
         incorrect: "Nepravilno. 😢",
