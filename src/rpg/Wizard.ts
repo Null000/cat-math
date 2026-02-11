@@ -24,7 +24,7 @@ export class Wizard extends Actor {
             textureScale: 0.1,
             health: Math.floor(100 * xpFactor),
             attackPower: Math.floor(5 * xpFactor),
-            defensePower: Math.floor(1 * xpFactor),
+            defensePower: Math.floor(xpFactor),
             speed: Math.floor(6 * xpFactor),
             xpDrop: 0
         });
@@ -133,8 +133,8 @@ export class Wizard extends Actor {
             // Ease-in for accelerating projectile
             const eased = t * t;
 
-            const startX = 30;
-            const startY = -120;
+            const startX = 100;
+            const startY = -180;
             const endX = this.magicTargetX;
             const endY = this.magicTargetY;
 
