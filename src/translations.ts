@@ -43,6 +43,7 @@ export const translations = {
         [Category.Addition_HundredWithCarry]: "Addition: 100 (with carry)",
         [Category.Addition_Hundred]: "Addition: 100",
         [Category.Addition_Hundred_Missing]: "Addition: 100 (missing facts)",
+        [Category.Addition_Tens]: "Addition: Tens",
 
         [Category.Subtraction_Ten]: "Subtraction: 10",
         [Category.Subtraction_Ten_Missing]: "Subtraction: 10 (missing facts)",
@@ -52,6 +53,7 @@ export const translations = {
         [Category.Subtraction_HundredWithBorrow]: "Subtraction: 100 (with borrow)",
         [Category.Subtraction_Hundred]: "Subtraction: 100",
         [Category.Subtraction_Hundred_Missing]: "Subtraction: 100 (missing facts)",
+        [Category.Subtraction_Tens]: "Subtraction: Tens",
 
         [Category.Multiplication_Ten]: "Multiplication: 10",
         [Category.Multiplication_Ten_Missing]: "Multiplication: 10 (missing facts)",
@@ -120,6 +122,7 @@ export const translations = {
         [Category.Addition_HundredWithCarry]: "Seštevanje: 100 (s prehodom)",
         [Category.Addition_Hundred]: "Seštevanje: 100",
         [Category.Addition_Hundred_Missing]: "Seštevanje: 100 (neznani člen)",
+        [Category.Addition_Tens]: "Seštevanje: desetice",
 
         [Category.Subtraction_Ten]: "Odštevanje: 10",
         [Category.Subtraction_Ten_Missing]: "Odštevanje: 10 (neznani člen)",
@@ -129,6 +132,7 @@ export const translations = {
         [Category.Subtraction_HundredWithBorrow]: "Odštevanje: 100 (s prehodom)",
         [Category.Subtraction_Hundred]: "Odštevanje: 100",
         [Category.Subtraction_Hundred_Missing]: "Odštevanje: 100 (neznani člen)",
+        [Category.Subtraction_Tens]: "Odštevanje: desetice",
 
         [Category.Multiplication_Ten]: "Množenje: 10",
         [Category.Multiplication_Ten_Missing]: "Množenje: 10 (neznani člen)",
