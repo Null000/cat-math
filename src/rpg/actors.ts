@@ -245,8 +245,8 @@ async function init() {
   $("btn-level-up").addEventListener("click", async () => {
     if (!currentActor || !(currentActor instanceof Wizard)) return;
     const currentLevel = getWizardLevel(wizardXp);
-    // Jump XP to next level boundary
-    wizardXp = currentLevel * 100;
+    // Jump XP past the next level boundary
+    wizardXp = currentLevel * 100 + 1;
     log(`Level up! XP: ${wizardXp}, Level: ${getWizardLevel(wizardXp)}`);
     await currentActor.levelUp(wizardXp);
     log("Level up complete");
