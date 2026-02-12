@@ -1,7 +1,7 @@
 import { Application, Container, Graphics } from "pixi.js";
 import { standardHeight, standardWidth } from "./constants.ts";
 import { Actor } from "./Actor.ts";
-import { Wizard, initWizard } from "./Wizard.ts";
+import { Wizard, initWizard, getWizardLevel } from "./Wizard.ts";
 import { EnemyType, makeEnemies } from "./enemies/enemyMaker.ts";
 import { BackgroundType, makeBackground } from "./backgroundMaker.ts";
 
@@ -14,6 +14,7 @@ let app: Application;
 let world: Container;
 let currentActor: Actor | null = null;
 let dummyTarget: Actor | null = null;
+let wizardXp: number = 0;
 
 function $(id: string) {
   return document.getElementById(id)!;
@@ -55,18 +56,17 @@ function setButtons(enabled: boolean) {
     "btn-die",
     "btn-run-left",
     "btn-cast-magic",
+    "btn-level-up",
     "btn-heal",
     "btn-reset",
   ];
   for (const id of ids) {
     ($(id) as HTMLButtonElement).disabled = !enabled;
   }
-  // Cast magic only for wizard
-  ($(
-    "btn-cast-magic",
-  ) as HTMLButtonElement).disabled = !(
-    enabled && currentActor instanceof Wizard
-  );
+  // Cast magic and level up only for wizard
+  const isWizard = enabled && currentActor instanceof Wizard;
+  ($("btn-cast-magic") as HTMLButtonElement).disabled = !isWizard;
+  ($("btn-level-up") as HTMLButtonElement).disabled = !isWizard;
 }
 
 async function ensureDummyTarget(): Promise<Actor> {
@@ -103,6 +103,7 @@ async function createActor(type: string, xp: number) {
   if (type === "wizard") {
     await initWizard(xp);
     actor = new Wizard(xp);
+    wizardXp = xp;
   } else {
     const enemies = await makeEnemies([type as EnemyType]);
     actor = enemies[0]!;
@@ -239,6 +240,17 @@ async function init() {
     log("Cast magic animation");
     await currentActor.castMagic(false, target);
     log("Cast magic complete");
+  });
+
+  $("btn-level-up").addEventListener("click", async () => {
+    if (!currentActor || !(currentActor instanceof Wizard)) return;
+    const currentLevel = getWizardLevel(wizardXp);
+    // Jump XP to next level boundary
+    wizardXp = currentLevel * 100;
+    log(`Level up! XP: ${wizardXp}, Level: ${getWizardLevel(wizardXp)}`);
+    await currentActor.levelUp(wizardXp);
+    log("Level up complete");
+    updateStats(currentActor);
   });
 
   $("btn-heal").addEventListener("click", () => {
