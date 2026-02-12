@@ -33728,7 +33728,10 @@ class Actor extends Container {
     const damage = Math.max(0, amount - this.defensePower);
     this.health = Math.max(0, this.health - damage);
     this.updateHealthBar();
-    await this.shake();
+    const damagePercent = Math.min(damage / this.maxHealth, 1);
+    const intensity = 3 + damagePercent * 17;
+    const duration = 0.2 + damagePercent * 0.6;
+    await this.shake(duration, intensity);
     return this.health === 0;
   }
   shakeTimer = 0;
