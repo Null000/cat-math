@@ -9,7 +9,7 @@ import { areas } from './areas.ts';
 
 
 export class BattleManager {
-    heroParty: Actor[] = [];
+    heroParty: Wizard[] = [];
     enemyParty: Actor[] = [];
     turns: { actor: Actor, isHero: boolean, timeTillTurn: number }[] = [];
 
@@ -223,7 +223,7 @@ export class BattleManager {
         let anyKilled = false;
 
         // 10% chance of area attack when there are multiple enemies
-        if (this.enemyParty.length > 1 && Math.random() < 0.1 && attacker instanceof Wizard) {
+        if (this.enemyParty.length > 1 && Math.random() < 0.1) {
             const damage = await attacker.areaAttack();
 
             // Apply damage to all enemies simultaneously
