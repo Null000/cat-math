@@ -56,7 +56,7 @@ export class Wizard extends Actor {
         const orb = new Graphics();
         this.drawOrb(orb, isCritical);
         this.magicOrb = orb;
-        orb.zIndex = 100;
+        orb.zIndex = 1000;
         this.parent!.addChild(orb);
 
         return new Promise((resolve) => {
@@ -93,7 +93,7 @@ export class Wizard extends Actor {
         trail.fill({ color, alpha: 0.5 });
         trail.x = this.x + x;
         trail.y = this.y + y;
-        trail.zIndex = 100;
+        trail.zIndex = 1000;
         this.parent!.addChild(trail);
         this.magicTrails.push({ graphic: trail, life: 0.3 });
     }
@@ -173,7 +173,7 @@ export class Wizard extends Actor {
                 burst.x = burstX;
                 burst.y = burstY;
                 this.magicBurst = burst;
-                burst.zIndex = 100;
+                burst.zIndex = 1000;
                 this.parent!.addChild(burst);
             }
         }
