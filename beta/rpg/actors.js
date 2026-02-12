@@ -33188,6 +33188,20 @@ class Wizard extends Actor {
   burstProgress = 0;
   burstDuration = 0.2;
   isBursting = false;
+  isAreaCasting = false;
+  resolveAreaMagic = null;
+  areaRing = null;
+  areaProgress = 0;
+  areaDuration = 0.6;
+  isLevelingUp = false;
+  resolveLevelUp = null;
+  levelUpProgress = 0;
+  levelUpDuration = 1.5;
+  levelUpGlow = null;
+  levelUpFlash = null;
+  levelUpParticles = [];
+  levelUpNewTexture = null;
+  levelUpTextureSwapped = false;
   constructor(xp) {
     const xpFactor = 1 + xp / 100;
     super({
@@ -33222,7 +33236,7 @@ class Wizard extends Actor {
     const orb = new Graphics;
     this.drawOrb(orb, isCritical);
     this.magicOrb = orb;
-    orb.zIndex = 100;
+    orb.zIndex = 1000;
     this.parent.addChild(orb);
     return new Promise((resolve) => {
       if (this.resolveMagic) {
@@ -33230,6 +33244,133 @@ class Wizard extends Actor {
       }
       this.resolveMagic = resolve;
     });
+  }
+  async areaAttack() {
+    await this.twitch();
+    await this.castAreaMagic();
+    return this.attackPower;
+  }
+  castAreaMagic() {
+    this.isAreaCasting = true;
+    this.areaProgress = 0;
+    this.magicLastTime = 0;
+    const ring = new Graphics;
+    const color = 11158783;
+    ring.circle(0, 0, 10);
+    ring.stroke({ color, alpha: 0.2, width: 12 });
+    ring.circle(0, 0, 10);
+    ring.stroke({ color, alpha: 0.5, width: 4 });
+    ring.circle(0, 0, 10);
+    ring.stroke({ color: 14527231, alpha: 0.7, width: 2 });
+    ring.circle(0, 0, 8);
+    ring.fill({ color, alpha: 0.1 });
+    ring.x = this.x;
+    ring.y = this.y - 80;
+    ring.zIndex = 100;
+    this.parent.addChild(ring);
+    this.areaRing = ring;
+    return new Promise((resolve) => {
+      if (this.resolveAreaMagic) {
+        this.resolveAreaMagic();
+      }
+      this.resolveAreaMagic = resolve;
+    });
+  }
+  async levelUp(newXp) {
+    const newLevel = getWizardLevel(newXp);
+    const newTexturePath = `assets/wizard${newLevel}.png`;
+    this.levelUpNewTexture = await Assets.load(newTexturePath);
+    const xpFactor = 1 + newXp / 100;
+    this.maxHealth = Math.floor(100 * xpFactor);
+    this.health = this.maxHealth;
+    this.attackPower = Math.floor(5 * xpFactor);
+    this.defensePower = Math.floor(xpFactor);
+    this.speed = Math.floor(6 * xpFactor);
+    this.updateHealthBar();
+    this.isLevelingUp = true;
+    this.levelUpProgress = 0;
+    this.levelUpTextureSwapped = false;
+    this.magicLastTime = 0;
+    this.levelUpParticles = [];
+    const glow = new Graphics;
+    glow.x = this.x;
+    glow.y = this.y - 80;
+    glow.zIndex = this.zIndex - 1;
+    this.parent.addChild(glow);
+    this.levelUpGlow = glow;
+    const flash = new Graphics;
+    flash.rect(-400, -300, 800, 600);
+    flash.fill({ color: 16777215, alpha: 0 });
+    flash.zIndex = 9000;
+    this.parent.addChild(flash);
+    this.levelUpFlash = flash;
+    return new Promise((resolve) => {
+      if (this.resolveLevelUp) {
+        this.resolveLevelUp();
+      }
+      this.resolveLevelUp = resolve;
+    });
+  }
+  spawnLevelUpParticle(centerX, centerY, phase) {
+    const particle = new Graphics;
+    const size = 2 + Math.random() * 4;
+    const colors = [16766720, 16771584, 16777215, 16758784];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    particle.circle(0, 0, size);
+    particle.fill({ color, alpha: 0.8 });
+    particle.zIndex = 9001;
+    let vx2;
+    let vy2;
+    if (phase === "rise") {
+      particle.x = centerX + (Math.random() - 0.5) * 60;
+      particle.y = centerY + Math.random() * 40;
+      vx2 = (Math.random() - 0.5) * 30;
+      vy2 = -(60 + Math.random() * 100);
+    } else {
+      particle.x = centerX;
+      particle.y = centerY;
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 100 + Math.random() * 200;
+      vx2 = Math.cos(angle) * speed;
+      vy2 = Math.sin(angle) * speed;
+    }
+    this.parent.addChild(particle);
+    this.levelUpParticles.push({ graphic: particle, life: 0.8 + Math.random() * 0.4, vx: vx2, vy: vy2 });
+  }
+  updateLevelUpGlow(t2) {
+    if (!this.levelUpGlow)
+      return;
+    this.levelUpGlow.clear();
+    let glowAlpha;
+    let glowRadius;
+    if (t2 < 0.35) {
+      const p2 = t2 / 0.35;
+      glowAlpha = p2 * 0.4;
+      glowRadius = 30 + p2 * 40;
+    } else if (t2 < 0.5) {
+      glowAlpha = 0.4 + (t2 - 0.35) / 0.15 * 0.3;
+      glowRadius = 70 + (t2 - 0.35) / 0.15 * 20;
+    } else {
+      const p2 = Math.min((t2 - 0.5) / 0.5, 1);
+      glowAlpha = 0.7 * (1 - p2);
+      glowRadius = 90 * (1 - p2 * 0.3);
+    }
+    this.levelUpGlow.circle(0, 0, glowRadius);
+    this.levelUpGlow.fill({ color: 16766720, alpha: glowAlpha * 0.3 });
+    this.levelUpGlow.circle(0, 0, glowRadius * 0.6);
+    this.levelUpGlow.fill({ color: 16771584, alpha: glowAlpha * 0.5 });
+    this.levelUpGlow.circle(0, 0, glowRadius * 0.3);
+    this.levelUpGlow.fill({ color: 16777215, alpha: glowAlpha * 0.7 });
+  }
+  spawnAreaTrail(x2, y2) {
+    const trail = new Graphics;
+    trail.circle(0, 0, 3);
+    trail.fill({ color: 11158783, alpha: 0.5 });
+    trail.x = x2;
+    trail.y = y2;
+    trail.zIndex = 100;
+    this.parent.addChild(trail);
+    this.magicTrails.push({ graphic: trail, life: 0.3 });
   }
   drawOrb(orb, isCritical) {
     const baseRadius = isCritical ? 28 : 10;
@@ -33251,13 +33392,13 @@ class Wizard extends Actor {
     trail.fill({ color, alpha: 0.5 });
     trail.x = this.x + x2;
     trail.y = this.y + y2;
-    trail.zIndex = 100;
+    trail.zIndex = 1000;
     this.parent.addChild(trail);
     this.magicTrails.push({ graphic: trail, life: 0.3 });
   }
   update(time, isSine) {
     super.update(time, isSine);
-    const hasWork = this.isCastingMagic || this.isBursting || this.magicTrails.length > 0;
+    const hasWork = this.isCastingMagic || this.isBursting || this.isAreaCasting || this.magicTrails.length > 0 || this.isLevelingUp || this.levelUpParticles.length > 0;
     if (!hasWork)
       return;
     if (this.magicLastTime === 0) {
@@ -33312,8 +33453,101 @@ class Wizard extends Actor {
         burst.x = burstX;
         burst.y = burstY;
         this.magicBurst = burst;
-        burst.zIndex = 100;
+        burst.zIndex = 1000;
         this.parent.addChild(burst);
+      }
+    }
+    if (this.isAreaCasting && this.areaRing) {
+      this.areaProgress += delta;
+      const t2 = Math.min(this.areaProgress / this.areaDuration, 1);
+      const maxScale = 60;
+      const currentScale = maxScale * (0.1 + t2 * 0.9);
+      this.areaRing.scale.set(currentScale);
+      this.areaRing.alpha = (1 - t2 * t2) * 0.8;
+      if (t2 > 0.05 && t2 < 0.8 && Math.random() < 0.6) {
+        const actualRadius = 10 * currentScale;
+        const angle = Math.random() * Math.PI * 2;
+        const px = this.x + Math.cos(angle) * actualRadius;
+        const py = this.y - 80 + Math.sin(angle) * actualRadius;
+        this.spawnAreaTrail(px, py);
+      }
+      if (t2 >= 1) {
+        this.parent.removeChild(this.areaRing);
+        this.areaRing.destroy();
+        this.areaRing = null;
+        this.isAreaCasting = false;
+        this.magicLastTime = 0;
+        if (this.resolveAreaMagic) {
+          this.resolveAreaMagic();
+          this.resolveAreaMagic = null;
+        }
+      }
+    }
+    if (this.isLevelingUp) {
+      this.levelUpProgress += delta;
+      const t2 = Math.min(this.levelUpProgress / this.levelUpDuration, 1);
+      const centerX = this.x;
+      const centerY = this.y - 80;
+      this.updateLevelUpGlow(t2);
+      if (t2 < 0.45 && Math.random() < 0.6) {
+        this.spawnLevelUpParticle(centerX, centerY, "rise");
+      }
+      if (this.levelUpFlash) {
+        if (t2 >= 0.4 && t2 < 0.55) {
+          const flashT = (t2 - 0.4) / 0.15;
+          const flashAlpha = flashT < 0.5 ? flashT * 2 * 0.7 : (1 - (flashT - 0.5) * 2) * 0.7;
+          this.levelUpFlash.alpha = Math.max(0, flashAlpha);
+        } else {
+          this.levelUpFlash.alpha = 0;
+        }
+      }
+      if (!this.levelUpTextureSwapped && t2 >= 0.475 && this.levelUpNewTexture) {
+        this.sprite.texture = this.levelUpNewTexture;
+        this.levelUpTextureSwapped = true;
+      }
+      if (t2 >= 0.35 && t2 < 0.7) {
+        const pulseT = (t2 - 0.35) / 0.35;
+        const pulse = 1 + Math.sin(pulseT * Math.PI) * 0.15;
+        this.sprite.scale.set(0.1 * pulse);
+      } else {
+        this.sprite.scale.set(0.1);
+      }
+      if (t2 >= 0.5 && t2 < 0.7 && Math.random() < 0.5) {
+        this.spawnLevelUpParticle(centerX, centerY, "burst");
+      }
+      if (t2 >= 1) {
+        this.isLevelingUp = false;
+        this.sprite.scale.set(0.1);
+        if (this.levelUpGlow) {
+          this.parent.removeChild(this.levelUpGlow);
+          this.levelUpGlow.destroy();
+          this.levelUpGlow = null;
+        }
+        if (this.levelUpFlash) {
+          this.parent.removeChild(this.levelUpFlash);
+          this.levelUpFlash.destroy();
+          this.levelUpFlash = null;
+        }
+        this.levelUpNewTexture = null;
+        this.magicLastTime = 0;
+        if (this.resolveLevelUp) {
+          this.resolveLevelUp();
+          this.resolveLevelUp = null;
+        }
+      }
+    }
+    for (let i2 = this.levelUpParticles.length - 1;i2 >= 0; i2--) {
+      const p2 = this.levelUpParticles[i2];
+      p2.life -= delta;
+      p2.graphic.x += p2.vx * delta;
+      p2.graphic.y += p2.vy * delta;
+      const lifeRatio = Math.max(0, p2.life / 1);
+      p2.graphic.alpha = lifeRatio * 0.8;
+      p2.graphic.scale.set(Math.max(0.01, lifeRatio));
+      if (p2.life <= 0) {
+        this.parent.removeChild(p2.graphic);
+        p2.graphic.destroy();
+        this.levelUpParticles.splice(i2, 1);
       }
     }
     if (this.isBursting && this.magicBurst) {
@@ -33657,6 +33891,7 @@ var app;
 var world;
 var currentActor = null;
 var dummyTarget = null;
+var wizardXp = 0;
 function $2(id) {
   return document.getElementById(id);
 }
@@ -33695,13 +33930,18 @@ function setButtons(enabled) {
     "btn-die",
     "btn-run-left",
     "btn-cast-magic",
+    "btn-area-attack",
+    "btn-level-up",
     "btn-heal",
     "btn-reset"
   ];
   for (const id of ids) {
     $2(id).disabled = !enabled;
   }
-  $2("btn-cast-magic").disabled = !(enabled && currentActor instanceof Wizard);
+  const isWizard = enabled && currentActor instanceof Wizard;
+  $2("btn-cast-magic").disabled = !isWizard;
+  $2("btn-area-attack").disabled = !isWizard;
+  $2("btn-level-up").disabled = !isWizard;
 }
 async function ensureDummyTarget() {
   if (dummyTarget && dummyTarget.parent)
@@ -33733,6 +33973,7 @@ async function createActor(type, xp) {
   if (type === "wizard") {
     await initWizard(xp);
     actor = new Wizard(xp);
+    wizardXp = xp;
   } else {
     const enemies = await makeEnemies([type]);
     actor = enemies[0];
@@ -33847,6 +34088,23 @@ async function init2() {
     log("Cast magic animation");
     await currentActor.castMagic(false, target);
     log("Cast magic complete");
+  });
+  $2("btn-area-attack").addEventListener("click", async () => {
+    if (!currentActor || !(currentActor instanceof Wizard))
+      return;
+    log("Area attack animation");
+    const dmg = await currentActor.areaAttack();
+    log(`Area attack complete (${dmg} damage)`);
+  });
+  $2("btn-level-up").addEventListener("click", async () => {
+    if (!currentActor || !(currentActor instanceof Wizard))
+      return;
+    const currentLevel = getWizardLevel(wizardXp);
+    wizardXp = currentLevel * 100 + 1;
+    log(`Level up! XP: ${wizardXp}, Level: ${getWizardLevel(wizardXp)}`);
+    await currentActor.levelUp(wizardXp);
+    log("Level up complete");
+    updateStats(currentActor);
   });
   $2("btn-heal").addEventListener("click", () => {
     if (!currentActor)
