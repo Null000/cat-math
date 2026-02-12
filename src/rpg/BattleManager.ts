@@ -1,6 +1,6 @@
 import { Container, Graphics } from 'pixi.js';
 import { Actor } from './Actor.ts';
-import { Wizard } from './Wizard.ts';
+import { Wizard, getWizardLevel } from './Wizard.ts';
 import { makeEnemies, EnemyType } from './enemies/enemyMaker.ts';
 import { makeWizard } from './enemies/wizardMaker.ts';
 import { makeBackground, BackgroundType } from './backgroundMaker.ts';
@@ -216,10 +216,17 @@ export class BattleManager {
     async correctAnswer() {
         this.turnCounter++;
 
+        const prevLevel = getWizardLevel(this.xp);
         this.xp++;
         this.onXpChange?.(this.xp);
+        const newLevel = getWizardLevel(this.xp);
 
         const attacker = this.heroParty[0]!;
+
+        // Trigger level-up animation if level changed
+        if (newLevel > prevLevel) {
+            await attacker.levelUp(this.xp);
+        }
         let anyKilled = false;
 
         // 10% chance of area attack when there are multiple enemies
