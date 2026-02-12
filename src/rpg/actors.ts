@@ -56,6 +56,7 @@ function setButtons(enabled: boolean) {
     "btn-die",
     "btn-run-left",
     "btn-cast-magic",
+    "btn-area-attack",
     "btn-level-up",
     "btn-heal",
     "btn-reset",
@@ -66,6 +67,7 @@ function setButtons(enabled: boolean) {
   // Cast magic and level up only for wizard
   const isWizard = enabled && currentActor instanceof Wizard;
   ($("btn-cast-magic") as HTMLButtonElement).disabled = !isWizard;
+  ($("btn-area-attack") as HTMLButtonElement).disabled = !isWizard;
   ($("btn-level-up") as HTMLButtonElement).disabled = !isWizard;
 }
 
@@ -240,6 +242,13 @@ async function init() {
     log("Cast magic animation");
     await currentActor.castMagic(false, target);
     log("Cast magic complete");
+  });
+
+  $("btn-area-attack").addEventListener("click", async () => {
+    if (!currentActor || !(currentActor instanceof Wizard)) return;
+    log("Area attack animation");
+    const dmg = await currentActor.areaAttack();
+    log(`Area attack complete (${dmg} damage)`);
   });
 
   $("btn-level-up").addEventListener("click", async () => {
