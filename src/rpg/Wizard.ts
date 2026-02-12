@@ -17,6 +17,12 @@ export class Wizard extends Actor {
     private burstDuration: number = 0.2;
     private isBursting: boolean = false;
 
+    private isAreaCasting: boolean = false;
+    private resolveAreaMagic: (() => void) | null = null;
+    private areaRing: Graphics | null = null;
+    private areaProgress: number = 0;
+    private areaDuration: number = 0.6;
+
     constructor(xp: number) {
         const xpFactor = 1 + xp / 100;
         super({
@@ -67,6 +73,57 @@ export class Wizard extends Actor {
         });
     }
 
+    async areaAttack(): Promise<number> {
+        await this.twitch();
+        await this.castAreaMagic();
+        return this.attackPower;
+    }
+
+    private castAreaMagic(): Promise<void> {
+        this.isAreaCasting = true;
+        this.areaProgress = 0;
+        this.magicLastTime = 0;
+
+        const ring = new Graphics();
+        const color = 0xaa44ff;
+        // Outer glow
+        ring.circle(0, 0, 10);
+        ring.stroke({ color, alpha: 0.2, width: 12 });
+        // Main ring
+        ring.circle(0, 0, 10);
+        ring.stroke({ color, alpha: 0.5, width: 4 });
+        // Inner bright ring
+        ring.circle(0, 0, 10);
+        ring.stroke({ color: 0xddaaff, alpha: 0.7, width: 2 });
+        // Core fill
+        ring.circle(0, 0, 8);
+        ring.fill({ color, alpha: 0.1 });
+
+        ring.x = this.x;
+        ring.y = this.y - 80;
+        ring.zIndex = 100;
+        this.parent!.addChild(ring);
+        this.areaRing = ring;
+
+        return new Promise((resolve) => {
+            if (this.resolveAreaMagic) {
+                this.resolveAreaMagic();
+            }
+            this.resolveAreaMagic = resolve;
+        });
+    }
+
+    private spawnAreaTrail(x: number, y: number) {
+        const trail = new Graphics();
+        trail.circle(0, 0, 3);
+        trail.fill({ color: 0xaa44ff, alpha: 0.5 });
+        trail.x = x;
+        trail.y = y;
+        trail.zIndex = 100;
+        this.parent!.addChild(trail);
+        this.magicTrails.push({ graphic: trail, life: 0.3 });
+    }
+
     private drawOrb(orb: Graphics, isCritical: boolean) {
         const baseRadius = isCritical ? 28 : 10;
         const color = isCritical ? 0xffdd44 : 0x44aaff;
@@ -101,7 +158,7 @@ export class Wizard extends Actor {
     override update(time: number, isSine: boolean) {
         super.update(time, isSine);
 
-        const hasWork = this.isCastingMagic || this.isBursting || this.magicTrails.length > 0;
+        const hasWork = this.isCastingMagic || this.isBursting || this.isAreaCasting || this.magicTrails.length > 0;
         if (!hasWork) return;
 
         if (this.magicLastTime === 0) {
@@ -175,6 +232,38 @@ export class Wizard extends Actor {
                 this.magicBurst = burst;
                 burst.zIndex = 100;
                 this.parent!.addChild(burst);
+            }
+        }
+
+        // Area attack ring animation
+        if (this.isAreaCasting && this.areaRing) {
+            this.areaProgress += delta;
+            const t = Math.min(this.areaProgress / this.areaDuration, 1);
+
+            const maxScale = 60;
+            const currentScale = maxScale * (0.1 + t * 0.9);
+            this.areaRing.scale.set(currentScale);
+            this.areaRing.alpha = (1 - t * t) * 0.8;
+
+            // Spawn trail particles along ring edge
+            if (t > 0.05 && t < 0.8 && Math.random() < 0.6) {
+                const actualRadius = 10 * currentScale;
+                const angle = Math.random() * Math.PI * 2;
+                const px = this.x + Math.cos(angle) * actualRadius;
+                const py = (this.y - 80) + Math.sin(angle) * actualRadius;
+                this.spawnAreaTrail(px, py);
+            }
+
+            if (t >= 1) {
+                this.parent!.removeChild(this.areaRing);
+                this.areaRing.destroy();
+                this.areaRing = null;
+                this.isAreaCasting = false;
+                this.magicLastTime = 0;
+                if (this.resolveAreaMagic) {
+                    this.resolveAreaMagic();
+                    this.resolveAreaMagic = null;
+                }
             }
         }
 

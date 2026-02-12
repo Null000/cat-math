@@ -1,5 +1,6 @@
 import { Container, Graphics } from 'pixi.js';
 import { Actor } from './Actor.ts';
+import { Wizard } from './Wizard.ts';
 import { makeEnemies, EnemyType } from './enemies/enemyMaker.ts';
 import { makeWizard } from './enemies/wizardMaker.ts';
 import { makeBackground, BackgroundType } from './backgroundMaker.ts';
@@ -218,35 +219,55 @@ export class BattleManager {
         this.onXpChange?.(this.xp);
 
         const attacker = this.heroParty[0]!;
-        const defender = this.enemyParty[0]!;
-        if (await defender.takeDamage(await attacker.attack(defender))) {
-            await defender.die();
-            //remove defender
-            this.stage.removeChild(defender);
-            this.enemyParty.shift();
-            this.turns = this.turns.filter(turn => turn.actor !== defender);
+        let anyKilled = false;
 
-            if (this.enemyParty.length === 0) {
-                //reset
-                this.wave++;
-                const area = areas[this.area]!;
-                if (this.wave >= area.waves.length) {
-                    this.area++;
-                    this.onAreaChange?.(this.area);
-                    await this.fadeOut();
+        // 10% chance of area attack when there are multiple enemies
+        if (this.enemyParty.length > 1 && Math.random() < 0.1 && attacker instanceof Wizard) {
+            const damage = await attacker.areaAttack();
 
-                    for (const actor of this.heroParty) {
-                        actor.healMax();
-                    }
+            // Apply damage to all enemies simultaneously
+            const results = await Promise.all(
+                this.enemyParty.map(enemy => enemy.takeDamage(damage))
+            );
 
-                    await this.init();
-                    await this.fadeIn();
-                } else {
-                    await this.initEnemy();
-                    this.initTurns();
-                }
+            const deadEnemies = this.enemyParty.filter((_, i) => results[i] === true);
+            await Promise.all(deadEnemies.map(dead => dead.die()));
+            for (const dead of deadEnemies) {
+                this.stage.removeChild(dead);
             }
+            this.enemyParty = this.enemyParty.filter(e => !deadEnemies.includes(e));
+            this.turns = this.turns.filter(turn => !deadEnemies.includes(turn.actor));
+            anyKilled = deadEnemies.length > 0;
         } else {
+            const defender = this.enemyParty[0]!;
+            if (await defender.takeDamage(await attacker.attack(defender))) {
+                await defender.die();
+                this.stage.removeChild(defender);
+                this.enemyParty.shift();
+                this.turns = this.turns.filter(turn => turn.actor !== defender);
+                anyKilled = true;
+            }
+        }
+
+        if (this.enemyParty.length === 0) {
+            this.wave++;
+            const area = areas[this.area]!;
+            if (this.wave >= area.waves.length) {
+                this.area++;
+                this.onAreaChange?.(this.area);
+                await this.fadeOut();
+
+                for (const actor of this.heroParty) {
+                    actor.healMax();
+                }
+
+                await this.init();
+                await this.fadeIn();
+            } else {
+                await this.initEnemy();
+                this.initTurns();
+            }
+        } else if (!anyKilled) {
             this.shiftTurns();
         }
     }
