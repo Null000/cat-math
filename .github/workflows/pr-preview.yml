@@ -1,0 +1,73 @@
+name: PR Preview Deploy
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Build
+        run: bun run build
+
+      - name: Get branch name
+        id: branch
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          # Sanitize branch name for use as a folder (replace / with -)
+          SAFE_BRANCH=$(echo "$BRANCH_NAME" | sed 's/[^a-zA-Z0-9._-]/-/g')
+          echo "name=$SAFE_BRANCH" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy to FTP
+        run: |
+          lftp -e "
+            set ssl:verify-certificate no;
+            mirror --reverse --delete --verbose dist/ cat-math/${{ steps.branch.outputs.name }}/;
+            quit
+          " -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER"
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+
+      - name: Post preview URL
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branch = '${{ steps.branch.outputs.name }}';
+            const url = `https://www.example.com/cat-math/${branch}/`;
+            const body = `🔗 **Preview deployed:** [${url}](${url})`;
+
+            // Find existing bot comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const botComment = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes('Preview deployed:')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
