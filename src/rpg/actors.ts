@@ -57,6 +57,7 @@ function setButtons(enabled: boolean) {
     "btn-run-left",
     "btn-cast-magic",
     "btn-area-attack",
+    "btn-magic-missile",
     "btn-level-up",
     "btn-heal",
     "btn-reset",
@@ -68,6 +69,7 @@ function setButtons(enabled: boolean) {
   const isWizard = enabled && currentActor instanceof Wizard;
   ($("btn-cast-magic") as HTMLButtonElement).disabled = !isWizard;
   ($("btn-area-attack") as HTMLButtonElement).disabled = !isWizard;
+  ($("btn-magic-missile") as HTMLButtonElement).disabled = !isWizard;
   ($("btn-level-up") as HTMLButtonElement).disabled = !isWizard;
 }
 
@@ -249,6 +251,15 @@ async function init() {
     log("Area attack animation");
     const dmg = await currentActor.areaAttack();
     log(`Area attack complete (${dmg} damage)`);
+  });
+
+  $("btn-magic-missile").addEventListener("click", async () => {
+    if (!currentActor || !(currentActor instanceof Wizard)) return;
+    const target = await ensureDummyTarget();
+    log("Magic missile animation");
+    const dmg = await currentActor.magicMissileAttack(target);
+    log(`Magic missile complete (${dmg} damage)`);
+    updateStats(currentActor);
   });
 
   $("btn-level-up").addEventListener("click", async () => {

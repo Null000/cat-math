@@ -18,6 +18,7 @@ import { Container, Sprite } from "pixi.js";
 import { Wizard } from "./Wizard.ts";
 import { Spider } from "./enemies/Spider.ts";
 import { Slime } from "./enemies/Slime.ts";
+import {areas} from "./areas.ts";
 
 async function makeSimulatorEnemies(plan: EnemyType[]): Promise<Actor[]> {
 
@@ -72,6 +73,10 @@ async function makeSimulatorWizard(xp: number): Promise<Wizard> {
   const wizard = new Wizard(xp);
   fakeAnimations(wizard);
   wizard.castMagic = async () => { };
+  wizard.castAreaMagic = async () => {};
+  wizard.castMagicMissile = async () => {};
+  wizard.levelUp = async (xp) => wizard.levelUpStats(xp)
+
   return wizard;
 }
 
@@ -87,8 +92,13 @@ function fakeAnimations(actor: Actor) {
 // Main Simulation
 // ============================================================================
 
-async function runSimulation(xp: number = 0, planOverride?: EnemyType[]): Promise<number> {
-  const battleManager = new BattleManager(new Container(), xp);
+interface State {
+	xp: number,
+	area: number
+}
+
+async function runSimulation(startState: State, planOverride?: EnemyType[]): Promise<State> {
+  const battleManager = new BattleManager(new Container(), startState.xp, startState.area);
   battleManager._makeEnemies = (x) => makeSimulatorEnemies(planOverride ?? x);
   battleManager._makeWizard = makeSimulatorWizard;
   battleManager._makeBackground = async () => new Sprite();
@@ -102,11 +112,14 @@ async function runSimulation(xp: number = 0, planOverride?: EnemyType[]): Promis
     const dead = await battleManager.doTurns();
     if (dead) {
       console.log('hero died. area: ' + battleManager.area + ', wave: ' + battleManager.wave + ', turns: ' + battleManager.turnCounter + ', userInput: ' + i + ', xp: ' + battleManager.xp);
-      return battleManager.xp;
+      return {
+		  xp: battleManager.xp,
+		  area: battleManager.area
+	  };
     }
     await battleManager.correctAnswer();
   }
-  return -1;
+  throw new Error('Simulation did not end');
 }
 
 async function runSimulations() {
@@ -116,13 +129,19 @@ async function runSimulations() {
   //   console.log('result: ' + result);
   // }
 
+	//make infinite areas
+	const lastArea = areas[areas.length - 1]!;
+	for (let i = areas.length; i < 1000; i++) {
+		areas.push(lastArea)
+	}
+
   console.log('real simulation');
-  let result = await runSimulation();
-  result += await runSimulation(result);
-  result += await runSimulation(result);
-  result += await runSimulation(result);
-  result += await runSimulation(result);
-  console.log('result: ' + result);
+	let state: State = { xp: 0, area: 0 } ;
+	for (let i = 1; i <= 4; i++) {
+		console.log('life: ' + i);
+		state = await runSimulation(state);
+	}
+  console.log('end ex: ' + state.xp + ', area: ' + state.area);
 }
 
 // Run the simulation

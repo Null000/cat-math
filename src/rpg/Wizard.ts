@@ -167,7 +167,7 @@ export class Wizard extends Actor {
         this.magicTrails.push({ graphic: trail, life: 0.2 });
     }
 
-    private castAreaMagic(): Promise<void> {
+    castAreaMagic(): Promise<void> {
         this.isAreaCasting = true;
         this.areaProgress = 0;
         this.magicLastTime = 0;
@@ -201,18 +201,22 @@ export class Wizard extends Actor {
         });
     }
 
+	levelUpStats(newXp:number) {
+		const xpFactor = 1 + newXp / 100;
+		this.maxHealth = Math.floor(100 * xpFactor);
+		this.health = this.maxHealth;
+		this.attackPower = Math.floor(5 * xpFactor);
+		this.defensePower = Math.floor(xpFactor);
+		this.speed = Math.floor(6 * xpFactor);
+	}
+
     async levelUp(newXp: number): Promise<void> {
         const newLevel = getWizardLevel(newXp);
         const newTexturePath = `assets/wizard${newLevel}.png`;
         this.levelUpNewTexture = await Assets.load(newTexturePath);
 
         // Update stats
-        const xpFactor = 1 + newXp / 100;
-        this.maxHealth = Math.floor(100 * xpFactor);
-        this.health = this.maxHealth;
-        this.attackPower = Math.floor(5 * xpFactor);
-        this.defensePower = Math.floor(xpFactor);
-        this.speed = Math.floor(6 * xpFactor);
+        this.levelUpStats(newXp);
         this.updateHealthBar();
 
         this.isLevelingUp = true;

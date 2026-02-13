@@ -37,7 +37,7 @@ export class BattleManager {
     _makeWizard = makeWizard;
     _makeBackground = makeBackground;
 
-    constructor(stage: Container, xp: number, area: number = 0) {
+    constructor(stage: Container, xp: number, area: number) {
         this.stage = stage;
         this.xp = xp;
         this.area = area;
