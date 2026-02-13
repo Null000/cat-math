@@ -238,6 +238,11 @@ export abstract class Actor extends Container {
         return this.attackPower;
     }
 
+    async magicMissileAttack(target: Actor): Promise<number> {
+        await this.twitch();
+        return this.attackPower;
+    }
+
     async twitch(): Promise<void> {
         this.isTwitching = true;
         this.twitchProgress = 0;

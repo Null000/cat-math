@@ -23,6 +23,16 @@ export class Wizard extends Actor {
     private areaProgress: number = 0;
     private areaDuration: number = 0.6;
 
+    // Magic missile state
+    private isCastingMissiles: boolean = false;
+    private resolveMissiles: (() => void) | null = null;
+    private missiles: { graphic: Graphics; progress: number; startDelay: number; offsetY: number; hit: boolean }[] = [];
+    private missileDuration: number = 0.35;
+    private missileTargetX: number = 0;
+    private missileTargetY: number = 0;
+    private missileBursts: { graphic: Graphics; progress: number }[] = [];
+    private missileBurstDuration: number = 0.15;
+
     // Level-up animation state
     private isLevelingUp: boolean = false;
     private resolveLevelUp: (() => void) | null = null;
@@ -53,11 +63,13 @@ export class Wizard extends Actor {
     }
 
     override async attack(defender: Actor): Promise<number> {
-        // return super.attack(defender);
-        const isCritical = false;
         await this.twitch();
-        await this.castMagic(isCritical, defender);
-        return isCritical ? this.attackPower * 2 : this.attackPower;
+        if (Math.random() < 0.35) {
+            await this.castMagicMissile(defender);
+        } else {
+            await this.castMagic(false, defender);
+        }
+        return this.attackPower;
     }
 
     castMagic(isCritical: boolean, defender: Actor): Promise<void> {
@@ -88,6 +100,71 @@ export class Wizard extends Actor {
         await this.twitch();
         await this.castAreaMagic();
         return this.attackPower;
+    }
+
+    override async magicMissileAttack(defender: Actor): Promise<number> {
+        await this.twitch();
+        await this.castMagicMissile(defender);
+        return this.attackPower;
+    }
+
+    castMagicMissile(defender: Actor): Promise<void> {
+        this.isCastingMissiles = true;
+        this.missileTargetX = defender.x - this.x;
+        this.missileTargetY = defender.y - this.y - 80;
+        this.magicLastTime = 0;
+        this.missiles = [];
+        this.missileBursts = [];
+
+        const offsets = [-35, 0, 35];
+        for (let i = 0; i < 3; i++) {
+            const missile = new Graphics();
+            this.drawMissile(missile);
+            missile.zIndex = 1000;
+            missile.visible = false;
+            this.parent!.addChild(missile);
+            this.missiles.push({
+                graphic: missile,
+                progress: 0,
+                startDelay: i * 0.07,
+                offsetY: offsets[i]!,
+                hit: false
+            });
+        }
+
+        return new Promise((resolve) => {
+            if (this.resolveMissiles) {
+                this.resolveMissiles();
+            }
+            this.resolveMissiles = resolve;
+        });
+    }
+
+    private drawMissile(g: Graphics) {
+        const color = 0xcc44ff;
+        // Outer glow
+        g.circle(0, 0, 10);
+        g.fill({ color, alpha: 0.15 });
+        // Middle glow
+        g.circle(0, 0, 6);
+        g.fill({ color, alpha: 0.3 });
+        // Inner glow
+        g.circle(0, 0, 3.5);
+        g.fill({ color, alpha: 0.6 });
+        // Core
+        g.circle(0, 0, 1.5);
+        g.fill({ color: 0xffffff, alpha: 0.95 });
+    }
+
+    private spawnMissileTrail(x: number, y: number) {
+        const trail = new Graphics();
+        trail.circle(0, 0, 2);
+        trail.fill({ color: 0xcc44ff, alpha: 0.5 });
+        trail.x = this.x + x;
+        trail.y = this.y + y;
+        trail.zIndex = 1000;
+        this.parent!.addChild(trail);
+        this.magicTrails.push({ graphic: trail, life: 0.2 });
     }
 
     private castAreaMagic(): Promise<void> {
@@ -281,7 +358,7 @@ export class Wizard extends Actor {
     override update(time: number, isSine: boolean) {
         super.update(time, isSine);
 
-        const hasWork = this.isCastingMagic || this.isBursting || this.isAreaCasting || this.magicTrails.length > 0 || this.isLevelingUp || this.levelUpParticles.length > 0;
+        const hasWork = this.isCastingMagic || this.isBursting || this.isAreaCasting || this.isCastingMissiles || this.missileBursts.length > 0 || this.magicTrails.length > 0 || this.isLevelingUp || this.levelUpParticles.length > 0;
         if (!hasWork) return;
 
         if (this.magicLastTime === 0) {
@@ -355,6 +432,93 @@ export class Wizard extends Actor {
                 this.magicBurst = burst;
                 burst.zIndex = 1000;
                 this.parent!.addChild(burst);
+            }
+        }
+
+        // Magic missile animation
+        if (this.isCastingMissiles) {
+            let allHit = true;
+            for (const missile of this.missiles) {
+                if (missile.hit) continue;
+
+                if (missile.startDelay > 0) {
+                    missile.startDelay -= delta;
+                    allHit = false;
+                    continue;
+                }
+
+                missile.graphic.visible = true;
+                missile.progress += delta;
+                const t = Math.min(missile.progress / this.missileDuration, 1);
+
+                const eased = t * t;
+
+                const startX = 80;
+                const startY = -160;
+                const endX = this.missileTargetX;
+                const endY = this.missileTargetY;
+
+                const x = startX + (endX - startX) * eased;
+                const y = startY + (endY - startY) * eased + Math.sin(t * Math.PI) * missile.offsetY;
+
+                missile.graphic.x = this.x + x;
+                missile.graphic.y = this.y + y;
+
+                if (t > 0.05 && t < 0.9 && Math.random() < 0.4) {
+                    this.spawnMissileTrail(x, y);
+                }
+
+                if (t >= 1) {
+                    missile.hit = true;
+                    this.parent!.removeChild(missile.graphic);
+                    missile.graphic.destroy();
+
+                    // Small impact burst
+                    const burst = new Graphics();
+                    burst.circle(0, 0, 1);
+                    burst.fill({ color: 0xcc44ff, alpha: 0.6 });
+                    burst.x = this.x + endX;
+                    burst.y = this.y + endY;
+                    burst.zIndex = 1000;
+                    this.parent!.addChild(burst);
+                    this.missileBursts.push({ graphic: burst, progress: 0 });
+                } else {
+                    allHit = false;
+                }
+            }
+
+            if (allHit && this.missileBursts.length === 0) {
+                this.isCastingMissiles = false;
+                this.magicLastTime = 0;
+                if (this.resolveMissiles) {
+                    this.resolveMissiles();
+                    this.resolveMissiles = null;
+                }
+            }
+        }
+
+        // Magic missile bursts
+        for (let i = this.missileBursts.length - 1; i >= 0; i--) {
+            const burst = this.missileBursts[i]!;
+            burst.progress += delta;
+            const t = Math.min(burst.progress / this.missileBurstDuration, 1);
+            burst.graphic.scale.set(15 * t);
+            burst.graphic.alpha = (1 - t) * 0.6;
+
+            if (t >= 1) {
+                this.parent!.removeChild(burst.graphic);
+                burst.graphic.destroy();
+                this.missileBursts.splice(i, 1);
+            }
+        }
+
+        // Resolve missiles when all bursts done
+        if (this.isCastingMissiles && this.missiles.every(m => m.hit) && this.missileBursts.length === 0) {
+            this.isCastingMissiles = false;
+            this.magicLastTime = 0;
+            if (this.resolveMissiles) {
+                this.resolveMissiles();
+                this.resolveMissiles = null;
             }
         }
 
