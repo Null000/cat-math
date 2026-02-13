@@ -26,23 +26,14 @@ jobs:
           SAFE_BRANCH=$(echo "$BRANCH_NAME" | sed 's/[^a-zA-Z0-9._-]/-/g')
           echo "name=$SAFE_BRANCH" >> "$GITHUB_OUTPUT"
 
-      - name: Install lftp
-        run: sudo apt-get update && sudo apt-get install -y lftp
-
       - name: Deploy to FTP
-        run: |
-          lftp <<EOF
-            set ssl:verify-certificate no
-            set net:max-retries 3
-            set net:reconnect-interval-base 5
-            open -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER"
-            mirror --reverse --delete --verbose dist/ cat-math/${{ steps.branch.outputs.name }}/
-            quit
-          EOF
-        env:
-          FTP_SERVER: ${{ secrets.FTP_SERVER }}
-          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
-          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: cat-math/${{ steps.branch.outputs.name }}/
 
       - name: Post preview URL
         uses: actions/github-script@v7
