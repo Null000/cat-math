@@ -26,6 +26,9 @@ jobs:
           SAFE_BRANCH=$(echo "$BRANCH_NAME" | sed 's/[^a-zA-Z0-9._-]/-/g')
           echo "name=$SAFE_BRANCH" >> "$GITHUB_OUTPUT"
 
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
       - name: Deploy to FTP
         run: |
           lftp -e "
