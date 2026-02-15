@@ -103,6 +103,10 @@ async function init() {
 	const answerQueue: boolean[] = [];
 	let isProcessingTurns = false;
 
+	let lastCorrectTimestamp = -1;
+	let correctCount = 0;
+	let turnTimeSum = 0;
+
 	async function processQueue() {
 		if (isProcessingTurns) return;
 		isProcessingTurns = true;
@@ -110,6 +114,15 @@ async function init() {
 		while (answerQueue.length > 0) {
 			const isCorrect = answerQueue.shift()!;
 			if (isCorrect) {
+				const now = Date.now();
+
+				if (lastCorrectTimestamp > 0) {
+					correctCount++;
+					turnTimeSum += now - lastCorrectTimestamp;
+					console.log(`Correct count: ${correctCount}, Avg turn time: ${turnTimeSum / correctCount}`);
+				}
+				lastCorrectTimestamp = now;
+
 				await battleManager.correctAnswer();
 			} else {
 				await battleManager.incorrectAnswer();
