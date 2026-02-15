@@ -727,5 +727,5 @@ export function getWizardLevel(xp: number): number {
 	if (xp < 50) {
 		return 1;
 	}
-	return Math.ceil(xp - 50 / 100) + 1;
+	return Math.ceil((xp - 50) / 100) + 1;
 }
