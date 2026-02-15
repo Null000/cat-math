@@ -1,9 +1,9 @@
-import {Application, Container, Graphics} from 'pixi.js';
-import {standardHeight, standardWidth} from './constants.ts';
-import {BattleManager} from './BattleManager.ts';
-import {getProblem} from '../app.ts';
-import {Category} from '../common.ts';
-import {ProblemUI} from './ProblemUI.ts';
+import { Application, Container, Graphics } from "pixi.js";
+import { standardHeight, standardWidth } from "./constants.ts";
+import { BattleManager } from "./BattleManager.ts";
+import { getProblem } from "../app.ts";
+import { Category } from "../common.ts";
+import { ProblemUI } from "./ProblemUI.ts";
 
 declare function gtag(...args: any[]): void;
 
@@ -15,7 +15,7 @@ async function init() {
 	await app.init({
 		resizeTo: window,
 		backgroundColor: 0x000000,
-		antialias: true
+		antialias: true,
 	});
 	document.body.appendChild(app.canvas);
 
@@ -35,29 +35,39 @@ async function init() {
 	world.addChild(mask);
 
 	const urlParams = new URLSearchParams(window.location.search);
-	const categoriesParam = urlParams.get('categories');
+	const categoriesParam = urlParams.get("categories");
 	let selectedCategories: Category[];
 	if (categoriesParam) {
-		selectedCategories = categoriesParam.split(';').map(decodeURIComponent) as Category[];
+		selectedCategories = categoriesParam
+			.split(";")
+			.map(decodeURIComponent) as Category[];
 	} else {
 		selectedCategories = [Category.Addition_Ten];
 	}
 	let currentProblem = getProblem(selectedCategories);
 
-	const startXp = parseInt(localStorage.getItem('xp') || '0');
-	const startArea = parseInt(localStorage.getItem('rpg_area') || '0');
+	const startXp = parseInt(localStorage.getItem("xp") || "0");
+	const startArea = parseInt(localStorage.getItem("rpg_area") || "0");
 	const battleManager = new BattleManager(world, startXp, startArea);
-	battleManager.onXpChange = (xp) => localStorage.setItem('xp', xp.toString());
-	battleManager.onAreaChange = (area) => localStorage.setItem('rpg_area', area.toString());
+	battleManager.onXpChange = (xp) =>
+		localStorage.setItem("xp", xp.toString());
+	battleManager.onAreaChange = (area) =>
+		localStorage.setItem("rpg_area", area.toString());
 	await battleManager.init();
 
 	// Create Math UI
 	const mathUI = new ProblemUI(gameStage, onSubmit);
-	mathUI.setProblem(currentProblem.problem.text, currentProblem.problem.options);
+	mathUI.setProblem(
+		currentProblem.problem.text,
+		currentProblem.problem.options,
+	);
 
 	function nextProblem() {
 		currentProblem = getProblem(selectedCategories);
-		mathUI.setProblem(currentProblem.problem.text, currentProblem.problem.options);
+		mathUI.setProblem(
+			currentProblem.problem.text,
+			currentProblem.problem.options,
+		);
 	}
 
 	// Basic animation runner
@@ -86,7 +96,7 @@ async function init() {
 		mathUI.updateTransform(scale, x, y);
 	}
 
-	window.addEventListener('resize', resize);
+	window.addEventListener("resize", resize);
 	resize(); // Initial resize
 
 	// Queue for storing answers to prevent race conditions with doTurns
@@ -116,9 +126,9 @@ async function init() {
 	}
 
 	async function onSubmit(solution: string) {
-		if (solution === '') return;
+		if (solution === "") return;
 
-		if (solution === 'Makonja') {
+		if (solution === "Makonja") {
 			for (let i = 0; i < 1000; i++) {
 				answerQueue.push(true);
 			}
@@ -126,7 +136,8 @@ async function init() {
 			return;
 		}
 
-		const isCorrect = solution.trim() === currentProblem.problem.answer.toString();
+		const isCorrect =
+			solution.trim() === currentProblem.problem.answer.toString();
 
 		gtag("event", "problem_answer", {
 			category: currentProblem.category,
@@ -145,9 +156,7 @@ async function init() {
 		void processQueue();
 	}
 
-
 	await battleManager.doTurns();
 }
 
 init();
-
