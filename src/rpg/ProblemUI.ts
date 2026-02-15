@@ -5,6 +5,8 @@ export class ProblemUI {
     private problemText: Text;
     private container: HTMLDivElement;
     private input: HTMLInputElement;
+    private submitButton: HTMLButtonElement;
+    private inputRow: HTMLDivElement;
     private optionsContainer: HTMLDivElement;
 
     private styleTag: HTMLStyleElement;
@@ -115,6 +117,50 @@ export class ProblemUI {
                 40%, 60% { transform: translate3d(4px, 0, 0); }
             }
 
+            .input-row {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                pointer-events: auto;
+            }
+
+            #submit-btn {
+                background: rgba(46, 204, 113, 0.3);
+                border: 2px solid rgba(46, 204, 113, 0.5);
+                border-radius: 20px;
+                color: #2ecc71;
+                font-family: 'Inter', sans-serif;
+                font-size: 1.5rem;
+                font-weight: 800;
+                padding: 1rem 1.5rem;
+                text-align: center;
+                outline: none;
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                box-shadow:
+                    0 10px 30px rgba(0, 0, 0, 0.5),
+                    0 0 0 1px rgba(46, 204, 113, 0.2),
+                    inset 0 0 20px rgba(46, 204, 113, 0.05);
+                transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                cursor: pointer;
+                line-height: 1;
+            }
+
+            #submit-btn:hover {
+                background: rgba(46, 204, 113, 0.5);
+                border-color: #2ecc71;
+                box-shadow:
+                    0 15px 40px rgba(0, 0, 0, 0.6),
+                    0 0 0 2px rgba(46, 204, 113, 0.5),
+                    0 0 30px rgba(46, 204, 113, 0.3),
+                    inset 0 0 20px rgba(46, 204, 113, 0.1);
+                transform: translateY(-2px) scale(1.05);
+            }
+
+            #submit-btn:active {
+                transform: scale(0.95);
+            }
+
             #options-container {
                 display: none;
                 flex-wrap: wrap;
@@ -191,10 +237,22 @@ export class ProblemUI {
         this.input.placeholder = '?';
         this.input.autocomplete = 'off';
 
+        this.submitButton = document.createElement('button');
+        this.submitButton.id = 'submit-btn';
+        this.submitButton.textContent = '✓';
+        this.submitButton.addEventListener('click', () => {
+            this.onSubmit();
+        });
+
+        this.inputRow = document.createElement('div');
+        this.inputRow.className = 'input-row';
+        this.inputRow.appendChild(this.input);
+        this.inputRow.appendChild(this.submitButton);
+
         this.optionsContainer = document.createElement('div');
         this.optionsContainer.id = 'options-container';
 
-        this.container.appendChild(this.input);
+        this.container.appendChild(this.inputRow);
         this.container.appendChild(this.optionsContainer);
         document.body.appendChild(this.container);
 
@@ -232,7 +290,7 @@ export class ProblemUI {
         this.problemText.style.fill = '#ffffff'; // Reset color if changed
 
         if (options && options.length > 0) {
-            this.input.style.display = 'none';
+            this.inputRow.style.display = 'none';
             this.optionsContainer.style.display = 'flex';
             this.optionsContainer.innerHTML = '';
             for (const option of options) {
@@ -247,7 +305,7 @@ export class ProblemUI {
         } else {
             this.optionsContainer.style.display = 'none';
             this.optionsContainer.innerHTML = '';
-            this.input.style.display = '';
+            this.inputRow.style.display = '';
             this.input.focus();
         }
     }
