@@ -71,14 +71,27 @@ export class Wizard extends Actor {
 		target: Actor;
 		 damage: number;
 	}[]> {
-		const isCritical = false;
+		let isCritical = false;
 		await this.twitch();
+
+		const level = getWizardLevel(this.xp);
+
 		const target = defenders[0]!;
+
+		let damage = this.attackPower;
+
+
+		if (level > 1 ) {
+			if (Math.random() < 0.25) {
+				isCritical = true;
+				damage *= 2;
+			}
+		}
 
 		await this.castMagic(isCritical, target);
 		return [{
 			target,
-			damage: this.attackPower,
+			damage
 		}];
 	}
 

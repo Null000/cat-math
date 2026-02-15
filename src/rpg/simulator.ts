@@ -2,23 +2,26 @@
 // Text-based simulation using the same battle logic as BattleManager
 // Run with: bun run src/rpg/simulator.ts
 
-import { Actor } from "./Actor.ts";
-import { BattleManager } from "./BattleManager.ts";
-import { EnemyType } from "./enemies/enemyMaker.ts";
-import { Rat } from "./enemies/Rat.ts";
-import { DireRat } from "./enemies/DireRat.ts";
-import { Goblin } from "./enemies/Goblin.ts";
-import { Skeleton } from "./enemies/Skeleton.ts";
-import { Zombie } from "./enemies/Zombie.ts";
-import { Bat } from "./enemies/Bat.ts";
-import { Wolf } from "./enemies/Wolf.ts";
-import { Treant } from "./enemies/Treant.ts";
-import { Dummy } from "./enemies/Dummy.ts";
-import { Container, Sprite } from "pixi.js";
-import { Wizard } from "./Wizard.ts";
-import { Spider } from "./enemies/Spider.ts";
-import { Slime } from "./enemies/Slime.ts";
+import {Actor} from "./Actor.ts";
+import {BattleManager} from "./BattleManager.ts";
+import {EnemyType} from "./enemies/enemyMaker.ts";
+import {Rat} from "./enemies/Rat.ts";
+import {DireRat} from "./enemies/DireRat.ts";
+import {Goblin} from "./enemies/Goblin.ts";
+import {Skeleton} from "./enemies/Skeleton.ts";
+import {Zombie} from "./enemies/Zombie.ts";
+import {Bat} from "./enemies/Bat.ts";
+import {Wolf} from "./enemies/Wolf.ts";
+import {Treant} from "./enemies/Treant.ts";
+import {Dummy} from "./enemies/Dummy.ts";
+import {Container, Sprite} from "pixi.js";
+import {Wizard} from "./Wizard.ts";
+import {Spider} from "./enemies/Spider.ts";
+import {Slime} from "./enemies/Slime.ts";
 import {areas} from "./areas.ts";
+
+// @ts-ignore
+import fs from 'fs/promises'
 
 async function makeSimulatorEnemies(plan: EnemyType[]): Promise<Actor[]> {
 	const enemies = [];
@@ -71,19 +74,26 @@ async function makeSimulatorEnemies(plan: EnemyType[]): Promise<Actor[]> {
 async function makeSimulatorWizard(xp: number): Promise<Wizard> {
 	const wizard = new Wizard(xp);
 	fakeAnimations(wizard);
-	wizard.castMagic = async () => {};
-	wizard.castAreaMagic = async () => {};
-  wizard.castMagicMissile = async () => {};
-  wizard.levelUp = async (xp) => wizard.levelUpStats(xp)
+	wizard.castMagic = async () => {
+	};
+	wizard.castAreaMagic = async () => {
+	};
+	wizard.castMagicMissile = async () => {
+	};
+	wizard.levelUp = async (xp) => wizard.levelUpStats(xp)
 
-  return wizard;
+	return wizard;
 }
 
 function fakeAnimations(actor: Actor) {
-	actor.shake = async () => {};
-	actor.die = async () => {};
-	actor.runLeft = async () => {};
-	actor.twitch = async () => {};
+	actor.shake = async () => {
+	};
+	actor.die = async () => {
+	};
+	actor.runLeft = async () => {
+	};
+	actor.twitch = async () => {
+	};
 }
 
 // ============================================================================
@@ -92,45 +102,65 @@ function fakeAnimations(actor: Actor) {
 
 interface State {
 	xp: number,
-	area: number
+	area: number,
+	playerTurns: number,
 }
 
+const stats: {
+	area: number;
+	wave: number;
+	attackPower: number;
+	hp: number;
+}[] = [];
+
 async function runSimulation(startState: State,
-	planOverride?: EnemyType[],
+							 planOverride?: EnemyType[],
 ): Promise<State> {
 	const battleManager = new BattleManager(new Container(), startState.xp, startState.area);
 	battleManager._makeEnemies = (x) => makeSimulatorEnemies(planOverride ?? x);
 	battleManager._makeWizard = makeSimulatorWizard;
 	battleManager._makeBackground = async () => new Sprite();
 
-	battleManager.fadeIn = async () => {};
-	battleManager.fadeOut = async () => {};
+	battleManager.fadeIn = async () => {
+	};
+	battleManager.fadeOut = async () => {
+	};
 
 	await battleManager.init();
+
+	const startPlayerTurns = startState.playerTurns;
 
 	for (let i = 0; i < 300; i++) {
 		const dead = await battleManager.doTurns();
 		if (dead) {
 			console.log(
 				"hero died. area: " +
-					battleManager.area +
-					", wave: " +
-					battleManager.wave +
-					", turns: " +
-					battleManager.turnCounter +
-					", userInput: " +
-					i +
-					", xp: " +
-					battleManager.xp,
+				battleManager.area +
+				", wave: " +
+				battleManager.wave +
+				", turns: " +
+				battleManager.turnCounter +
+				", userInput: " +
+				(i + startPlayerTurns) +
+				", xp: " +
+				battleManager.xp,
 			);
 			return {
-		  xp: battleManager.xp,
-		  area: battleManager.area
-	  };
-    }
-    await battleManager.correctAnswer();
-  }
-  throw new Error('Simulation did not end');
+				xp: battleManager.xp,
+				area: battleManager.area,
+				playerTurns: i + startPlayerTurns
+			};
+		}
+
+		stats.push({
+			area: battleManager.area,
+			wave: battleManager.wave,
+			attackPower: battleManager.heroParty[0]!.attackPower,
+			hp: battleManager.heroParty[0]!.health
+		})
+		await battleManager.correctAnswer();
+	}
+	throw new Error('Simulation did not end');
 }
 
 async function runSimulations() {
@@ -146,13 +176,33 @@ async function runSimulations() {
 		areas.push(lastArea)
 	}
 
-  console.log('real simulation');
-	let state: State = { xp: 0, area: 0 } ;
-	for (let i = 1; i <= 4; i++) {
-		console.log('life: ' + i);
-		state = await runSimulation(state);
+	try {
+		console.log('real simulation');
+		let state: State = {xp: 0, area: 0, playerTurns: 0};
+		for (let i = 1; i <= 3; i++) {
+			console.log('life: ' + i);
+			state = await runSimulation(state);
+		}
+		console.log('end ex: ' + state.xp + ', area: ' + state.area + ', turns: ' + state.playerTurns);
+	} catch (e) {
+		console.log('ex: ' + e);
 	}
-  console.log('end ex: ' + state.xp + ', area: ' + state.area);
+
+	const prevAreaSum: number[] = [];
+	let currentSum = 0;
+	for (let area of areas) {
+		prevAreaSum.push(currentSum);
+		currentSum += area.waves.length;
+	}
+
+
+	const lines : string[]= [];
+	lines.push('turn,area,wave,attackPower,hp')
+	for (let i = 0; i < stats.length; i++) {
+		const stat = stats[i]!;
+		lines.push(`${i},${stat.area},${stat.wave + prevAreaSum[stat.area]!},${stat.attackPower},${stat.hp}`);
+	}
+	await fs.writeFile('stats.csv', lines.join('\n'));
 }
 
 // Run the simulation

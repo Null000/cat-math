@@ -40,7 +40,7 @@ export const areas: Area[] = [
 			[EnemyType.Slime, EnemyType.Slime],
 			[EnemyType.Slime, EnemyType.Slime],
 			[EnemyType.Slime, EnemyType.Slime],
-			Array.from({ length: 1000 }, () => EnemyType.Slime),
+			...Array.from({ length: 500 }, () => [EnemyType.Slime,EnemyType.Slime,EnemyType.Slime,EnemyType.Slime,EnemyType.Slime]),
 		],
 	},
 ];
