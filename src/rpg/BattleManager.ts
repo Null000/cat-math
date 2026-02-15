@@ -1,11 +1,11 @@
-import { Container, Graphics } from "pixi.js";
-import { Actor } from "./Actor.ts";
-import { Wizard, getWizardLevel } from "./Wizard.ts";
-import { makeEnemies, EnemyType } from "./enemies/enemyMaker.ts";
-import { makeWizard } from "./enemies/wizardMaker.ts";
-import { makeBackground, BackgroundType } from "./backgroundMaker.ts";
-import { standardWidth, standardHeight } from "./constants.ts";
-import { areas } from "./areas.ts";
+import {Container, Graphics} from "pixi.js";
+import {Actor} from "./Actor.ts";
+import {Wizard, getWizardLevel} from "./Wizard.ts";
+import {makeEnemies, EnemyType} from "./enemies/enemyMaker.ts";
+import {makeWizard} from "./enemies/wizardMaker.ts";
+import {makeBackground, BackgroundType} from "./backgroundMaker.ts";
+import {standardWidth, standardHeight} from "./constants.ts";
+import {areas} from "./areas.ts";
 
 export class BattleManager {
 	heroParty: Wizard[] = [];
@@ -237,41 +237,29 @@ export class BattleManager {
 		}
 		let anyKilled = false;
 
-		// 10% chance of area attack when there are multiple enemies
-		if (this.enemyParty.length > 1 && Math.random() < 0.1) {
-			const damage = await attacker.areaAttack();
+		const attackResult = await attacker.attack(this.enemyParty);
 
-			// Apply damage to all enemies simultaneously
-			const results = await Promise.all(
-				this.enemyParty.map((enemy) => enemy.takeDamage(damage)),
-			);
 
-			const deadEnemies = this.enemyParty.filter(
-				(_, i) => results[i] === true,
-			);
-			await Promise.all(deadEnemies.map((dead) => dead.die()));
-			for (const dead of deadEnemies) {
-				this.stage.removeChild(dead);
-			}
-			this.enemyParty = this.enemyParty.filter(
-				(e) => !deadEnemies.includes(e),
-			);
-			this.turns = this.turns.filter(
-				(turn) => !deadEnemies.includes(turn.actor),
-			);
-			anyKilled = deadEnemies.length > 0;
-		} else {
-			const defender = this.enemyParty[0]!;
-			if (await defender.takeDamage(await attacker.attack(defender))) {
-				await defender.die();
-				this.stage.removeChild(defender);
-				this.enemyParty.shift();
-				this.turns = this.turns.filter(
-					(turn) => turn.actor !== defender,
-				);
-				anyKilled = true;
-			}
+		// Apply damage to all enemies simultaneously
+		const results = await Promise.all(
+			attackResult.map((ar) => ar.target.takeDamage(ar.damage))
+		);
+
+		const deadEnemies = this.enemyParty.filter(
+			(_, i) => results[i] === true,
+		);
+		await Promise.all(deadEnemies.map((dead) => dead.die()));
+		for (const dead of deadEnemies) {
+			this.stage.removeChild(dead);
 		}
+		this.enemyParty = this.enemyParty.filter(
+			(e) => !deadEnemies.includes(e),
+		);
+		this.turns = this.turns.filter(
+			(turn) => !deadEnemies.includes(turn.actor),
+		);
+		anyKilled = deadEnemies.length > 0;
+
 
 		if (this.enemyParty.length === 0) {
 			this.wave++;
@@ -298,8 +286,10 @@ export class BattleManager {
 
 	//return true if hero is defeated
 	private async enemyAttack(attacker: Actor): Promise<boolean> {
+		//TODO must be updated to support enemy area attacks
 		const defender = this.heroParty[0]!;
-		if (await defender.takeDamage(await attacker.attack(defender))) {
+		const attackResult =await attacker.attack(this.heroParty);
+		if (await defender.takeDamage(attackResult[0]!.damage)) {
 			await defender.runLeft();
 
 			//remove all

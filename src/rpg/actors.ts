@@ -202,9 +202,9 @@ async function init() {
 		if (!currentActor) return;
 		const target = await ensureDummyTarget();
 		log("Attack animation");
-		const dmg = await currentActor.attack(target);
-		await target.takeDamage(dmg);
-		log(`Attack dealt ${dmg} damage to Dummy`);
+		const attackResult = await currentActor.attack([target]);
+		await target.takeDamage(attackResult[0]!.damage);
+		log(`Attack dealt ${attackResult[0]!.damage} damage to Dummy`);
 		updateStats(currentActor);
 	});
 

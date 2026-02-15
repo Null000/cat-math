@@ -57,12 +57,19 @@ export class Wizard extends Actor {
 		this.healthBar.setHealth(ratio);
 	}
 
-	override async attack(defender: Actor): Promise<number> {
-		// return super.attack(defender);
+	override async attack(defenders: Actor[]): Promise<{
+		target: Actor;
+		 damage: number;
+	}[]> {
 		const isCritical = false;
 		await this.twitch();
-		await this.castMagic(isCritical, defender);
-		return isCritical ? this.attackPower * 2 : this.attackPower;
+		const target = defenders[0]!;
+
+		await this.castMagic(isCritical, target);
+		return [{
+			target,
+			damage: this.attackPower,
+		}];
 	}
 
 	castMagic(isCritical: boolean, defender: Actor): Promise<void> {
@@ -540,5 +547,8 @@ export async function initWizard(xp: number) {
 }
 
 export function getWizardLevel(xp: number): number {
-	return xp === 0 ? 1 : Math.ceil(xp / 100);
+	if (xp < 50) {
+		return 1;
+	}
+	return Math.ceil(xp - 50 / 100) + 1;
 }
