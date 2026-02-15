@@ -16,12 +16,17 @@ export const areas: Area[] = [
 		waves: [
 			[EnemyType.Rat],
 			[EnemyType.Rat, EnemyType.Rat],
+			[EnemyType.Rat, EnemyType.Rat],
+			[EnemyType.DireRat],
 			[EnemyType.DireRat],
 			[EnemyType.DireRat, EnemyType.Rat],
+			[EnemyType.DireRat, EnemyType.Rat],
 			[EnemyType.DireRat, EnemyType.Rat, EnemyType.Rat],
+			[EnemyType.DireRat, EnemyType.DireRat],
 			[
 				EnemyType.DireRat,
 				EnemyType.DireRat,
+				EnemyType.Rat,
 				EnemyType.Rat,
 				EnemyType.Rat,
 			],
