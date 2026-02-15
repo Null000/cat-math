@@ -21,59 +21,58 @@ import { Slime } from "./enemies/Slime.ts";
 import {areas} from "./areas.ts";
 
 async function makeSimulatorEnemies(plan: EnemyType[]): Promise<Actor[]> {
+	const enemies = [];
 
-  const enemies = [];
-
-  for (const type of plan) {
-    let enemy: Actor;
-    switch (type) {
-      case EnemyType.Dummy:
-        enemy = new Dummy();
-        break;
-      case EnemyType.Rat:
-        enemy = new Rat();
-        break;
-      case EnemyType.DireRat:
-        enemy = new DireRat();
-        break;
-      case EnemyType.Goblin:
-        enemy = new Goblin();
-        break;
-      case EnemyType.Skeleton:
-        enemy = new Skeleton();
-        break;
-      case EnemyType.Zombie:
-        enemy = new Zombie();
-        break;
-      case EnemyType.Bat:
-        enemy = new Bat();
-        break;
-      case EnemyType.Wolf:
-        enemy = new Wolf();
-        break;
-      case EnemyType.Treant:
-        enemy = new Treant();
-        break;
-      case EnemyType.Spider:
-        enemy = new Spider();
-        break;
-      case EnemyType.Slime:
-        enemy = new Slime();
-        break;
-      default:
-        throw new Error('Unknown enemy type: ' + type);
-    }
-    fakeAnimations(enemy);
-    enemies.push(enemy);
-  }
-  return enemies;
+	for (const type of plan) {
+		let enemy: Actor;
+		switch (type) {
+			case EnemyType.Dummy:
+				enemy = new Dummy();
+				break;
+			case EnemyType.Rat:
+				enemy = new Rat();
+				break;
+			case EnemyType.DireRat:
+				enemy = new DireRat();
+				break;
+			case EnemyType.Goblin:
+				enemy = new Goblin();
+				break;
+			case EnemyType.Skeleton:
+				enemy = new Skeleton();
+				break;
+			case EnemyType.Zombie:
+				enemy = new Zombie();
+				break;
+			case EnemyType.Bat:
+				enemy = new Bat();
+				break;
+			case EnemyType.Wolf:
+				enemy = new Wolf();
+				break;
+			case EnemyType.Treant:
+				enemy = new Treant();
+				break;
+			case EnemyType.Spider:
+				enemy = new Spider();
+				break;
+			case EnemyType.Slime:
+				enemy = new Slime();
+				break;
+			default:
+				throw new Error("Unknown enemy type: " + type);
+		}
+		fakeAnimations(enemy);
+		enemies.push(enemy);
+	}
+	return enemies;
 }
 
 async function makeSimulatorWizard(xp: number): Promise<Wizard> {
-  const wizard = new Wizard(xp);
-  fakeAnimations(wizard);
-  wizard.castMagic = async () => { };
-  wizard.castAreaMagic = async () => {};
+	const wizard = new Wizard(xp);
+	fakeAnimations(wizard);
+	wizard.castMagic = async () => {};
+	wizard.castAreaMagic = async () => {};
   wizard.castMagicMissile = async () => {};
   wizard.levelUp = async (xp) => wizard.levelUpStats(xp)
 
@@ -81,12 +80,11 @@ async function makeSimulatorWizard(xp: number): Promise<Wizard> {
 }
 
 function fakeAnimations(actor: Actor) {
-  actor.shake = async () => { };
-  actor.die = async () => { };
-  actor.runLeft = async () => { };
-  actor.twitch = async () => { };
+	actor.shake = async () => {};
+	actor.die = async () => {};
+	actor.runLeft = async () => {};
+	actor.twitch = async () => {};
 }
-
 
 // ============================================================================
 // Main Simulation
@@ -97,22 +95,35 @@ interface State {
 	area: number
 }
 
-async function runSimulation(startState: State, planOverride?: EnemyType[]): Promise<State> {
-  const battleManager = new BattleManager(new Container(), startState.xp, startState.area);
-  battleManager._makeEnemies = (x) => makeSimulatorEnemies(planOverride ?? x);
-  battleManager._makeWizard = makeSimulatorWizard;
-  battleManager._makeBackground = async () => new Sprite();
+async function runSimulation(startState: State,
+	planOverride?: EnemyType[],
+): Promise<State> {
+	const battleManager = new BattleManager(new Container(), startState.xp, startState.area);
+	battleManager._makeEnemies = (x) => makeSimulatorEnemies(planOverride ?? x);
+	battleManager._makeWizard = makeSimulatorWizard;
+	battleManager._makeBackground = async () => new Sprite();
 
-  battleManager.fadeIn = async () => { };
-  battleManager.fadeOut = async () => { };
+	battleManager.fadeIn = async () => {};
+	battleManager.fadeOut = async () => {};
 
-  await battleManager.init();
+	await battleManager.init();
 
-  for (let i = 0; i < 300; i++) {
-    const dead = await battleManager.doTurns();
-    if (dead) {
-      console.log('hero died. area: ' + battleManager.area + ', wave: ' + battleManager.wave + ', turns: ' + battleManager.turnCounter + ', userInput: ' + i + ', xp: ' + battleManager.xp);
-      return {
+	for (let i = 0; i < 300; i++) {
+		const dead = await battleManager.doTurns();
+		if (dead) {
+			console.log(
+				"hero died. area: " +
+					battleManager.area +
+					", wave: " +
+					battleManager.wave +
+					", turns: " +
+					battleManager.turnCounter +
+					", userInput: " +
+					i +
+					", xp: " +
+					battleManager.xp,
+			);
+			return {
 		  xp: battleManager.xp,
 		  area: battleManager.area
 	  };
@@ -123,11 +134,11 @@ async function runSimulation(startState: State, planOverride?: EnemyType[]): Pro
 }
 
 async function runSimulations() {
-  // for (let enemy of [EnemyType.Rat, EnemyType.DireRat, EnemyType.Goblin, EnemyType.Skeleton, EnemyType.Zombie, EnemyType.Bat, EnemyType.Wolf, EnemyType.Treant]) {
-  //   console.log('running simulation for ' + enemy);
-  //   const result = await runSimulation(0, [enemy]);
-  //   console.log('result: ' + result);
-  // }
+	// for (let enemy of [EnemyType.Rat, EnemyType.DireRat, EnemyType.Goblin, EnemyType.Skeleton, EnemyType.Zombie, EnemyType.Bat, EnemyType.Wolf, EnemyType.Treant]) {
+	//   console.log('running simulation for ' + enemy);
+	//   const result = await runSimulation(0, [enemy]);
+	//   console.log('result: ' + result);
+	// }
 
 	//make infinite areas
 	const lastArea = areas[areas.length - 1]!;
