@@ -58,7 +58,12 @@ function setButtons(enabled: boolean) {
 		"btn-cast-magic",
 		"btn-area-attack",
 		"btn-magic-missile",
-    "btn-level-up",
+		"btn-lightning-bolt",
+		"btn-fire-bolt",
+		"btn-frost-shard",
+		"btn-arcane-beam",
+		"btn-meteor-strike",
+		"btn-level-up",
 		"btn-heal",
 		"btn-reset",
 	];
@@ -69,7 +74,12 @@ function setButtons(enabled: boolean) {
 	const isWizard = enabled && currentActor instanceof Wizard;
 	($("btn-cast-magic") as HTMLButtonElement).disabled = !isWizard;
 	($("btn-area-attack") as HTMLButtonElement).disabled = !isWizard;
-  ($("btn-magic-missile") as HTMLButtonElement).disabled = !isWizard;
+	($("btn-magic-missile") as HTMLButtonElement).disabled = !isWizard;
+	($("btn-lightning-bolt") as HTMLButtonElement).disabled = !isWizard;
+	($("btn-fire-bolt") as HTMLButtonElement).disabled = !isWizard;
+	($("btn-frost-shard") as HTMLButtonElement).disabled = !isWizard;
+	($("btn-arcane-beam") as HTMLButtonElement).disabled = !isWizard;
+	($("btn-meteor-strike") as HTMLButtonElement).disabled = !isWizard;
 	($("btn-level-up") as HTMLButtonElement).disabled = !isWizard;
 }
 
@@ -256,6 +266,51 @@ async function init() {
     log(`Magic missile complete (${dmg} damage)`);
     updateStats(currentActor);
   });
+
+	$("btn-lightning-bolt").addEventListener("click", async () => {
+		if (!currentActor || !(currentActor instanceof Wizard)) return;
+		const target = await ensureDummyTarget();
+		log("Lightning bolt animation");
+		const dmg = await currentActor.lightningBoltAttack(target);
+		log(`Lightning bolt complete (${dmg} damage)`);
+		updateStats(currentActor);
+	});
+
+	$("btn-fire-bolt").addEventListener("click", async () => {
+		if (!currentActor || !(currentActor instanceof Wizard)) return;
+		const target = await ensureDummyTarget();
+		log("Fire bolt animation");
+		const dmg = await currentActor.fireBoltAttack(target);
+		log(`Fire bolt complete (${dmg} damage)`);
+		updateStats(currentActor);
+	});
+
+	$("btn-frost-shard").addEventListener("click", async () => {
+		if (!currentActor || !(currentActor instanceof Wizard)) return;
+		const target = await ensureDummyTarget();
+		log("Frost shard animation");
+		const dmg = await currentActor.frostShardAttack(target);
+		log(`Frost shard complete (${dmg} damage)`);
+		updateStats(currentActor);
+	});
+
+	$("btn-arcane-beam").addEventListener("click", async () => {
+		if (!currentActor || !(currentActor instanceof Wizard)) return;
+		const target = await ensureDummyTarget();
+		log("Arcane beam animation");
+		const dmg = await currentActor.arcaneBeamAttack(target);
+		log(`Arcane beam complete (${dmg} damage)`);
+		updateStats(currentActor);
+	});
+
+	$("btn-meteor-strike").addEventListener("click", async () => {
+		if (!currentActor || !(currentActor instanceof Wizard)) return;
+		const target = await ensureDummyTarget();
+		log("Meteor strike animation");
+		const dmg = await currentActor.meteorStrikeAttack(target);
+		log(`Meteor strike complete (${dmg} damage)`);
+		updateStats(currentActor);
+	});
 
   $("btn-level-up").addEventListener("click", async () => {
 		if (!currentActor || !(currentActor instanceof Wizard)) return;
