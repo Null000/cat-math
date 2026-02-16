@@ -9,6 +9,20 @@ import { initWolf, Wolf } from "./Wolf.ts";
 import { initTreant, Treant } from "./Treant.ts";
 import { initDummy, Dummy } from "./Dummy.ts";
 import { initSlime, Slime } from "./Slime.ts";
+import { initSpider, Spider } from "./Spider.ts";
+import { initMushroom, Mushroom } from "./Mushroom.ts";
+import { initPoisonSlime, PoisonSlime } from "./PoisonSlime.ts";
+import { initGiantBat, GiantBat } from "./GiantBat.ts";
+import { initGiantSpider, GiantSpider } from "./GiantSpider.ts";
+import {
+	initSkeletonWarrior,
+	SkeletonWarrior,
+} from "./SkeletonWarrior.ts";
+import { initDireWolf, DireWolf } from "./DireWolf.ts";
+import { initGhost, Ghost } from "./Ghost.ts";
+import { initDarkSkeleton, DarkSkeleton } from "./DarkSkeleton.ts";
+import { initFireSlime, FireSlime } from "./FireSlime.ts";
+import { initDragon, Dragon } from "./Dragon.ts";
 
 export const EnemyType = {
 	Rat: "rat",
@@ -22,6 +36,16 @@ export const EnemyType = {
 	Treant: "treant",
 	Dummy: "dummy",
 	Spider: "spider",
+	Mushroom: "mushroom",
+	PoisonSlime: "poison_slime",
+	GiantBat: "giant_bat",
+	GiantSpider: "giant_spider",
+	SkeletonWarrior: "skeleton_warrior",
+	DireWolf: "dire_wolf",
+	Ghost: "ghost",
+	DarkSkeleton: "dark_skeleton",
+	FireSlime: "fire_slime",
+	Dragon: "dragon",
 } as const;
 
 export type EnemyType = (typeof EnemyType)[keyof typeof EnemyType];
@@ -71,6 +95,50 @@ export async function makeEnemies(plan: EnemyType[]): Promise<Actor[]> {
 			case EnemyType.Dummy:
 				await initDummy();
 				enemy = new Dummy();
+				break;
+			case EnemyType.Spider:
+				await initSpider();
+				enemy = new Spider();
+				break;
+			case EnemyType.Mushroom:
+				await initMushroom();
+				enemy = new Mushroom();
+				break;
+			case EnemyType.PoisonSlime:
+				await initPoisonSlime();
+				enemy = new PoisonSlime();
+				break;
+			case EnemyType.GiantBat:
+				await initGiantBat();
+				enemy = new GiantBat();
+				break;
+			case EnemyType.GiantSpider:
+				await initGiantSpider();
+				enemy = new GiantSpider();
+				break;
+			case EnemyType.SkeletonWarrior:
+				await initSkeletonWarrior();
+				enemy = new SkeletonWarrior();
+				break;
+			case EnemyType.DireWolf:
+				await initDireWolf();
+				enemy = new DireWolf();
+				break;
+			case EnemyType.Ghost:
+				await initGhost();
+				enemy = new Ghost();
+				break;
+			case EnemyType.DarkSkeleton:
+				await initDarkSkeleton();
+				enemy = new DarkSkeleton();
+				break;
+			case EnemyType.FireSlime:
+				await initFireSlime();
+				enemy = new FireSlime();
+				break;
+			case EnemyType.Dragon:
+				await initDragon();
+				enemy = new Dragon();
 				break;
 			default:
 				throw new Error("Unknown enemy type: " + type);

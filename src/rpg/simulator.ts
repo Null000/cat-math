@@ -18,6 +18,16 @@ import {Container, Sprite} from "pixi.js";
 import {Wizard} from "./Wizard.ts";
 import {Spider} from "./enemies/Spider.ts";
 import {Slime} from "./enemies/Slime.ts";
+import {Mushroom} from "./enemies/Mushroom.ts";
+import {PoisonSlime} from "./enemies/PoisonSlime.ts";
+import {GiantBat} from "./enemies/GiantBat.ts";
+import {GiantSpider} from "./enemies/GiantSpider.ts";
+import {SkeletonWarrior} from "./enemies/SkeletonWarrior.ts";
+import {DireWolf} from "./enemies/DireWolf.ts";
+import {Ghost} from "./enemies/Ghost.ts";
+import {DarkSkeleton} from "./enemies/DarkSkeleton.ts";
+import {FireSlime} from "./enemies/FireSlime.ts";
+import {Dragon} from "./enemies/Dragon.ts";
 import {areas} from "./areas.ts";
 
 // @ts-ignore
@@ -61,6 +71,36 @@ async function makeSimulatorEnemies(plan: EnemyType[]): Promise<Actor[]> {
 				break;
 			case EnemyType.Slime:
 				enemy = new Slime();
+				break;
+			case EnemyType.Mushroom:
+				enemy = new Mushroom();
+				break;
+			case EnemyType.PoisonSlime:
+				enemy = new PoisonSlime();
+				break;
+			case EnemyType.GiantBat:
+				enemy = new GiantBat();
+				break;
+			case EnemyType.GiantSpider:
+				enemy = new GiantSpider();
+				break;
+			case EnemyType.SkeletonWarrior:
+				enemy = new SkeletonWarrior();
+				break;
+			case EnemyType.DireWolf:
+				enemy = new DireWolf();
+				break;
+			case EnemyType.Ghost:
+				enemy = new Ghost();
+				break;
+			case EnemyType.DarkSkeleton:
+				enemy = new DarkSkeleton();
+				break;
+			case EnemyType.FireSlime:
+				enemy = new FireSlime();
+				break;
+			case EnemyType.Dragon:
+				enemy = new Dragon();
 				break;
 			default:
 				throw new Error("Unknown enemy type: " + type);

@@ -7,10 +7,10 @@ export class Spider extends Actor {
 			texture: spiderTexture,
 			textureScale: 0.5,
 			health: 20,
-			attackPower: 5,
+			attackPower: 4,
 			defensePower: 1,
-			speed: 6,
-			xpDrop: 18,
+			speed: 5,
+			xpDrop: 12,
 		});
 	}
 }
