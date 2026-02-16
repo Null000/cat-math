@@ -49,6 +49,64 @@ export class Wizard extends Actor {
 	private levelUpNewTexture: Texture | null = null;
 	private levelUpTextureSwapped: boolean = false;
 
+	// Lightning bolt state
+	private isCastingLightning: boolean = false;
+	private resolveLightning: (() => void) | null = null;
+	private lightningProgress: number = 0;
+	private lightningDuration: number = 0.3;
+	private lightningBolt: Graphics | null = null;
+	private lightningTargetX: number = 0;
+	private lightningTargetY: number = 0;
+	private lightningBurst: Graphics | null = null;
+	private lightningBurstProgress: number = 0;
+	private isLightningBursting: boolean = false;
+	private lightningBurstDuration: number = 0.15;
+
+	// Fire bolt state
+	private isCastingFireBolt: boolean = false;
+	private resolveFireBolt: (() => void) | null = null;
+	private fireBoltProgress: number = 0;
+	private fireBoltDuration: number = 0.4;
+	private fireBoltOrb: Graphics | null = null;
+	private fireBoltTargetX: number = 0;
+	private fireBoltTargetY: number = 0;
+	private fireBoltBurst: Graphics | null = null;
+	private fireBoltBurstProgress: number = 0;
+	private isFireBoltBursting: boolean = false;
+	private fireBoltBurstDuration: number = 0.2;
+
+	// Frost shard state
+	private isCastingFrost: boolean = false;
+	private resolveFrost: (() => void) | null = null;
+	private frostShards: { graphic: Graphics; progress: number; offsetY: number; hit: boolean }[] = [];
+	private frostDuration: number = 0.3;
+	private frostTargetX: number = 0;
+	private frostTargetY: number = 0;
+	private frostBursts: { graphic: Graphics; progress: number }[] = [];
+	private frostBurstDuration: number = 0.15;
+
+	// Arcane beam state
+	private isCastingBeam: boolean = false;
+	private resolveBeam: (() => void) | null = null;
+	private beamProgress: number = 0;
+	private beamDuration: number = 0.5;
+	private beamGraphic: Graphics | null = null;
+	private beamTargetX: number = 0;
+	private beamTargetY: number = 0;
+
+	// Meteor strike state
+	private isCastingMeteor: boolean = false;
+	private resolveMeteor: (() => void) | null = null;
+	private meteorProgress: number = 0;
+	private meteorDuration: number = 0.5;
+	private meteorGraphic: Graphics | null = null;
+	private meteorTargetX: number = 0;
+	private meteorTargetY: number = 0;
+	private meteorBurst: Graphics | null = null;
+	private meteorBurstProgress: number = 0;
+	private isMeteorBursting: boolean = false;
+	private meteorBurstDuration: number = 0.25;
+
 	constructor(xp: number) {
 		const xpFactor = 1 + xp / 100;
 		super({
@@ -222,6 +280,271 @@ export class Wizard extends Actor {
 			}
 			this.resolveAreaMagic = resolve;
 		});
+	}
+
+	// --- Lightning Bolt ---
+
+	async lightningBoltAttack(defender: Actor): Promise<number> {
+		await this.twitch();
+		await this.castLightningBolt(defender);
+		return this.attackPower;
+	}
+
+	castLightningBolt(defender: Actor): Promise<void> {
+		this.isCastingLightning = true;
+		this.lightningProgress = 0;
+		this.magicLastTime = 0;
+		this.isLightningBursting = false;
+		this.lightningTargetX = defender.x;
+		this.lightningTargetY = defender.y - 80;
+
+		const bolt = new Graphics();
+		bolt.zIndex = 1000;
+		this.parent!.addChild(bolt);
+		this.lightningBolt = bolt;
+
+		return new Promise((resolve) => {
+			if (this.resolveLightning) this.resolveLightning();
+			this.resolveLightning = resolve;
+		});
+	}
+
+	private drawLightningBolt(g: Graphics, startX: number, startY: number, endX: number, endY: number) {
+		g.clear();
+		const segments = 8;
+		const points: { x: number; y: number }[] = [{ x: startX, y: startY }];
+		const dx = endX - startX;
+		const dy = endY - startY;
+		const len = Math.sqrt(dx * dx + dy * dy);
+		const perpX = -dy / len;
+		const perpY = dx / len;
+
+		for (let i = 1; i < segments; i++) {
+			const t = i / segments;
+			const baseX = startX + dx * t;
+			const baseY = startY + dy * t;
+			const offset = (Math.random() - 0.5) * 40;
+			points.push({
+				x: baseX + perpX * offset,
+				y: baseY + perpY * offset,
+			});
+		}
+		points.push({ x: endX, y: endY });
+
+		// Outer glow
+		g.moveTo(points[0]!.x, points[0]!.y);
+		for (let i = 1; i < points.length; i++) {
+			g.lineTo(points[i]!.x, points[i]!.y);
+		}
+		g.stroke({ color: 0x4488ff, alpha: 0.3, width: 12 });
+
+		// Main bolt
+		g.moveTo(points[0]!.x, points[0]!.y);
+		for (let i = 1; i < points.length; i++) {
+			g.lineTo(points[i]!.x, points[i]!.y);
+		}
+		g.stroke({ color: 0x88ccff, alpha: 0.6, width: 4 });
+
+		// Bright core
+		g.moveTo(points[0]!.x, points[0]!.y);
+		for (let i = 1; i < points.length; i++) {
+			g.lineTo(points[i]!.x, points[i]!.y);
+		}
+		g.stroke({ color: 0xffffff, alpha: 0.9, width: 2 });
+	}
+
+	// --- Fire Bolt ---
+
+	async fireBoltAttack(defender: Actor): Promise<number> {
+		await this.twitch();
+		await this.castFireBolt(defender);
+		return this.attackPower;
+	}
+
+	castFireBolt(defender: Actor): Promise<void> {
+		this.isCastingFireBolt = true;
+		this.fireBoltProgress = 0;
+		this.magicLastTime = 0;
+		this.isFireBoltBursting = false;
+		this.fireBoltTargetX = defender.x - this.x;
+		this.fireBoltTargetY = defender.y - this.y - 80;
+
+		const orb = new Graphics();
+		this.drawFireBoltOrb(orb);
+		this.fireBoltOrb = orb;
+		orb.zIndex = 1000;
+		this.parent!.addChild(orb);
+
+		return new Promise((resolve) => {
+			if (this.resolveFireBolt) this.resolveFireBolt();
+			this.resolveFireBolt = resolve;
+		});
+	}
+
+	private drawFireBoltOrb(g: Graphics) {
+		g.circle(0, 0, 25);
+		g.fill({ color: 0xff4400, alpha: 0.15 });
+		g.circle(0, 0, 15);
+		g.fill({ color: 0xff6600, alpha: 0.3 });
+		g.circle(0, 0, 10);
+		g.fill({ color: 0xffaa00, alpha: 0.6 });
+		g.circle(0, 0, 5);
+		g.fill({ color: 0xffffcc, alpha: 0.95 });
+	}
+
+	private spawnFireTrail(x: number, y: number) {
+		const trail = new Graphics();
+		const colors = [0xff4400, 0xff6600, 0xffaa00];
+		const color = colors[Math.floor(Math.random() * colors.length)]!;
+		trail.circle(0, 0, 3 + Math.random() * 3);
+		trail.fill({ color, alpha: 0.5 });
+		trail.x = this.x + x;
+		trail.y = this.y + y;
+		trail.zIndex = 1000;
+		this.parent!.addChild(trail);
+		this.magicTrails.push({ graphic: trail, life: 0.3 });
+	}
+
+	// --- Frost Shard ---
+
+	async frostShardAttack(defender: Actor): Promise<number> {
+		await this.twitch();
+		await this.castFrostShard(defender);
+		return this.attackPower;
+	}
+
+	castFrostShard(defender: Actor): Promise<void> {
+		this.isCastingFrost = true;
+		this.magicLastTime = 0;
+		this.frostShards = [];
+		this.frostBursts = [];
+		this.frostTargetX = defender.x - this.x;
+		this.frostTargetY = defender.y - this.y - 80;
+
+		const offsets = [-30, -15, 0, 15, 30];
+		for (let i = 0; i < 5; i++) {
+			const shard = new Graphics();
+			this.drawFrostShard(shard);
+			shard.zIndex = 1000;
+			shard.visible = false;
+			this.parent!.addChild(shard);
+			this.frostShards.push({
+				graphic: shard,
+				progress: 0,
+				offsetY: offsets[i]!,
+				hit: false,
+			});
+		}
+
+		return new Promise((resolve) => {
+			if (this.resolveFrost) this.resolveFrost();
+			this.resolveFrost = resolve;
+		});
+	}
+
+	private drawFrostShard(g: Graphics) {
+		const color = 0x44ddff;
+		g.circle(0, 0, 8);
+		g.fill({ color, alpha: 0.15 });
+		g.moveTo(0, -6);
+		g.lineTo(4, 0);
+		g.lineTo(0, 6);
+		g.lineTo(-4, 0);
+		g.closePath();
+		g.fill({ color, alpha: 0.6 });
+		g.circle(0, 0, 2);
+		g.fill({ color: 0xffffff, alpha: 0.9 });
+	}
+
+	private spawnFrostTrail(x: number, y: number) {
+		const trail = new Graphics();
+		trail.circle(0, 0, 2);
+		trail.fill({ color: 0x44ddff, alpha: 0.5 });
+		trail.x = this.x + x;
+		trail.y = this.y + y;
+		trail.zIndex = 1000;
+		this.parent!.addChild(trail);
+		this.magicTrails.push({ graphic: trail, life: 0.2 });
+	}
+
+	// --- Arcane Beam ---
+
+	async arcaneBeamAttack(defender: Actor): Promise<number> {
+		await this.twitch();
+		await this.castArcaneBeam(defender);
+		return this.attackPower;
+	}
+
+	castArcaneBeam(defender: Actor): Promise<void> {
+		this.isCastingBeam = true;
+		this.beamProgress = 0;
+		this.magicLastTime = 0;
+		this.beamTargetX = defender.x;
+		this.beamTargetY = defender.y - 80;
+
+		const beam = new Graphics();
+		beam.zIndex = 1000;
+		this.parent!.addChild(beam);
+		this.beamGraphic = beam;
+
+		return new Promise((resolve) => {
+			if (this.resolveBeam) this.resolveBeam();
+			this.resolveBeam = resolve;
+		});
+	}
+
+	// --- Meteor Strike ---
+
+	async meteorStrikeAttack(defender: Actor): Promise<number> {
+		await this.twitch();
+		await this.castMeteorStrike(defender);
+		return this.attackPower;
+	}
+
+	castMeteorStrike(defender: Actor): Promise<void> {
+		this.isCastingMeteor = true;
+		this.meteorProgress = 0;
+		this.magicLastTime = 0;
+		this.isMeteorBursting = false;
+		this.meteorTargetX = defender.x;
+		this.meteorTargetY = defender.y - 80;
+
+		const meteor = new Graphics();
+		this.drawMeteor(meteor);
+		meteor.zIndex = 1000;
+		this.parent!.addChild(meteor);
+		this.meteorGraphic = meteor;
+
+		return new Promise((resolve) => {
+			if (this.resolveMeteor) this.resolveMeteor();
+			this.resolveMeteor = resolve;
+		});
+	}
+
+	private drawMeteor(g: Graphics) {
+		g.circle(0, 0, 30);
+		g.fill({ color: 0xff4400, alpha: 0.15 });
+		g.circle(0, 0, 20);
+		g.fill({ color: 0xff6600, alpha: 0.3 });
+		g.circle(0, 0, 12);
+		g.fill({ color: 0x884400, alpha: 0.8 });
+		g.circle(0, 0, 7);
+		g.fill({ color: 0xffaa00, alpha: 0.7 });
+		g.circle(0, 0, 3);
+		g.fill({ color: 0xffffcc, alpha: 0.95 });
+	}
+
+	private spawnMeteorTrail(x: number, y: number) {
+		const trail = new Graphics();
+		const colors = [0xff4400, 0xff6600, 0xffaa00];
+		const color = colors[Math.floor(Math.random() * colors.length)]!;
+		trail.circle(0, 0, 4 + Math.random() * 4);
+		trail.fill({ color, alpha: 0.5 });
+		trail.x = x;
+		trail.y = y;
+		trail.zIndex = 1000;
+		this.parent!.addChild(trail);
+		this.magicTrails.push({ graphic: trail, life: 0.35 });
 	}
 
 	levelUpStats(newXp:number) {
@@ -398,7 +721,13 @@ export class Wizard extends Actor {
 			this.isCastingMagic ||
 			this.isBursting ||
 			this.isAreaCasting ||
-			this.isCastingMissiles || this.missileBursts.length > 0 || this.magicTrails.length > 0 || this.isLevelingUp || this.levelUpParticles.length > 0;
+			this.isCastingMissiles || this.missileBursts.length > 0 ||
+			this.isCastingLightning || this.isLightningBursting ||
+			this.isCastingFireBolt || this.isFireBoltBursting ||
+			this.isCastingFrost || this.frostBursts.length > 0 ||
+			this.isCastingBeam ||
+			this.isCastingMeteor || this.isMeteorBursting ||
+			this.magicTrails.length > 0 || this.isLevelingUp || this.levelUpParticles.length > 0;
         if (!hasWork) return;
 
 		if (this.magicLastTime === 0) {
@@ -591,6 +920,354 @@ export class Wizard extends Actor {
 				if (this.resolveAreaMagic) {
 					this.resolveAreaMagic();
 					this.resolveAreaMagic = null;
+				}
+			}
+		}
+
+		// Lightning bolt animation
+		if (this.isCastingLightning && this.lightningBolt) {
+			this.lightningProgress += delta;
+			const t = Math.min(this.lightningProgress / this.lightningDuration, 1);
+
+			const startX = this.x + 100;
+			const startY = this.y - 180;
+
+			// Redraw jagged bolt each frame for flicker effect
+			this.drawLightningBolt(this.lightningBolt, startX, startY, this.lightningTargetX, this.lightningTargetY);
+			this.lightningBolt.alpha = t < 0.7 ? 1 : 1 - (t - 0.7) / 0.3;
+
+			if (t >= 1) {
+				const burstX = this.lightningTargetX;
+				const burstY = this.lightningTargetY;
+				this.parent!.removeChild(this.lightningBolt);
+				this.lightningBolt.destroy();
+				this.lightningBolt = null;
+				this.isCastingLightning = false;
+
+				this.isLightningBursting = true;
+				this.lightningBurstProgress = 0;
+				const burst = new Graphics();
+				burst.circle(0, 0, 1);
+				burst.fill({ color: 0x88ccff, alpha: 0.7 });
+				burst.x = burstX;
+				burst.y = burstY;
+				burst.zIndex = 1000;
+				this.parent!.addChild(burst);
+				this.lightningBurst = burst;
+			}
+		}
+
+		if (this.isLightningBursting && this.lightningBurst) {
+			this.lightningBurstProgress += delta;
+			const t = Math.min(this.lightningBurstProgress / this.lightningBurstDuration, 1);
+			this.lightningBurst.scale.set(30 * t);
+			this.lightningBurst.alpha = (1 - t) * 0.7;
+
+			if (t >= 1) {
+				this.parent!.removeChild(this.lightningBurst);
+				this.lightningBurst.destroy();
+				this.lightningBurst = null;
+				this.isLightningBursting = false;
+				this.magicLastTime = 0;
+				if (this.resolveLightning) {
+					this.resolveLightning();
+					this.resolveLightning = null;
+				}
+			}
+		}
+
+		// Fire bolt animation
+		if (this.isCastingFireBolt && this.fireBoltOrb) {
+			this.fireBoltProgress += delta;
+			const t = Math.min(this.fireBoltProgress / this.fireBoltDuration, 1);
+			const eased = t * t;
+
+			const startX = 100;
+			const startY = -180;
+			const endX = this.fireBoltTargetX;
+			const endY = this.fireBoltTargetY;
+
+			const orbX = startX + (endX - startX) * eased;
+			const orbY = startY + (endY - startY) * eased - Math.sin(t * Math.PI) * 60;
+
+			this.fireBoltOrb.x = this.x + orbX;
+			this.fireBoltOrb.y = this.y + orbY;
+
+			const pulse = 1 + Math.sin(t * Math.PI * 8) * 0.1;
+			this.fireBoltOrb.scale.set(pulse);
+
+			if (t > 0.05 && t < 0.9 && Math.random() < 0.6) {
+				this.spawnFireTrail(orbX, orbY);
+			}
+
+			if (t >= 1) {
+				const burstX = this.fireBoltOrb.x;
+				const burstY = this.fireBoltOrb.y;
+				this.parent!.removeChild(this.fireBoltOrb);
+				this.fireBoltOrb.destroy();
+				this.fireBoltOrb = null;
+				this.isCastingFireBolt = false;
+
+				this.isFireBoltBursting = true;
+				this.fireBoltBurstProgress = 0;
+				const burst = new Graphics();
+				burst.circle(0, 0, 1);
+				burst.fill({ color: 0xff6600, alpha: 0.7 });
+				burst.x = burstX;
+				burst.y = burstY;
+				burst.zIndex = 1000;
+				this.parent!.addChild(burst);
+				this.fireBoltBurst = burst;
+			}
+		}
+
+		if (this.isFireBoltBursting && this.fireBoltBurst) {
+			this.fireBoltBurstProgress += delta;
+			const t = Math.min(this.fireBoltBurstProgress / this.fireBoltBurstDuration, 1);
+			this.fireBoltBurst.scale.set(35 * t);
+			this.fireBoltBurst.alpha = (1 - t) * 0.7;
+
+			if (t >= 1) {
+				this.parent!.removeChild(this.fireBoltBurst);
+				this.fireBoltBurst.destroy();
+				this.fireBoltBurst = null;
+				this.isFireBoltBursting = false;
+				this.magicLastTime = 0;
+				if (this.resolveFireBolt) {
+					this.resolveFireBolt();
+					this.resolveFireBolt = null;
+				}
+			}
+		}
+
+		// Frost shard animation
+		if (this.isCastingFrost) {
+			let allHit = true;
+			for (const shard of this.frostShards) {
+				if (shard.hit) continue;
+
+				shard.progress += delta;
+				if (shard.progress <= 0) {
+					allHit = false;
+					continue;
+				}
+
+				shard.graphic.visible = true;
+				const t = Math.min(shard.progress / this.frostDuration, 1);
+				const eased = t * t;
+
+				const startX = 80;
+				const startY = -160;
+				const endX = this.frostTargetX;
+				const endY = this.frostTargetY;
+
+				const x = startX + (endX - startX) * eased;
+				const y = startY + (endY - startY) * eased + Math.sin(t * Math.PI) * shard.offsetY;
+
+				shard.graphic.x = this.x + x;
+				shard.graphic.y = this.y + y;
+
+				// Spin the shard
+				shard.graphic.rotation = t * Math.PI * 4;
+
+				if (t > 0.05 && t < 0.9 && Math.random() < 0.4) {
+					this.spawnFrostTrail(x, y);
+				}
+
+				if (t >= 1) {
+					shard.hit = true;
+					this.parent!.removeChild(shard.graphic);
+					shard.graphic.destroy();
+
+					const burst = new Graphics();
+					burst.circle(0, 0, 1);
+					burst.fill({ color: 0x44ddff, alpha: 0.6 });
+					burst.x = this.x + endX;
+					burst.y = this.y + endY;
+					burst.zIndex = 1000;
+					this.parent!.addChild(burst);
+					this.frostBursts.push({ graphic: burst, progress: 0 });
+				} else {
+					allHit = false;
+				}
+			}
+
+			if (allHit && this.frostBursts.length === 0) {
+				this.isCastingFrost = false;
+				this.magicLastTime = 0;
+				if (this.resolveFrost) {
+					this.resolveFrost();
+					this.resolveFrost = null;
+				}
+			}
+		}
+
+		// Frost shard bursts
+		for (let i = this.frostBursts.length - 1; i >= 0; i--) {
+			const burst = this.frostBursts[i]!;
+			burst.progress += delta;
+			const t = Math.min(burst.progress / this.frostBurstDuration, 1);
+			burst.graphic.scale.set(15 * t);
+			burst.graphic.alpha = (1 - t) * 0.6;
+
+			if (t >= 1) {
+				this.parent!.removeChild(burst.graphic);
+				burst.graphic.destroy();
+				this.frostBursts.splice(i, 1);
+			}
+		}
+
+		// Resolve frost when all bursts done
+		if (this.isCastingFrost && this.frostShards.every(s => s.hit) && this.frostBursts.length === 0) {
+			this.isCastingFrost = false;
+			this.magicLastTime = 0;
+			if (this.resolveFrost) {
+				this.resolveFrost();
+				this.resolveFrost = null;
+			}
+		}
+
+		// Arcane beam animation
+		if (this.isCastingBeam && this.beamGraphic) {
+			this.beamProgress += delta;
+			const t = Math.min(this.beamProgress / this.beamDuration, 1);
+
+			const startX = this.x + 100;
+			const startY = this.y - 180;
+			const endX = this.beamTargetX;
+			const endY = this.beamTargetY;
+
+			this.beamGraphic.clear();
+
+			let beamEndX: number;
+			let beamEndY: number;
+			let alpha: number;
+			let width: number;
+
+			if (t < 0.2) {
+				// Extend beam to target
+				const extend = t / 0.2;
+				beamEndX = startX + (endX - startX) * extend;
+				beamEndY = startY + (endY - startY) * extend;
+				alpha = 0.8;
+				width = 6;
+			} else if (t < 0.7) {
+				// Full beam, pulsing width
+				beamEndX = endX;
+				beamEndY = endY;
+				alpha = 0.8;
+				width = 6 + Math.sin((t - 0.2) / 0.5 * Math.PI * 4) * 3;
+			} else {
+				// Fade out
+				const fadeT = (t - 0.7) / 0.3;
+				beamEndX = endX;
+				beamEndY = endY;
+				alpha = 0.8 * (1 - fadeT);
+				width = 6 * (1 - fadeT);
+			}
+
+			// Outer glow
+			this.beamGraphic.moveTo(startX, startY);
+			this.beamGraphic.lineTo(beamEndX, beamEndY);
+			this.beamGraphic.stroke({ color: 0x9944ff, alpha: alpha * 0.3, width: width * 3 });
+
+			// Main beam
+			this.beamGraphic.moveTo(startX, startY);
+			this.beamGraphic.lineTo(beamEndX, beamEndY);
+			this.beamGraphic.stroke({ color: 0xbb66ff, alpha: alpha * 0.6, width: width });
+
+			// Core
+			this.beamGraphic.moveTo(startX, startY);
+			this.beamGraphic.lineTo(beamEndX, beamEndY);
+			this.beamGraphic.stroke({ color: 0xffffff, alpha: alpha * 0.9, width: Math.max(1, width * 0.3) });
+
+			// Beam particles
+			if (t > 0.1 && t < 0.8 && Math.random() < 0.5) {
+				const particleT = Math.random();
+				const px = startX + (beamEndX - startX) * particleT;
+				const py = startY + (beamEndY - startY) * particleT;
+				const trail = new Graphics();
+				trail.circle(0, 0, 2);
+				trail.fill({ color: 0xbb66ff, alpha: 0.5 });
+				trail.x = px + (Math.random() - 0.5) * 10;
+				trail.y = py + (Math.random() - 0.5) * 10;
+				trail.zIndex = 1000;
+				this.parent!.addChild(trail);
+				this.magicTrails.push({ graphic: trail, life: 0.2 });
+			}
+
+			if (t >= 1) {
+				this.parent!.removeChild(this.beamGraphic);
+				this.beamGraphic.destroy();
+				this.beamGraphic = null;
+				this.isCastingBeam = false;
+				this.magicLastTime = 0;
+				if (this.resolveBeam) {
+					this.resolveBeam();
+					this.resolveBeam = null;
+				}
+			}
+		}
+
+		// Meteor strike animation
+		if (this.isCastingMeteor && this.meteorGraphic) {
+			this.meteorProgress += delta;
+			const t = Math.min(this.meteorProgress / this.meteorDuration, 1);
+
+			// Falls diagonally from upper-right
+			const startX = this.meteorTargetX + 150;
+			const startY = -100;
+			const endX = this.meteorTargetX;
+			const endY = this.meteorTargetY;
+
+			const eased = t * t;
+
+			this.meteorGraphic.x = startX + (endX - startX) * eased;
+			this.meteorGraphic.y = startY + (endY - startY) * eased;
+
+			const scale = 0.5 + t * 0.5;
+			this.meteorGraphic.scale.set(scale);
+
+			if (t > 0.05 && t < 0.95 && Math.random() < 0.6) {
+				this.spawnMeteorTrail(this.meteorGraphic.x, this.meteorGraphic.y);
+			}
+
+			if (t >= 1) {
+				const burstX = this.meteorGraphic.x;
+				const burstY = this.meteorGraphic.y;
+				this.parent!.removeChild(this.meteorGraphic);
+				this.meteorGraphic.destroy();
+				this.meteorGraphic = null;
+				this.isCastingMeteor = false;
+
+				this.isMeteorBursting = true;
+				this.meteorBurstProgress = 0;
+				const burst = new Graphics();
+				burst.circle(0, 0, 1);
+				burst.fill({ color: 0xff6600, alpha: 0.8 });
+				burst.x = burstX;
+				burst.y = burstY;
+				burst.zIndex = 1000;
+				this.parent!.addChild(burst);
+				this.meteorBurst = burst;
+			}
+		}
+
+		if (this.isMeteorBursting && this.meteorBurst) {
+			this.meteorBurstProgress += delta;
+			const t = Math.min(this.meteorBurstProgress / this.meteorBurstDuration, 1);
+			this.meteorBurst.scale.set(50 * t);
+			this.meteorBurst.alpha = (1 - t) * 0.8;
+
+			if (t >= 1) {
+				this.parent!.removeChild(this.meteorBurst);
+				this.meteorBurst.destroy();
+				this.meteorBurst = null;
+				this.isMeteorBursting = false;
+				this.magicLastTime = 0;
+				if (this.resolveMeteor) {
+					this.resolveMeteor();
+					this.resolveMeteor = null;
 				}
 			}
 		}
