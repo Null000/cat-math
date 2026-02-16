@@ -1,21 +1,21 @@
-import { Texture, Assets } from 'pixi.js';
-import { Actor } from '../Actor.ts';
+import { Texture, Assets } from "pixi.js";
+import { Actor } from "../Actor.ts";
 
 export class Treant extends Actor {
-    constructor() {
-        super({
-            texture: treantTexture,
-            textureScale: 0.5,
-            health: 140,
-            attackPower: 12,
-            defensePower: 8,
-            speed: 3,
-            xpDrop: 300
-        });
-    }
+	constructor() {
+		super({
+			texture: treantTexture,
+			textureScale: 0.5,
+			health: 140,
+			attackPower: 12,
+			defensePower: 8,
+			speed: 3,
+			xpDrop: 300,
+		});
+	}
 }
 let treantTexture: Texture;
 export async function initTreant() {
-    if (treantTexture) return;
-    treantTexture = await Assets.load('assets/treant.png');
+	if (treantTexture) return;
+	treantTexture = await Assets.load("assets/treant.png");
 }
