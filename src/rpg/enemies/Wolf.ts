@@ -6,11 +6,11 @@ export class Wolf extends Actor {
 		super({
 			texture: wolfTexture,
 			textureScale: 0.3,
-			health: 30,
+			health: 35,
 			attackPower: 8,
-			defensePower: 3,
-			speed: 8,
-			xpDrop: 30,
+			defensePower: 2,
+			speed: 7,
+			xpDrop: 28,
 		});
 	}
 }

@@ -5,17 +5,18 @@ export class Treant extends Actor {
 	constructor() {
 		super({
 			texture: treantTexture,
-			textureScale: 0.5,
-			health: 140,
-			attackPower: 12,
-			defensePower: 8,
+			textureScale: 0.45,
+			health: 70,
+			attackPower: 10,
+			defensePower: 5,
 			speed: 3,
-			xpDrop: 300,
+			xpDrop: 60,
 		});
+		this.sprite.tint = 0x447744;
 	}
 }
 let treantTexture: Texture;
 export async function initTreant() {
 	if (treantTexture) return;
-	treantTexture = await Assets.load("assets/treant.png");
+	treantTexture = await Assets.load("assets/slime.png");
 }

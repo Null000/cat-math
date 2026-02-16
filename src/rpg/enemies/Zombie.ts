@@ -5,17 +5,18 @@ export class Zombie extends Actor {
 	constructor() {
 		super({
 			texture: zombieTexture,
-			textureScale: 0.5,
-			health: 42,
-			attackPower: 7,
+			textureScale: 0.3,
+			health: 50,
+			attackPower: 8,
 			defensePower: 4,
 			speed: 2,
-			xpDrop: 35,
+			xpDrop: 32,
 		});
+		this.sprite.tint = 0x778866;
 	}
 }
 let zombieTexture: Texture;
 export async function initZombie() {
 	if (zombieTexture) return;
-	zombieTexture = await Assets.load("assets/zombie.png");
+	zombieTexture = await Assets.load("assets/skeleton.png");
 }

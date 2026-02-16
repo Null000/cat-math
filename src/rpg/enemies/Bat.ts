@@ -6,11 +6,11 @@ export class Bat extends Actor {
 		super({
 			texture: batTexture,
 			textureScale: 0.25,
-			health: 16,
-			attackPower: 4,
-			defensePower: 1,
-			speed: 9,
-			xpDrop: 12,
+			health: 14,
+			attackPower: 3,
+			defensePower: 0,
+			speed: 8,
+			xpDrop: 10,
 		});
 	}
 }
