@@ -3,3 +3,4 @@ dist
 remote-debug-profile
 package-lock.json
 .idea
+stats.csv
