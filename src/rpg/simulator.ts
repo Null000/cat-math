@@ -1,6 +1,7 @@
 // Cat Wizard - Battle Simulator
 // Text-based simulation using the same battle logic as BattleManager
 // Run with: bun run src/rpg/simulator.ts
+// Run sweep with: bun run src/rpg/simulator.ts sweep
 
 import {Actor} from "./Actor.ts";
 import {BattleManager} from "./BattleManager.ts";
@@ -15,7 +16,7 @@ import {Wolf} from "./enemies/Wolf.ts";
 import {Treant} from "./enemies/Treant.ts";
 import {Dummy} from "./enemies/Dummy.ts";
 import {Container, Sprite} from "pixi.js";
-import {Wizard} from "./Wizard.ts";
+import {getWizardLevel, Wizard} from "./Wizard.ts";
 import {Spider} from "./enemies/Spider.ts";
 import {Slime} from "./enemies/Slime.ts";
 import {Mushroom} from "./enemies/Mushroom.ts";
@@ -32,6 +33,39 @@ import {areas} from "./areas.ts";
 
 // @ts-ignore
 import fs from 'fs/promises'
+
+// ============================================================================
+// Types
+// ============================================================================
+
+type SimEvent =
+	| { turn: number; event: "death"; area: number; wave: number; xp: number }
+	| { turn: number; event: "levelUp"; newLevel: number; xp: number }
+	| { turn: number; event: "areaChange"; newArea: number; xp: number };
+
+interface EnemyStatFactors {
+	enemyTypes: EnemyType[];
+	hpFactor: number;
+	attackFactor: number;
+}
+
+interface SimulationResult {
+	state: State;
+	events: SimEvent[];
+}
+
+interface SweepResult {
+	hpFactor: number;
+	attackFactor: number;
+	events: SimEvent[];
+	finalXp: number;
+	finalArea: number;
+	finalPlayerTurns: number;
+}
+
+// ============================================================================
+// Simulator Factories
+// ============================================================================
 
 async function makeSimulatorEnemies(plan: EnemyType[]): Promise<Actor[]> {
 	const enemies = [];
@@ -136,6 +170,22 @@ function fakeAnimations(actor: Actor) {
 	};
 }
 
+function applyStatFactors(
+	enemies: Actor[],
+	plan: EnemyType[],
+	factors: EnemyStatFactors,
+): void {
+	for (let i = 0; i < enemies.length; i++) {
+		const enemyType = plan[i];
+		if (enemyType !== undefined && factors.enemyTypes.includes(enemyType)) {
+			const enemy = enemies[i]!;
+			enemy.health = Math.floor(enemy.health * factors.hpFactor);
+			enemy.maxHealth = Math.floor(enemy.maxHealth * factors.hpFactor);
+			enemy.attackPower = Math.floor(enemy.attackPower * factors.attackFactor);
+		}
+	}
+}
+
 // ============================================================================
 // Main Simulation
 // ============================================================================
@@ -151,13 +201,25 @@ const stats: {
 	wave: number;
 	attackPower: number;
 	hp: number;
+	dead: number;
 }[] = [];
 
-async function runSimulation(startState: State,
-							 planOverride?: EnemyType[],
-): Promise<State> {
+async function runSimulation(
+	startState: State,
+	planOverride?: EnemyType[],
+	statFactors?: EnemyStatFactors,
+): Promise<SimulationResult> {
+	const events: SimEvent[] = [];
+
 	const battleManager = new BattleManager(new Container(), startState.xp, startState.area);
-	battleManager._makeEnemies = (x) => makeSimulatorEnemies(planOverride ?? x);
+	battleManager._makeEnemies = async (x) => {
+		const plan = planOverride ?? x;
+		const enemies = await makeSimulatorEnemies(plan);
+		if (statFactors) {
+			applyStatFactors(enemies, plan, statFactors);
+		}
+		return enemies;
+	};
 	battleManager._makeWizard = makeSimulatorWizard;
 	battleManager._makeBackground = async () => new Sprite();
 
@@ -170,9 +232,16 @@ async function runSimulation(startState: State,
 
 	const startPlayerTurns = startState.playerTurns;
 
-	for (let i = 0; i < 300; i++) {
+	for (let i = 0; i < 1000; i++) {
 		const dead = await battleManager.doTurns();
 		if (dead) {
+			events.push({
+				turn: i + startPlayerTurns,
+				event: "death",
+				area: battleManager.area,
+				wave: battleManager.wave,
+				xp: battleManager.xp,
+			});
 			console.log(
 				"hero died. area: " +
 				battleManager.area +
@@ -186,9 +255,12 @@ async function runSimulation(startState: State,
 				battleManager.xp,
 			);
 			return {
-				xp: battleManager.xp,
-				area: battleManager.area,
-				playerTurns: i + startPlayerTurns
+				state: {
+					xp: battleManager.xp,
+					area: battleManager.area,
+					playerTurns: i + startPlayerTurns
+				},
+				events,
 			};
 		}
 
@@ -196,12 +268,44 @@ async function runSimulation(startState: State,
 			area: battleManager.area,
 			wave: battleManager.wave,
 			attackPower: battleManager.heroParty[0]!.attackPower,
-			hp: battleManager.heroParty[0]!.health
+			hp: battleManager.heroParty[0]!.health,
+			dead: dead ? 1 : 0,
 		})
+
+		const levelBefore = getWizardLevel(battleManager.xp);
+		const areaBefore = battleManager.area;
+
 		await battleManager.correctAnswer();
+
+		const levelAfter = getWizardLevel(battleManager.xp);
+		if (levelAfter > levelBefore) {
+			events.push({
+				turn: i + startPlayerTurns,
+				event: "levelUp",
+				newLevel: levelAfter,
+				xp: battleManager.xp,
+			});
+		}
+
+		if (battleManager.area > areaBefore) {
+			events.push({
+				turn: i + startPlayerTurns,
+				event: "areaChange",
+				newArea: battleManager.area,
+				xp: battleManager.xp,
+			});
+		}
 	}
-	throw new Error('Simulation did not end');
+	console.error('Simulation did not end');
+	return {
+		state: startState,
+		events: []
+	}
 }
+
+// ============================================================================
+// Standard Simulation (original behavior)
+// ============================================================================
 
 async function runSimulations() {
 	// for (let enemy of [EnemyType.Rat, EnemyType.DireRat, EnemyType.Goblin, EnemyType.Skeleton, EnemyType.Zombie, EnemyType.Bat, EnemyType.Wolf, EnemyType.Treant]) {
@@ -216,12 +320,24 @@ async function runSimulations() {
 		areas.push(lastArea)
 	}
 
+	const enemiesInArea = new Set<EnemyType>()
+	for (let wave of areas[2]!.waves) {
+		for (const enemy of wave) {
+			enemiesInArea.add(enemy as any);
+		}
+	}
+
 	try {
 		console.log('real simulation');
 		let state: State = {xp: 0, area: 0, playerTurns: 0};
-		for (let i = 1; i <= 3; i++) {
-			console.log('life: ' + i);
-			state = await runSimulation(state);
+		for (let i = 1; i <= 5; i++) {
+			console.log('life: ' + i)
+			const result = await runSimulation(state, undefined, {
+				enemyTypes: Array.from(enemiesInArea),
+				attackFactor: 1,
+				hpFactor: 1,
+			});
+			state = result.state;
 		}
 		console.log('end ex: ' + state.xp + ', area: ' + state.area + ', turns: ' + state.playerTurns);
 	} catch (e) {
@@ -236,14 +352,111 @@ async function runSimulations() {
 	}
 
 
-	const lines : string[]= [];
-	lines.push('turn,area,wave,attackPower,hp')
+	const lines: string[] = [];
+	lines.push('turn,area,wave,attackPower,hp,dead')
 	for (let i = 0; i < stats.length; i++) {
 		const stat = stats[i]!;
-		lines.push(`${i},${stat.area},${stat.wave + prevAreaSum[stat.area]!},${stat.attackPower},${stat.hp}`);
+		lines.push(`${i},${stat.area},${stat.wave + prevAreaSum[stat.area]!},${stat.attackPower},${stat.hp},${stat.dead}`);
 	}
 	await fs.writeFile('stats.csv', lines.join('\n'));
 }
 
-// Run the simulation
-await runSimulations();
+// ============================================================================
+// Factor Sweep
+// ============================================================================
+
+// Enemy types to apply factors to during sweep
+const sweepEnemyTypes: EnemyType[] = [EnemyType.Rat, EnemyType.DireRat];
+
+function generateFactors(start: number, end: number, step: number): number[] {
+	const factors: number[] = [];
+	for (let v = start; v <= end + step / 2; v += step) {
+		factors.push(Math.round(v * 100) / 100);
+	}
+	return factors;
+}
+
+async function runSweep(enemyTypes: EnemyType[], lives: number): Promise<void> {
+	// Pad areas to 1000
+	const lastArea = areas[areas.length - 1]!;
+	for (let i = areas.length; i < 1000; i++) {
+		areas.push(lastArea);
+	}
+
+	const hpFactors = generateFactors(0.8, 1.2, 0.05);
+	const attackFactors = generateFactors(0.8, 1.2, 0.05);
+	const results: SweepResult[] = [];
+
+	for (const hpFactor of hpFactors) {
+		for (const attackFactor of attackFactors) {
+			console.log(`sweep: hpFactor=${hpFactor}, attackFactor=${attackFactor}`);
+
+			const factors: EnemyStatFactors = {
+				enemyTypes,
+				hpFactor,
+				attackFactor,
+			};
+
+			let state: State = {xp: 0, area: 0, playerTurns: 0};
+			const allEvents: SimEvent[] = [];
+
+			for (let life = 1; life <= lives; life++) {
+				const result = await runSimulation(state, undefined, factors);
+				allEvents.push(...result.events);
+				state = result.state;
+			}
+
+			results.push({
+				hpFactor,
+				attackFactor,
+				events: allEvents,
+				finalXp: state.xp,
+				finalArea: state.area,
+				finalPlayerTurns: state.playerTurns,
+			});
+		}
+	}
+
+	// Write detailed JSON
+	const output = {
+		config: {
+			enemyTypes,
+			hpFactors,
+			attackFactors,
+			lives,
+		},
+		results,
+	};
+	await fs.writeFile('sweep_results.json', JSON.stringify(output, null, 2));
+
+	// Write summary CSV
+	const csvLines: string[] = [];
+	csvLines.push(
+		'hpFactor,attackFactor,totalDeaths,finalArea,finalXp,finalPlayerTurns,firstDeathTurn,levelUpCount,areaChangeCount'
+	);
+	for (const r of results) {
+		const deaths = r.events.filter((e) => e.event === "death");
+		const levelUps = r.events.filter((e) => e.event === "levelUp");
+		const areaChanges = r.events.filter((e) => e.event === "areaChange");
+		const firstDeathTurn = deaths.length > 0 ? deaths[0]!.turn : -1;
+		csvLines.push(
+			`${r.hpFactor},${r.attackFactor},${deaths.length},${r.finalArea},${r.finalXp},${r.finalPlayerTurns},${firstDeathTurn},${levelUps.length},${areaChanges.length}`
+		);
+	}
+	await fs.writeFile('sweep_summary.csv', csvLines.join('\n'));
+
+	console.log(`Sweep complete: ${results.length} combinations.`);
+	console.log('Results written to sweep_results.json and sweep_summary.csv');
+}
+
+// ============================================================================
+// Entry Point
+// ============================================================================
+
+const mode = process.argv[2];
+
+if (mode === "sweep") {
+	await runSweep(sweepEnemyTypes, 5);
+} else {
+	await runSimulations();
+}
