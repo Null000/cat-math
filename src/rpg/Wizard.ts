@@ -1,5 +1,5 @@
-import { Texture, Assets, Graphics } from "pixi.js";
-import { Actor } from "./Actor.ts";
+import {Assets, Graphics, Texture} from "pixi.js";
+import {Actor} from "./Actor.ts";
 
 export class Wizard extends Actor {
 	private isCastingMagic: boolean = false;
@@ -24,16 +24,16 @@ export class Wizard extends Actor {
 	private areaDuration: number = 0.6;
 
 	// Magic missile state
-    private isCastingMissiles: boolean = false;
-    private resolveMissiles: (() => void) | null = null;
-    private missiles: { graphic: Graphics; progress: number; startDelay: number; offsetY: number; hit: boolean }[] = [];
-    private missileDuration: number = 0.35;
-    private missileTargetX: number = 0;
-    private missileTargetY: number = 0;
-    private missileBursts: { graphic: Graphics; progress: number }[] = [];
-    private missileBurstDuration: number = 0.15;
+	private isCastingMissiles: boolean = false;
+	private resolveMissiles: (() => void) | null = null;
+	private missiles: { graphic: Graphics; progress: number; startDelay: number; offsetY: number; hit: boolean }[] = [];
+	private missileDuration: number = 0.35;
+	private missileTargetX: number = 0;
+	private missileTargetY: number = 0;
+	private missileBursts: { graphic: Graphics; progress: number }[] = [];
+	private missileBurstDuration: number = 0.15;
 
-    // Level-up animation state
+	// Level-up animation state
 	private isLevelingUp: boolean = false;
 	private resolveLevelUp: (() => void) | null = null;
 	private levelUpProgress: number = 0;
@@ -127,7 +127,7 @@ export class Wizard extends Actor {
 
 	override async attack(defenders: Actor[]): Promise<{
 		target: Actor;
-		 damage: number;
+		damage: number;
 	}[]> {
 		let isCritical = false;
 		await this.twitch();
@@ -139,7 +139,7 @@ export class Wizard extends Actor {
 		let damage = this.attackPower;
 
 
-		if (level > 1 ) {
+		if (level > 1) {
 			if (Math.random() < 0.25) {
 				isCritical = true;
 				damage *= 2;
@@ -184,89 +184,89 @@ export class Wizard extends Actor {
 	}
 
 	override async magicMissileAttack(defender: Actor): Promise<number> {
-        await this.twitch();
-        await this.castMagicMissile(defender);
-        return this.attackPower;
-    }
+		await this.twitch();
+		await this.castMagicMissile(defender);
+		return this.attackPower;
+	}
 
-    castMagicMissile(defender: Actor): Promise<void> {
-        this.isCastingMissiles = true;
-        this.missileTargetX = defender.x - this.x;
-        this.missileTargetY = defender.y - this.y - 80;
-        this.magicLastTime = 0;
-        this.missiles = [];
-        this.missileBursts = [];
+	castMagicMissile(defender: Actor): Promise<void> {
+		this.isCastingMissiles = true;
+		this.missileTargetX = defender.x - this.x;
+		this.missileTargetY = defender.y - this.y - 80;
+		this.magicLastTime = 0;
+		this.missiles = [];
+		this.missileBursts = [];
 
-        const offsets = [-35, 0, 35];
-        for (let i = 0; i < 3; i++) {
-            const missile = new Graphics();
-            this.drawMissile(missile);
-            missile.zIndex = 1000;
-            missile.visible = false;
-            this.parent!.addChild(missile);
-            this.missiles.push({
-                graphic: missile,
-                progress: 0,
-                startDelay: i * 0.07,
-                offsetY: offsets[i]!,
-                hit: false
-            });
-        }
+		const offsets = [-35, 0, 35];
+		for (let i = 0; i < 3; i++) {
+			const missile = new Graphics();
+			this.drawMissile(missile);
+			missile.zIndex = 1000;
+			missile.visible = false;
+			this.parent!.addChild(missile);
+			this.missiles.push({
+				graphic: missile,
+				progress: 0,
+				startDelay: i * 0.07,
+				offsetY: offsets[i]!,
+				hit: false
+			});
+		}
 
-        return new Promise((resolve) => {
-            if (this.resolveMissiles) {
-                this.resolveMissiles();
-            }
-            this.resolveMissiles = resolve;
-        });
-    }
+		return new Promise((resolve) => {
+			if (this.resolveMissiles) {
+				this.resolveMissiles();
+			}
+			this.resolveMissiles = resolve;
+		});
+	}
 
-    private drawMissile(g: Graphics) {
-        const color = 0xcc44ff;
-        // Outer glow
-        g.circle(0, 0, 10);
-        g.fill({ color, alpha: 0.15 });
-        // Middle glow
-        g.circle(0, 0, 6);
-        g.fill({ color, alpha: 0.3 });
-        // Inner glow
-        g.circle(0, 0, 3.5);
-        g.fill({ color, alpha: 0.6 });
-        // Core
-        g.circle(0, 0, 1.5);
-        g.fill({ color: 0xffffff, alpha: 0.95 });
-    }
+	private drawMissile(g: Graphics) {
+		const color = 0xcc44ff;
+		// Outer glow
+		g.circle(0, 0, 10);
+		g.fill({color, alpha: 0.15});
+		// Middle glow
+		g.circle(0, 0, 6);
+		g.fill({color, alpha: 0.3});
+		// Inner glow
+		g.circle(0, 0, 3.5);
+		g.fill({color, alpha: 0.6});
+		// Core
+		g.circle(0, 0, 1.5);
+		g.fill({color: 0xffffff, alpha: 0.95});
+	}
 
-    private spawnMissileTrail(x: number, y: number) {
-        const trail = new Graphics();
-        trail.circle(0, 0, 2);
-        trail.fill({ color: 0xcc44ff, alpha: 0.5 });
-        trail.x = this.x + x;
-        trail.y = this.y + y;
-        trail.zIndex = 1000;
-        this.parent!.addChild(trail);
-        this.magicTrails.push({ graphic: trail, life: 0.2 });
-    }
+	private spawnMissileTrail(x: number, y: number) {
+		const trail = new Graphics();
+		trail.circle(0, 0, 2);
+		trail.fill({color: 0xcc44ff, alpha: 0.5});
+		trail.x = this.x + x;
+		trail.y = this.y + y;
+		trail.zIndex = 1000;
+		this.parent!.addChild(trail);
+		this.magicTrails.push({graphic: trail, life: 0.2});
+	}
 
-    castAreaMagic(): Promise<void> {
-        this.isAreaCasting = true;
-        this.areaProgress = 0;
-        this.magicLastTime = 0;
+	castAreaMagic(): Promise<void> {
+		this.isAreaCasting = true;
+		this.areaProgress = 0;
+		this.magicLastTime = 0;
 
 		const ring = new Graphics();
 		const color = 0xaa44ff;
 		// Outer glow
 		ring.circle(0, 0, 10);
-		ring.stroke({ color, alpha: 0.2, width: 12 });
+		ring.stroke({color, alpha: 0.2, width: 12});
 		// Main ring
 		ring.circle(0, 0, 10);
-		ring.stroke({ color, alpha: 0.5, width: 4 });
+		ring.stroke({color, alpha: 0.5, width: 4});
 		// Inner bright ring
 		ring.circle(0, 0, 10);
-		ring.stroke({ color: 0xddaaff, alpha: 0.7, width: 2 });
+		ring.stroke({color: 0xddaaff, alpha: 0.7, width: 2});
 		// Core fill
 		ring.circle(0, 0, 8);
-		ring.fill({ color, alpha: 0.1 });
+		ring.fill({color, alpha: 0.1});
 
 		ring.x = this.x;
 		ring.y = this.y - 80;
@@ -312,7 +312,7 @@ export class Wizard extends Actor {
 	private drawLightningBolt(g: Graphics, startX: number, startY: number, endX: number, endY: number) {
 		g.clear();
 		const segments = 8;
-		const points: { x: number; y: number }[] = [{ x: startX, y: startY }];
+		const points: { x: number; y: number }[] = [{x: startX, y: startY}];
 		const dx = endX - startX;
 		const dy = endY - startY;
 		const len = Math.sqrt(dx * dx + dy * dy);
@@ -329,28 +329,28 @@ export class Wizard extends Actor {
 				y: baseY + perpY * offset,
 			});
 		}
-		points.push({ x: endX, y: endY });
+		points.push({x: endX, y: endY});
 
 		// Outer glow
 		g.moveTo(points[0]!.x, points[0]!.y);
 		for (let i = 1; i < points.length; i++) {
 			g.lineTo(points[i]!.x, points[i]!.y);
 		}
-		g.stroke({ color: 0x4488ff, alpha: 0.3, width: 12 });
+		g.stroke({color: 0x4488ff, alpha: 0.3, width: 12});
 
 		// Main bolt
 		g.moveTo(points[0]!.x, points[0]!.y);
 		for (let i = 1; i < points.length; i++) {
 			g.lineTo(points[i]!.x, points[i]!.y);
 		}
-		g.stroke({ color: 0x88ccff, alpha: 0.6, width: 4 });
+		g.stroke({color: 0x88ccff, alpha: 0.6, width: 4});
 
 		// Bright core
 		g.moveTo(points[0]!.x, points[0]!.y);
 		for (let i = 1; i < points.length; i++) {
 			g.lineTo(points[i]!.x, points[i]!.y);
 		}
-		g.stroke({ color: 0xffffff, alpha: 0.9, width: 2 });
+		g.stroke({color: 0xffffff, alpha: 0.9, width: 2});
 	}
 
 	// --- Fire Bolt ---
@@ -383,13 +383,13 @@ export class Wizard extends Actor {
 
 	private drawFireBoltOrb(g: Graphics) {
 		g.circle(0, 0, 25);
-		g.fill({ color: 0xff4400, alpha: 0.15 });
+		g.fill({color: 0xff4400, alpha: 0.15});
 		g.circle(0, 0, 15);
-		g.fill({ color: 0xff6600, alpha: 0.3 });
+		g.fill({color: 0xff6600, alpha: 0.3});
 		g.circle(0, 0, 10);
-		g.fill({ color: 0xffaa00, alpha: 0.6 });
+		g.fill({color: 0xffaa00, alpha: 0.6});
 		g.circle(0, 0, 5);
-		g.fill({ color: 0xffffcc, alpha: 0.95 });
+		g.fill({color: 0xffffcc, alpha: 0.95});
 	}
 
 	private spawnFireTrail(x: number, y: number) {
@@ -397,12 +397,12 @@ export class Wizard extends Actor {
 		const colors = [0xff4400, 0xff6600, 0xffaa00];
 		const color = colors[Math.floor(Math.random() * colors.length)]!;
 		trail.circle(0, 0, 3 + Math.random() * 3);
-		trail.fill({ color, alpha: 0.5 });
+		trail.fill({color, alpha: 0.5});
 		trail.x = this.x + x;
 		trail.y = this.y + y;
 		trail.zIndex = 1000;
 		this.parent!.addChild(trail);
-		this.magicTrails.push({ graphic: trail, life: 0.3 });
+		this.magicTrails.push({graphic: trail, life: 0.3});
 	}
 
 	// --- Frost Shard ---
@@ -445,26 +445,26 @@ export class Wizard extends Actor {
 	private drawFrostShard(g: Graphics) {
 		const color = 0x44ddff;
 		g.circle(0, 0, 8);
-		g.fill({ color, alpha: 0.15 });
+		g.fill({color, alpha: 0.15});
 		g.moveTo(0, -6);
 		g.lineTo(4, 0);
 		g.lineTo(0, 6);
 		g.lineTo(-4, 0);
 		g.closePath();
-		g.fill({ color, alpha: 0.6 });
+		g.fill({color, alpha: 0.6});
 		g.circle(0, 0, 2);
-		g.fill({ color: 0xffffff, alpha: 0.9 });
+		g.fill({color: 0xffffff, alpha: 0.9});
 	}
 
 	private spawnFrostTrail(x: number, y: number) {
 		const trail = new Graphics();
 		trail.circle(0, 0, 2);
-		trail.fill({ color: 0x44ddff, alpha: 0.5 });
+		trail.fill({color: 0x44ddff, alpha: 0.5});
 		trail.x = this.x + x;
 		trail.y = this.y + y;
 		trail.zIndex = 1000;
 		this.parent!.addChild(trail);
-		this.magicTrails.push({ graphic: trail, life: 0.2 });
+		this.magicTrails.push({graphic: trail, life: 0.2});
 	}
 
 	// --- Arcane Beam ---
@@ -523,15 +523,15 @@ export class Wizard extends Actor {
 
 	private drawMeteor(g: Graphics) {
 		g.circle(0, 0, 30);
-		g.fill({ color: 0xff4400, alpha: 0.15 });
+		g.fill({color: 0xff4400, alpha: 0.15});
 		g.circle(0, 0, 20);
-		g.fill({ color: 0xff6600, alpha: 0.3 });
+		g.fill({color: 0xff6600, alpha: 0.3});
 		g.circle(0, 0, 12);
-		g.fill({ color: 0x884400, alpha: 0.8 });
+		g.fill({color: 0x884400, alpha: 0.8});
 		g.circle(0, 0, 7);
-		g.fill({ color: 0xffaa00, alpha: 0.7 });
+		g.fill({color: 0xffaa00, alpha: 0.7});
 		g.circle(0, 0, 3);
-		g.fill({ color: 0xffffcc, alpha: 0.95 });
+		g.fill({color: 0xffffcc, alpha: 0.95});
 	}
 
 	private spawnMeteorTrail(x: number, y: number) {
@@ -539,15 +539,16 @@ export class Wizard extends Actor {
 		const colors = [0xff4400, 0xff6600, 0xffaa00];
 		const color = colors[Math.floor(Math.random() * colors.length)]!;
 		trail.circle(0, 0, 4 + Math.random() * 4);
-		trail.fill({ color, alpha: 0.5 });
+		trail.fill({color, alpha: 0.5});
 		trail.x = x;
 		trail.y = y;
 		trail.zIndex = 1000;
 		this.parent!.addChild(trail);
-		this.magicTrails.push({ graphic: trail, life: 0.35 });
+		this.magicTrails.push({graphic: trail, life: 0.35});
 	}
 
-	levelUpStats(newXp:number) {
+	levelUpStats(newXp: number) {
+		this.xp += newXp;
 		const xpFactor = 1 + newXp / 100;
 		this.maxHealth = Math.floor(100 * xpFactor);
 		this.health = this.maxHealth;
@@ -556,13 +557,13 @@ export class Wizard extends Actor {
 		this.speed = Math.floor(6 * xpFactor);
 	}
 
-    async levelUp(newXp: number): Promise<void> {
-        const newLevel = getWizardLevel(newXp);
-        const newTexturePath = `assets/wizard${newLevel}.png`;
-        this.levelUpNewTexture = await Assets.load(newTexturePath);
+	async levelUp(newXp: number): Promise<void> {
+		const newLevel = getWizardLevel(newXp);
+		const newTexturePath = `assets/wizard${newLevel}.png`;
+		this.levelUpNewTexture = await Assets.load(newTexturePath);
 
-        // Update stats
-        this.levelUpStats(newXp);
+		// Update stats
+		this.levelUpStats(newXp);
 		this.updateHealthBar();
 
 		this.isLevelingUp = true;
@@ -582,7 +583,7 @@ export class Wizard extends Actor {
 		// Create flash overlay
 		const flash = new Graphics();
 		flash.rect(-400, -300, 800, 600);
-		flash.fill({ color: 0xffffff, alpha: 0 });
+		flash.fill({color: 0xffffff, alpha: 0});
 		flash.zIndex = 9000;
 		this.parent!.addChild(flash);
 		this.levelUpFlash = flash;
@@ -606,7 +607,7 @@ export class Wizard extends Actor {
 		const color = colors[Math.floor(Math.random() * colors.length)]!;
 
 		particle.circle(0, 0, size);
-		particle.fill({ color, alpha: 0.8 });
+		particle.fill({color, alpha: 0.8});
 		particle.zIndex = 9001;
 
 		let vx: number;
@@ -663,24 +664,24 @@ export class Wizard extends Actor {
 
 		// Outer glow
 		this.levelUpGlow.circle(0, 0, glowRadius);
-		this.levelUpGlow.fill({ color: 0xffd700, alpha: glowAlpha * 0.3 });
+		this.levelUpGlow.fill({color: 0xffd700, alpha: glowAlpha * 0.3});
 		// Middle glow
 		this.levelUpGlow.circle(0, 0, glowRadius * 0.6);
-		this.levelUpGlow.fill({ color: 0xffea00, alpha: glowAlpha * 0.5 });
+		this.levelUpGlow.fill({color: 0xffea00, alpha: glowAlpha * 0.5});
 		// Inner glow
 		this.levelUpGlow.circle(0, 0, glowRadius * 0.3);
-		this.levelUpGlow.fill({ color: 0xffffff, alpha: glowAlpha * 0.7 });
+		this.levelUpGlow.fill({color: 0xffffff, alpha: glowAlpha * 0.7});
 	}
 
 	private spawnAreaTrail(x: number, y: number) {
 		const trail = new Graphics();
 		trail.circle(0, 0, 3);
-		trail.fill({ color: 0xaa44ff, alpha: 0.5 });
+		trail.fill({color: 0xaa44ff, alpha: 0.5});
 		trail.x = x;
 		trail.y = y;
 		trail.zIndex = 100;
 		this.parent!.addChild(trail);
-		this.magicTrails.push({ graphic: trail, life: 0.3 });
+		this.magicTrails.push({graphic: trail, life: 0.3});
 	}
 
 	private drawOrb(orb: Graphics, isCritical: boolean) {
@@ -689,16 +690,16 @@ export class Wizard extends Actor {
 
 		// Outer glow
 		orb.circle(0, 0, baseRadius * 2.5);
-		orb.fill({ color, alpha: 0.15 });
+		orb.fill({color, alpha: 0.15});
 		// Middle glow
 		orb.circle(0, 0, baseRadius * 1.5);
-		orb.fill({ color, alpha: 0.3 });
+		orb.fill({color, alpha: 0.3});
 		// Inner glow
 		orb.circle(0, 0, baseRadius);
-		orb.fill({ color, alpha: 0.6 });
+		orb.fill({color, alpha: 0.6});
 		// Core
 		orb.circle(0, 0, baseRadius * 0.5);
-		orb.fill({ color: 0xffffff, alpha: 0.95 });
+		orb.fill({color: 0xffffff, alpha: 0.95});
 	}
 
 	private spawnTrail(x: number, y: number) {
@@ -706,12 +707,12 @@ export class Wizard extends Actor {
 		const radius = this.magicIsCritical ? 4 : 3;
 		const color = this.magicIsCritical ? 0xffdd44 : 0x44aaff;
 		trail.circle(0, 0, radius);
-		trail.fill({ color, alpha: 0.5 });
+		trail.fill({color, alpha: 0.5});
 		trail.x = this.x + x;
 		trail.y = this.y + y;
 		trail.zIndex = 1000;
 		this.parent!.addChild(trail);
-		this.magicTrails.push({ graphic: trail, life: 0.3 });
+		this.magicTrails.push({graphic: trail, life: 0.3});
 	}
 
 	override update(time: number, isSine: boolean) {
@@ -728,7 +729,7 @@ export class Wizard extends Actor {
 			this.isCastingBeam ||
 			this.isCastingMeteor || this.isMeteorBursting ||
 			this.magicTrails.length > 0 || this.isLevelingUp || this.levelUpParticles.length > 0;
-        if (!hasWork) return;
+		if (!hasWork) return;
 
 		if (this.magicLastTime === 0) {
 			this.magicLastTime = time;
@@ -796,7 +797,7 @@ export class Wizard extends Actor {
 				const burst = new Graphics();
 				const color = this.magicIsCritical ? 0xffdd44 : 0x44aaff;
 				burst.circle(0, 0, 1);
-				burst.fill({ color, alpha: 0.6 });
+				burst.fill({color, alpha: 0.6});
 				burst.x = burstX;
 				burst.y = burstY;
 				this.magicBurst = burst;
@@ -806,93 +807,93 @@ export class Wizard extends Actor {
 		}
 
 		// Magic missile animation
-        if (this.isCastingMissiles) {
-            let allHit = true;
-            for (const missile of this.missiles) {
-                if (missile.hit) continue;
+		if (this.isCastingMissiles) {
+			let allHit = true;
+			for (const missile of this.missiles) {
+				if (missile.hit) continue;
 
-                if (missile.startDelay > 0) {
-                    missile.startDelay -= delta;
-                    allHit = false;
-                    continue;
-                }
+				if (missile.startDelay > 0) {
+					missile.startDelay -= delta;
+					allHit = false;
+					continue;
+				}
 
-                missile.graphic.visible = true;
-                missile.progress += delta;
-                const t = Math.min(missile.progress / this.missileDuration, 1);
+				missile.graphic.visible = true;
+				missile.progress += delta;
+				const t = Math.min(missile.progress / this.missileDuration, 1);
 
-                const eased = t * t;
+				const eased = t * t;
 
-                const startX = 80;
-                const startY = -160;
-                const endX = this.missileTargetX;
-                const endY = this.missileTargetY;
+				const startX = 80;
+				const startY = -160;
+				const endX = this.missileTargetX;
+				const endY = this.missileTargetY;
 
-                const x = startX + (endX - startX) * eased;
-                const y = startY + (endY - startY) * eased + Math.sin(t * Math.PI) * missile.offsetY;
+				const x = startX + (endX - startX) * eased;
+				const y = startY + (endY - startY) * eased + Math.sin(t * Math.PI) * missile.offsetY;
 
-                missile.graphic.x = this.x + x;
-                missile.graphic.y = this.y + y;
+				missile.graphic.x = this.x + x;
+				missile.graphic.y = this.y + y;
 
-                if (t > 0.05 && t < 0.9 && Math.random() < 0.4) {
-                    this.spawnMissileTrail(x, y);
-                }
+				if (t > 0.05 && t < 0.9 && Math.random() < 0.4) {
+					this.spawnMissileTrail(x, y);
+				}
 
-                if (t >= 1) {
-                    missile.hit = true;
-                    this.parent!.removeChild(missile.graphic);
-                    missile.graphic.destroy();
+				if (t >= 1) {
+					missile.hit = true;
+					this.parent!.removeChild(missile.graphic);
+					missile.graphic.destroy();
 
-                    // Small impact burst
-                    const burst = new Graphics();
-                    burst.circle(0, 0, 1);
-                    burst.fill({ color: 0xcc44ff, alpha: 0.6 });
-                    burst.x = this.x + endX;
-                    burst.y = this.y + endY;
-                    burst.zIndex = 1000;
-                    this.parent!.addChild(burst);
-                    this.missileBursts.push({ graphic: burst, progress: 0 });
-                } else {
-                    allHit = false;
-                }
-            }
+					// Small impact burst
+					const burst = new Graphics();
+					burst.circle(0, 0, 1);
+					burst.fill({color: 0xcc44ff, alpha: 0.6});
+					burst.x = this.x + endX;
+					burst.y = this.y + endY;
+					burst.zIndex = 1000;
+					this.parent!.addChild(burst);
+					this.missileBursts.push({graphic: burst, progress: 0});
+				} else {
+					allHit = false;
+				}
+			}
 
-            if (allHit && this.missileBursts.length === 0) {
-                this.isCastingMissiles = false;
-                this.magicLastTime = 0;
-                if (this.resolveMissiles) {
-                    this.resolveMissiles();
-                    this.resolveMissiles = null;
-                }
-            }
-        }
+			if (allHit && this.missileBursts.length === 0) {
+				this.isCastingMissiles = false;
+				this.magicLastTime = 0;
+				if (this.resolveMissiles) {
+					this.resolveMissiles();
+					this.resolveMissiles = null;
+				}
+			}
+		}
 
-        // Magic missile bursts
-        for (let i = this.missileBursts.length - 1; i >= 0; i--) {
-            const burst = this.missileBursts[i]!;
-            burst.progress += delta;
-            const t = Math.min(burst.progress / this.missileBurstDuration, 1);
-            burst.graphic.scale.set(15 * t);
-            burst.graphic.alpha = (1 - t) * 0.6;
+		// Magic missile bursts
+		for (let i = this.missileBursts.length - 1; i >= 0; i--) {
+			const burst = this.missileBursts[i]!;
+			burst.progress += delta;
+			const t = Math.min(burst.progress / this.missileBurstDuration, 1);
+			burst.graphic.scale.set(15 * t);
+			burst.graphic.alpha = (1 - t) * 0.6;
 
-            if (t >= 1) {
-                this.parent!.removeChild(burst.graphic);
-                burst.graphic.destroy();
-                this.missileBursts.splice(i, 1);
-            }
-        }
+			if (t >= 1) {
+				this.parent!.removeChild(burst.graphic);
+				burst.graphic.destroy();
+				this.missileBursts.splice(i, 1);
+			}
+		}
 
-        // Resolve missiles when all bursts done
-        if (this.isCastingMissiles && this.missiles.every(m => m.hit) && this.missileBursts.length === 0) {
-            this.isCastingMissiles = false;
-            this.magicLastTime = 0;
-            if (this.resolveMissiles) {
-                this.resolveMissiles();
-                this.resolveMissiles = null;
-            }
-        }
+		// Resolve missiles when all bursts done
+		if (this.isCastingMissiles && this.missiles.every(m => m.hit) && this.missileBursts.length === 0) {
+			this.isCastingMissiles = false;
+			this.magicLastTime = 0;
+			if (this.resolveMissiles) {
+				this.resolveMissiles();
+				this.resolveMissiles = null;
+			}
+		}
 
-        // Area attack ring animation
+		// Area attack ring animation
 		if (this.isAreaCasting && this.areaRing) {
 			this.areaProgress += delta;
 			const t = Math.min(this.areaProgress / this.areaDuration, 1);
@@ -948,7 +949,7 @@ export class Wizard extends Actor {
 				this.lightningBurstProgress = 0;
 				const burst = new Graphics();
 				burst.circle(0, 0, 1);
-				burst.fill({ color: 0x88ccff, alpha: 0.7 });
+				burst.fill({color: 0x88ccff, alpha: 0.7});
 				burst.x = burstX;
 				burst.y = burstY;
 				burst.zIndex = 1000;
@@ -1012,7 +1013,7 @@ export class Wizard extends Actor {
 				this.fireBoltBurstProgress = 0;
 				const burst = new Graphics();
 				burst.circle(0, 0, 1);
-				burst.fill({ color: 0xff6600, alpha: 0.7 });
+				burst.fill({color: 0xff6600, alpha: 0.7});
 				burst.x = burstX;
 				burst.y = burstY;
 				burst.zIndex = 1000;
@@ -1081,12 +1082,12 @@ export class Wizard extends Actor {
 
 					const burst = new Graphics();
 					burst.circle(0, 0, 1);
-					burst.fill({ color: 0x44ddff, alpha: 0.6 });
+					burst.fill({color: 0x44ddff, alpha: 0.6});
 					burst.x = this.x + endX;
 					burst.y = this.y + endY;
 					burst.zIndex = 1000;
 					this.parent!.addChild(burst);
-					this.frostBursts.push({ graphic: burst, progress: 0 });
+					this.frostBursts.push({graphic: burst, progress: 0});
 				} else {
 					allHit = false;
 				}
@@ -1169,17 +1170,17 @@ export class Wizard extends Actor {
 			// Outer glow
 			this.beamGraphic.moveTo(startX, startY);
 			this.beamGraphic.lineTo(beamEndX, beamEndY);
-			this.beamGraphic.stroke({ color: 0x9944ff, alpha: alpha * 0.3, width: width * 3 });
+			this.beamGraphic.stroke({color: 0x9944ff, alpha: alpha * 0.3, width: width * 3});
 
 			// Main beam
 			this.beamGraphic.moveTo(startX, startY);
 			this.beamGraphic.lineTo(beamEndX, beamEndY);
-			this.beamGraphic.stroke({ color: 0xbb66ff, alpha: alpha * 0.6, width: width });
+			this.beamGraphic.stroke({color: 0xbb66ff, alpha: alpha * 0.6, width: width});
 
 			// Core
 			this.beamGraphic.moveTo(startX, startY);
 			this.beamGraphic.lineTo(beamEndX, beamEndY);
-			this.beamGraphic.stroke({ color: 0xffffff, alpha: alpha * 0.9, width: Math.max(1, width * 0.3) });
+			this.beamGraphic.stroke({color: 0xffffff, alpha: alpha * 0.9, width: Math.max(1, width * 0.3)});
 
 			// Beam particles
 			if (t > 0.1 && t < 0.8 && Math.random() < 0.5) {
@@ -1188,12 +1189,12 @@ export class Wizard extends Actor {
 				const py = startY + (beamEndY - startY) * particleT;
 				const trail = new Graphics();
 				trail.circle(0, 0, 2);
-				trail.fill({ color: 0xbb66ff, alpha: 0.5 });
+				trail.fill({color: 0xbb66ff, alpha: 0.5});
 				trail.x = px + (Math.random() - 0.5) * 10;
 				trail.y = py + (Math.random() - 0.5) * 10;
 				trail.zIndex = 1000;
 				this.parent!.addChild(trail);
-				this.magicTrails.push({ graphic: trail, life: 0.2 });
+				this.magicTrails.push({graphic: trail, life: 0.2});
 			}
 
 			if (t >= 1) {
@@ -1244,7 +1245,7 @@ export class Wizard extends Actor {
 				this.meteorBurstProgress = 0;
 				const burst = new Graphics();
 				burst.circle(0, 0, 1);
-				burst.fill({ color: 0xff6600, alpha: 0.8 });
+				burst.fill({color: 0xff6600, alpha: 0.8});
 				burst.x = burstX;
 				burst.y = burstY;
 				burst.zIndex = 1000;
@@ -1390,6 +1391,7 @@ export class Wizard extends Actor {
 		}
 	}
 }
+
 let wizardTexture: Texture;
 let wizardTextureLevel: number;
 
@@ -1401,7 +1403,7 @@ export async function initWizard(xp: number) {
 }
 
 export function getWizardLevel(xp: number): number {
-	if (xp < 50) {
+	if (xp < 51) {
 		return 1;
 	}
 	return Math.ceil((xp - 50) / 100) + 1;

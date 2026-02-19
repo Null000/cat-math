@@ -16,7 +16,7 @@ import {Wolf} from "./enemies/Wolf.ts";
 import {Treant} from "./enemies/Treant.ts";
 import {Dummy} from "./enemies/Dummy.ts";
 import {Container, Sprite} from "pixi.js";
-import {Wizard, getWizardLevel} from "./Wizard.ts";
+import {getWizardLevel, Wizard} from "./Wizard.ts";
 import {Spider} from "./enemies/Spider.ts";
 import {Slime} from "./enemies/Slime.ts";
 import {Mushroom} from "./enemies/Mushroom.ts";
@@ -201,6 +201,7 @@ const stats: {
 	wave: number;
 	attackPower: number;
 	hp: number;
+	dead: number;
 }[] = [];
 
 async function runSimulation(
@@ -231,7 +232,7 @@ async function runSimulation(
 
 	const startPlayerTurns = startState.playerTurns;
 
-	for (let i = 0; i < 300; i++) {
+	for (let i = 0; i < 1000; i++) {
 		const dead = await battleManager.doTurns();
 		if (dead) {
 			events.push({
@@ -267,7 +268,8 @@ async function runSimulation(
 			area: battleManager.area,
 			wave: battleManager.wave,
 			attackPower: battleManager.heroParty[0]!.attackPower,
-			hp: battleManager.heroParty[0]!.health
+			hp: battleManager.heroParty[0]!.health,
+			dead: dead ? 1 : 0,
 		})
 
 		const levelBefore = getWizardLevel(battleManager.xp);
@@ -294,7 +296,11 @@ async function runSimulation(
 			});
 		}
 	}
-	throw new Error('Simulation did not end');
+	console.error('Simulation did not end');
+	return {
+		state: startState,
+		events: []
+	}
 }
 
 // ============================================================================
@@ -314,12 +320,23 @@ async function runSimulations() {
 		areas.push(lastArea)
 	}
 
+	const enemiesInArea = new Set<EnemyType>()
+	for (let wave of areas[2]!.waves) {
+		for (const enemy of wave) {
+			enemiesInArea.add(enemy as any);
+		}
+	}
+
 	try {
 		console.log('real simulation');
 		let state: State = {xp: 0, area: 0, playerTurns: 0};
-		for (let i = 1; i <= 3; i++) {
-			console.log('life: ' + i);
-			const result = await runSimulation(state);
+		for (let i = 1; i <= 5; i++) {
+			console.log('life: ' + i)
+			const result = await runSimulation(state, undefined, {
+				enemyTypes: Array.from(enemiesInArea),
+				attackFactor: 1,
+				hpFactor: 1,
+			});
 			state = result.state;
 		}
 		console.log('end ex: ' + state.xp + ', area: ' + state.area + ', turns: ' + state.playerTurns);
@@ -335,11 +352,11 @@ async function runSimulations() {
 	}
 
 
-	const lines : string[]= [];
-	lines.push('turn,area,wave,attackPower,hp')
+	const lines: string[] = [];
+	lines.push('turn,area,wave,attackPower,hp,dead')
 	for (let i = 0; i < stats.length; i++) {
 		const stat = stats[i]!;
-		lines.push(`${i},${stat.area},${stat.wave + prevAreaSum[stat.area]!},${stat.attackPower},${stat.hp}`);
+		lines.push(`${i},${stat.area},${stat.wave + prevAreaSum[stat.area]!},${stat.attackPower},${stat.hp},${stat.dead}`);
 	}
 	await fs.writeFile('stats.csv', lines.join('\n'));
 }
@@ -439,7 +456,7 @@ async function runSweep(enemyTypes: EnemyType[], lives: number): Promise<void> {
 const mode = process.argv[2];
 
 if (mode === "sweep") {
-	await runSweep(sweepEnemyTypes, 3);
+	await runSweep(sweepEnemyTypes, 5);
 } else {
 	await runSimulations();
 }
