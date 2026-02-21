@@ -1,9 +1,9 @@
-import { Application, Container, Graphics } from "pixi.js";
-import { standardHeight, standardWidth } from "./constants.ts";
-import { BattleManager } from "./BattleManager.ts";
-import { getProblem } from "../app.ts";
-import { Category } from "../common.ts";
-import { ProblemUI } from "./ProblemUI.ts";
+import {Application, Container, Graphics} from "pixi.js";
+import {standardHeight, standardWidth} from "./constants.ts";
+import {BattleManager} from "./BattleManager.ts";
+import {getProblem} from "../app.ts";
+import {Category} from "../common.ts";
+import {ProblemUI} from "./ProblemUI.ts";
 
 declare function gtag(...args: any[]): void;
 
@@ -72,7 +72,7 @@ async function init() {
 
 	// Basic animation runner
 	app.ticker.add((time) => {
-		battleManager.update(time.lastTime);
+		battleManager.update(time);
 	});
 
 	// Handle resize

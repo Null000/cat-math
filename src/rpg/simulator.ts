@@ -299,7 +299,7 @@ async function runSimulation(
 	console.error('Simulation did not end');
 	return {
 		state: startState,
-		events: []
+		events: events,
 	}
 }
 
@@ -365,9 +365,6 @@ async function runSimulations() {
 // Factor Sweep
 // ============================================================================
 
-// Enemy types to apply factors to during sweep
-const sweepEnemyTypes: EnemyType[] = [EnemyType.Rat, EnemyType.DireRat];
-
 function generateFactors(start: number, end: number, step: number): number[] {
 	const factors: number[] = [];
 	for (let v = start; v <= end + step / 2; v += step) {
@@ -383,12 +380,14 @@ async function runSweep(enemyTypes: EnemyType[], lives: number): Promise<void> {
 		areas.push(lastArea);
 	}
 
-	const hpFactors = generateFactors(0.8, 1.2, 0.05);
-	const attackFactors = generateFactors(0.8, 1.2, 0.05);
+	const hpFactors = generateFactors(0.5, 1.5, 0.1);
+	const attackFactors = generateFactors(0.8, 2, 0.2);
+	const lockFactors = true;
+
 	const results: SweepResult[] = [];
 
 	for (const hpFactor of hpFactors) {
-		for (const attackFactor of attackFactors) {
+		for (const attackFactor of lockFactors ? [hpFactor] : attackFactors) {
 			console.log(`sweep: hpFactor=${hpFactor}, attackFactor=${attackFactor}`);
 
 			const factors: EnemyStatFactors = {
@@ -442,6 +441,25 @@ async function runSweep(enemyTypes: EnemyType[], lives: number): Promise<void> {
 		csvLines.push(
 			`${r.hpFactor},${r.attackFactor},${deaths.length},${r.finalArea},${r.finalXp},${r.finalPlayerTurns},${firstDeathTurn},${levelUps.length},${areaChanges.length}`
 		);
+
+		const eventsToLog: string[] = [];
+		let foundArea = false;
+		const areaOfInterest = 3;
+		for (let event of r.events) {
+			if (event.event === "areaChange" && event.newArea === 3) {
+				eventsToLog.push("area" + event.newArea + "@" + event.turn);
+				foundArea = true;
+			} else if (event.turn > 500) {
+				break;
+			} else if (event.event === "areaChange" && event.newArea > areaOfInterest) {
+				eventsToLog.push("area" + event.newArea + "@" + event.turn);
+				break;
+			} else if (foundArea) {
+				eventsToLog.push(event.event + "@" + event.turn);
+			}
+		}
+
+		console.log(r.attackFactor + "->\t" + eventsToLog.join('\t\t'));
 	}
 	await fs.writeFile('sweep_summary.csv', csvLines.join('\n'));
 
@@ -456,7 +474,14 @@ async function runSweep(enemyTypes: EnemyType[], lives: number): Promise<void> {
 const mode = process.argv[2];
 
 if (mode === "sweep") {
-	await runSweep(sweepEnemyTypes, 5);
+	const enemiesInArea = new Set<EnemyType>()
+	for (let wave of areas[3]!.waves) {
+		for (const enemy of wave) {
+			enemiesInArea.add(enemy as any);
+		}
+	}
+
+	await runSweep(Array.from(enemiesInArea), 5);
 } else {
 	await runSimulations();
 }

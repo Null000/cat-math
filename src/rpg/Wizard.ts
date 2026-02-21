@@ -1,4 +1,4 @@
-import {Assets, Graphics, Texture} from "pixi.js";
+import {Assets, Graphics, Texture, Ticker} from "pixi.js";
 import {Actor} from "./Actor.ts";
 
 export class Wizard extends Actor {
@@ -715,7 +715,7 @@ export class Wizard extends Actor {
 		this.magicTrails.push({graphic: trail, life: 0.3});
 	}
 
-	override update(time: number, isSine: boolean) {
+	override update(time: Ticker, isSine: boolean) {
 		super.update(time, isSine);
 
 		const hasWork =
@@ -732,12 +732,12 @@ export class Wizard extends Actor {
 		if (!hasWork) return;
 
 		if (this.magicLastTime === 0) {
-			this.magicLastTime = time;
+			this.magicLastTime = time.lastTime;
 			return;
 		}
 
-		const delta = (time - this.magicLastTime) / 1000;
-		this.magicLastTime = time;
+		const delta = (time.lastTime - this.magicLastTime) / 1000;
+		this.magicLastTime = time.lastTime;
 
 		// Update trail particles
 		for (let i = this.magicTrails.length - 1; i >= 0; i--) {

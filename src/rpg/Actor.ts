@@ -1,4 +1,4 @@
-import { Container, Graphics, Sprite, Text, Texture } from "pixi.js";
+import { Container, Graphics, Sprite, Text, Texture, Ticker } from "pixi.js";
 import { HealthBar } from "./HealthBar.ts";
 
 export abstract class Actor extends Container {
@@ -153,12 +153,13 @@ export abstract class Actor extends Container {
 		});
 	}
 
-	update(time: number, isSine: boolean) {
+	update(time: Ticker, isSine: boolean) {
+		const lastTime = time.lastTime;
 		if (this.lastTime === 0) {
-			this.lastTime = time;
+			this.lastTime = lastTime;
 		}
-		const delta = (time - this.lastTime) / 1000;
-		this.lastTime = time;
+		const delta = (lastTime - this.lastTime) / 1000;
+		this.lastTime = lastTime;
 
 		if (this.isDying) {
 			this.alpha -= delta;
@@ -250,7 +251,7 @@ export abstract class Actor extends Container {
 				Math.random() * this.shakeIntensity * 2 - this.shakeIntensity;
 		}
 
-		let offset = isSine ? Math.sin(time / 500) : Math.cos(time / 500);
+		let offset = isSine ? Math.sin(lastTime / 500) : Math.cos(lastTime / 500);
 		offset *= 10;
 
 		this.sprite.y = offset + shakeY;

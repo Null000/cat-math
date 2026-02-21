@@ -1,10 +1,10 @@
-import {Container, Graphics} from "pixi.js";
+import {Container, Graphics, Ticker} from "pixi.js";
 import {Actor} from "./Actor.ts";
-import {Wizard, getWizardLevel} from "./Wizard.ts";
-import {makeEnemies, EnemyType} from "./enemies/enemyMaker.ts";
+import {getWizardLevel, Wizard} from "./Wizard.ts";
+import {makeEnemies} from "./enemies/enemyMaker.ts";
 import {makeWizard} from "./enemies/wizardMaker.ts";
-import {makeBackground, BackgroundType} from "./backgroundMaker.ts";
-import {standardWidth, standardHeight} from "./constants.ts";
+import {makeBackground} from "./backgroundMaker.ts";
+import {standardHeight, standardWidth} from "./constants.ts";
 import {areas} from "./areas.ts";
 
 export class BattleManager {
@@ -75,14 +75,14 @@ export class BattleManager {
 		});
 	}
 
-	private updateFade(time: number) {
+	private updateFade(time: Ticker) {
 		if (!this.isFading) return;
 
 		if (this.lastFadeTime === 0) {
-			this.lastFadeTime = time;
+			this.lastFadeTime = time.lastTime;
 		}
-		const delta = (time - this.lastFadeTime) / 1000;
-		this.lastFadeTime = time;
+		const delta = (time.lastTime - this.lastFadeTime) / 1000;
+		this.lastFadeTime = time.lastTime;
 
 		this.fadeProgress += delta;
 		const t = Math.min(this.fadeProgress / this.fadeDuration, 1);
@@ -288,7 +288,7 @@ export class BattleManager {
 	private async enemyAttack(attacker: Actor): Promise<boolean> {
 		//TODO must be updated to support enemy area attacks
 		const defender = this.heroParty[0]!;
-		const attackResult =await attacker.attack(this.heroParty);
+		const attackResult = await attacker.attack(this.heroParty);
 		if (await defender.takeDamage(attackResult[0]!.damage)) {
 			await defender.runLeft();
 
@@ -310,13 +310,13 @@ export class BattleManager {
 		this.shiftTurns();
 	}
 
-	update(lastTime: number) {
-		this.updateFade(lastTime);
+	update(time: Ticker) {
+		this.updateFade(time);
 		for (const actor of this.heroParty) {
-			actor.update(lastTime, true);
+			actor.update(time, true);
 		}
 		for (const actor of this.enemyParty) {
-			actor.update(lastTime, false);
+			actor.update(time, false);
 		}
 	}
 }
