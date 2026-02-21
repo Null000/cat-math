@@ -72,7 +72,7 @@ export abstract class Actor extends Container {
 
 		const damagePercent = Math.min(damage / this.maxHealth, 1);
 		const intensity = 3 + damagePercent * 17;
-		const duration = 0.2 + damagePercent * 0.6;
+		const duration = 200 + damagePercent * 600;
 		await this.shake(duration, intensity);
 
 		return this.health === 0;
@@ -139,7 +139,7 @@ export abstract class Actor extends Container {
 
 	enter(
 		fromX: number,
-		duration: number = 0.6,
+		duration: number = 600,
 		delay: number = 0,
 	): Promise<void> {
 		this.isEntering = true;
@@ -327,7 +327,7 @@ export abstract class Actor extends Container {
 			this.resolveSpeechBubble = resolve;
 			this.speechBubbleTimeout = setTimeout(() => {
 				this.hideSpeechBubble();
-			}, duration * 1000);
+			}, duration);
 		});
 	}
 

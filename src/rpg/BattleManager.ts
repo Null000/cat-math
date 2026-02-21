@@ -152,7 +152,7 @@ export class BattleManager {
 
 			actor.zIndex = actor.y;
 			this.stage.addChild(actor);
-			enterPromises.push(actor.enter(enterFromX, 0.6, i * 0.15));
+			enterPromises.push(actor.enter(enterFromX, 600, i * 0.15));
 		}
 
 		// TODO this gets the game stuck

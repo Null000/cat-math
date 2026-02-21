@@ -1,9 +1,9 @@
-import { Application, Container, Graphics } from "pixi.js";
-import { standardHeight, standardWidth } from "./constants.ts";
-import { Actor } from "./Actor.ts";
-import { Wizard, initWizard, getWizardLevel } from "./Wizard.ts";
-import { EnemyType, makeEnemies } from "./enemies/enemyMaker.ts";
-import { BackgroundType, makeBackground } from "./backgroundMaker.ts";
+import {Application, Container, Graphics} from "pixi.js";
+import {standardHeight, standardWidth} from "./constants.ts";
+import {Actor} from "./Actor.ts";
+import {getWizardLevel, initWizard, Wizard} from "./Wizard.ts";
+import {EnemyType, makeEnemies} from "./enemies/enemyMaker.ts";
+import {BackgroundType, makeBackground} from "./backgroundMaker.ts";
 
 const ACTOR_X = 400;
 const ACTOR_Y = 500;
@@ -201,7 +201,7 @@ async function init() {
 	$("btn-shake").addEventListener("click", async () => {
 		if (!currentActor) return;
 		log("Shake animation");
-		await currentActor.shake(0.5, 10);
+		await currentActor.shake(2000, 10);
 		log("Shake complete");
 	});
 
@@ -261,13 +261,13 @@ async function init() {
 	});
 
 	$("btn-magic-missile").addEventListener("click", async () => {
-    if (!currentActor || !(currentActor instanceof Wizard)) return;
-    const target = await ensureDummyTarget();
-    log("Magic missile animation");
-    const dmg = await currentActor.magicMissileAttack(target);
-    log(`Magic missile complete (${dmg} damage)`);
-    updateStats(currentActor);
-  });
+		if (!currentActor || !(currentActor instanceof Wizard)) return;
+		const target = await ensureDummyTarget();
+		log("Magic missile animation");
+		const dmg = await currentActor.magicMissileAttack(target);
+		log(`Magic missile complete (${dmg} damage)`);
+		updateStats(currentActor);
+	});
 
 	$("btn-lightning-bolt").addEventListener("click", async () => {
 		if (!currentActor || !(currentActor instanceof Wizard)) return;
@@ -314,7 +314,7 @@ async function init() {
 		updateStats(currentActor);
 	});
 
-  $("btn-level-up").addEventListener("click", async () => {
+	$("btn-level-up").addEventListener("click", async () => {
 		if (!currentActor || !(currentActor instanceof Wizard)) return;
 		const currentLevel = getWizardLevel(wizardXp);
 		// Jump XP past the next level boundary
@@ -345,7 +345,7 @@ async function init() {
 		if (!currentActor) return;
 		const text = ($("bubble-text") as HTMLInputElement).value || "Hello!";
 		const duration =
-			parseFloat(($("bubble-duration") as HTMLInputElement).value) || 2;
+			parseFloat(($("bubble-duration") as HTMLInputElement).value) || 2000;
 		log(`Show speech bubble (${duration}s): "${text}"`);
 		await currentActor.showSpeechBubble(text, duration);
 		log("Speech bubble hidden");
