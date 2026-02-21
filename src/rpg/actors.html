@@ -297,6 +297,38 @@
 					<button id="btn-heal" disabled>Heal Max</button>
 					<button id="btn-reset" disabled>Reset Position</button>
 				</div>
+				<div class="row" style="margin-top: 8px">
+					<input
+						type="text"
+						id="bubble-text"
+						value="Hello!"
+						placeholder="Bubble text"
+						style="
+							background: rgba(255, 255, 255, 0.08);
+							border: 1px solid rgba(255, 255, 255, 0.15);
+							border-radius: 6px;
+							color: #e0e0e0;
+							font-family: inherit;
+							font-size: 14px;
+							padding: 6px 10px;
+							width: 160px;
+						"
+					/>
+					<label
+						>Duration
+						<input
+							type="number"
+							id="bubble-duration"
+							value="2"
+							step="0.5"
+							style="width: 70px"
+					/></label>
+					<button id="btn-show-bubble" disabled>Show Bubble</button>
+					<button id="btn-show-bubble-forever" disabled>
+						Show Bubble (-1)
+					</button>
+					<button id="btn-hide-bubble" disabled>Hide Bubble</button>
+				</div>
 				<div id="log"></div>
 			</div>
 		</div>

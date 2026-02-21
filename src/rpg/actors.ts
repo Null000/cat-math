@@ -66,6 +66,9 @@ function setButtons(enabled: boolean) {
 		"btn-level-up",
 		"btn-heal",
 		"btn-reset",
+		"btn-show-bubble",
+		"btn-show-bubble-forever",
+		"btn-hide-bubble",
 	];
 	for (const id of ids) {
 		($(id) as HTMLButtonElement).disabled = !enabled;
@@ -337,6 +340,30 @@ async function init() {
 		const xp = parseInt(($("wizard-xp") as HTMLInputElement).value) || 0;
 		createActor(type, xp);
 		log("Reset actor position & state");
+	});
+
+	$("btn-show-bubble").addEventListener("click", async () => {
+		if (!currentActor) return;
+		const text = ($("bubble-text") as HTMLInputElement).value || "Hello!";
+		const duration =
+			parseFloat(($("bubble-duration") as HTMLInputElement).value) || 2;
+		log(`Show speech bubble (${duration}s): "${text}"`);
+		await currentActor.showSpeechBubble(text, duration);
+		log("Speech bubble hidden");
+	});
+
+	$("btn-show-bubble-forever").addEventListener("click", async () => {
+		if (!currentActor) return;
+		const text = ($("bubble-text") as HTMLInputElement).value || "Hello!";
+		log(`Show speech bubble (forever): "${text}"`);
+		await currentActor.showSpeechBubble(text, -1);
+		log("Speech bubble shown (persistent)");
+	});
+
+	$("btn-hide-bubble").addEventListener("click", () => {
+		if (!currentActor) return;
+		currentActor.hideSpeechBubble();
+		log("Speech bubble hidden");
 	});
 
 	// Create wizard by default
