@@ -1394,7 +1394,7 @@ let wizardTexture: Texture;
 let wizardTextureLevel: number;
 
 export async function initWizard(xp: number) {
-	const level = getWizardLevel(xp);
+	const level = Math.max(getWizardLevel(xp), 7);
 	if (wizardTextureLevel === level) return;
 	wizardTextureLevel = level;
 	wizardTexture = await Assets.load(`assets/wizard${level}.png`);
