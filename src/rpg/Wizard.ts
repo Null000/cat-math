@@ -7,21 +7,21 @@ export class Wizard extends Actor {
 	private magicOrb: Graphics | null = null;
 	private magicTrails: { graphic: Graphics; life: number }[] = [];
 	private magicProgress: number = 0;
-	private magicDuration: number = 0.4;
+	private magicDuration: number = 400;
 	private magicIsCritical: boolean = false;
 	private magicLastTime: number = 0;
 	private magicTargetX: number = 0;
 	private magicTargetY: number = 0;
 	private magicBurst: Graphics | null = null;
 	private burstProgress: number = 0;
-	private burstDuration: number = 0.2;
+	private burstDuration: number = 200;
 	private isBursting: boolean = false;
 
 	private isAreaCasting: boolean = false;
 	private resolveAreaMagic: (() => void) | null = null;
 	private areaRing: Graphics | null = null;
 	private areaProgress: number = 0;
-	private areaDuration: number = 0.6;
+	private areaDuration: number = 600;
 
 	// Magic missile state
 	private isCastingMissiles: boolean = false;
@@ -31,13 +31,13 @@ export class Wizard extends Actor {
 	private missileTargetX: number = 0;
 	private missileTargetY: number = 0;
 	private missileBursts: { graphic: Graphics; progress: number }[] = [];
-	private missileBurstDuration: number = 0.15;
+	private missileBurstDuration: number = 150;
 
 	// Level-up animation state
 	private isLevelingUp: boolean = false;
 	private resolveLevelUp: (() => void) | null = null;
 	private levelUpProgress: number = 0;
-	private levelUpDuration: number = 1.5;
+	private levelUpDuration: number = 1500;
 	private levelUpGlow: Graphics | null = null;
 	private levelUpFlash: Graphics | null = null;
 	private levelUpParticles: {
@@ -53,43 +53,43 @@ export class Wizard extends Actor {
 	private isCastingLightning: boolean = false;
 	private resolveLightning: (() => void) | null = null;
 	private lightningProgress: number = 0;
-	private lightningDuration: number = 0.3;
+	private lightningDuration: number = 300;
 	private lightningBolt: Graphics | null = null;
 	private lightningTargetX: number = 0;
 	private lightningTargetY: number = 0;
 	private lightningBurst: Graphics | null = null;
 	private lightningBurstProgress: number = 0;
 	private isLightningBursting: boolean = false;
-	private lightningBurstDuration: number = 0.15;
+	private lightningBurstDuration: number = 150;
 
 	// Fire bolt state
 	private isCastingFireBolt: boolean = false;
 	private resolveFireBolt: (() => void) | null = null;
 	private fireBoltProgress: number = 0;
-	private fireBoltDuration: number = 0.4;
+	private fireBoltDuration: number = 400;
 	private fireBoltOrb: Graphics | null = null;
 	private fireBoltTargetX: number = 0;
 	private fireBoltTargetY: number = 0;
 	private fireBoltBurst: Graphics | null = null;
 	private fireBoltBurstProgress: number = 0;
 	private isFireBoltBursting: boolean = false;
-	private fireBoltBurstDuration: number = 0.2;
+	private fireBoltBurstDuration: number = 200;
 
 	// Frost shard state
 	private isCastingFrost: boolean = false;
 	private resolveFrost: (() => void) | null = null;
 	private frostShards: { graphic: Graphics; progress: number; offsetY: number; hit: boolean }[] = [];
-	private frostDuration: number = 0.3;
+	private frostDuration: number = 300;
 	private frostTargetX: number = 0;
 	private frostTargetY: number = 0;
 	private frostBursts: { graphic: Graphics; progress: number }[] = [];
-	private frostBurstDuration: number = 0.15;
+	private frostBurstDuration: number = 150;
 
 	// Arcane beam state
 	private isCastingBeam: boolean = false;
 	private resolveBeam: (() => void) | null = null;
 	private beamProgress: number = 0;
-	private beamDuration: number = 0.5;
+	private beamDuration: number = 500;
 	private beamGraphic: Graphics | null = null;
 	private beamTargetX: number = 0;
 	private beamTargetY: number = 0;
@@ -98,14 +98,14 @@ export class Wizard extends Actor {
 	private isCastingMeteor: boolean = false;
 	private resolveMeteor: (() => void) | null = null;
 	private meteorProgress: number = 0;
-	private meteorDuration: number = 0.5;
+	private meteorDuration: number = 500;
 	private meteorGraphic: Graphics | null = null;
 	private meteorTargetX: number = 0;
 	private meteorTargetY: number = 0;
 	private meteorBurst: Graphics | null = null;
 	private meteorBurstProgress: number = 0;
 	private isMeteorBursting: boolean = false;
-	private meteorBurstDuration: number = 0.25;
+	private meteorBurstDuration: number = 250;
 
 	constructor(xp: number) {
 		const xpFactor = 1 + xp / 100;
@@ -245,7 +245,7 @@ export class Wizard extends Actor {
 		trail.y = this.y + y;
 		trail.zIndex = 1000;
 		this.parent!.addChild(trail);
-		this.magicTrails.push({graphic: trail, life: 0.2});
+		this.magicTrails.push({graphic: trail, life: 200});
 	}
 
 	castAreaMagic(): Promise<void> {
@@ -402,7 +402,7 @@ export class Wizard extends Actor {
 		trail.y = this.y + y;
 		trail.zIndex = 1000;
 		this.parent!.addChild(trail);
-		this.magicTrails.push({graphic: trail, life: 0.3});
+		this.magicTrails.push({graphic: trail, life: 300});
 	}
 
 	// --- Frost Shard ---
@@ -464,7 +464,7 @@ export class Wizard extends Actor {
 		trail.y = this.y + y;
 		trail.zIndex = 1000;
 		this.parent!.addChild(trail);
-		this.magicTrails.push({graphic: trail, life: 0.2});
+		this.magicTrails.push({graphic: trail, life: 200});
 	}
 
 	// --- Arcane Beam ---
@@ -544,7 +544,7 @@ export class Wizard extends Actor {
 		trail.y = y;
 		trail.zIndex = 1000;
 		this.parent!.addChild(trail);
-		this.magicTrails.push({graphic: trail, life: 0.35});
+		this.magicTrails.push({graphic: trail, life: 350});
 	}
 
 	levelUpStats(newXp: number) {
@@ -681,7 +681,7 @@ export class Wizard extends Actor {
 		trail.y = y;
 		trail.zIndex = 100;
 		this.parent!.addChild(trail);
-		this.magicTrails.push({graphic: trail, life: 0.3});
+		this.magicTrails.push({graphic: trail, life: 300});
 	}
 
 	private drawOrb(orb: Graphics, isCritical: boolean) {
@@ -712,7 +712,7 @@ export class Wizard extends Actor {
 		trail.y = this.y + y;
 		trail.zIndex = 1000;
 		this.parent!.addChild(trail);
-		this.magicTrails.push({graphic: trail, life: 0.3});
+		this.magicTrails.push({graphic: trail, life: 300});
 	}
 
 	override update(time: Ticker, isSine: boolean) {
@@ -736,14 +736,13 @@ export class Wizard extends Actor {
 			return;
 		}
 
-		const delta = time.deltaMS / 1000;
 
 		// Update trail particles
 		for (let i = this.magicTrails.length - 1; i >= 0; i--) {
 			const trail = this.magicTrails[i]!;
-			trail.life -= delta;
-			trail.graphic.alpha = Math.max(0, trail.life / 0.3) * 0.5;
-			trail.graphic.scale.set(Math.max(0.01, trail.life / 0.3));
+			trail.life -= time.deltaMS;
+			trail.graphic.alpha = Math.max(0, trail.life / 300) * 0.5;
+			trail.graphic.scale.set(Math.max(0.01, trail.life / 300));
 			if (trail.life <= 0) {
 				this.parent!.removeChild(trail.graphic);
 				trail.graphic.destroy();
@@ -753,7 +752,7 @@ export class Wizard extends Actor {
 
 		// Orb flight animation
 		if (this.isCastingMagic && this.magicOrb) {
-			this.magicProgress += delta;
+			this.magicProgress += time.deltaMS;
 			const t = Math.min(this.magicProgress / this.magicDuration, 1);
 
 			// Ease-in for accelerating projectile
@@ -812,13 +811,13 @@ export class Wizard extends Actor {
 				if (missile.hit) continue;
 
 				if (missile.startDelay > 0) {
-					missile.startDelay -= delta;
+					missile.startDelay -= time.deltaMS;
 					allHit = false;
 					continue;
 				}
 
 				missile.graphic.visible = true;
-				missile.progress += delta;
+				missile.progress += time.deltaMS;
 				const t = Math.min(missile.progress / this.missileDuration, 1);
 
 				const eased = t * t;
@@ -870,7 +869,7 @@ export class Wizard extends Actor {
 		// Magic missile bursts
 		for (let i = this.missileBursts.length - 1; i >= 0; i--) {
 			const burst = this.missileBursts[i]!;
-			burst.progress += delta;
+			burst.progress += time.deltaMS;
 			const t = Math.min(burst.progress / this.missileBurstDuration, 1);
 			burst.graphic.scale.set(15 * t);
 			burst.graphic.alpha = (1 - t) * 0.6;
@@ -894,7 +893,7 @@ export class Wizard extends Actor {
 
 		// Area attack ring animation
 		if (this.isAreaCasting && this.areaRing) {
-			this.areaProgress += delta;
+			this.areaProgress += time.deltaMS;
 			const t = Math.min(this.areaProgress / this.areaDuration, 1);
 
 			const maxScale = 60;
@@ -926,7 +925,7 @@ export class Wizard extends Actor {
 
 		// Lightning bolt animation
 		if (this.isCastingLightning && this.lightningBolt) {
-			this.lightningProgress += delta;
+			this.lightningProgress += time.deltaMS;
 			const t = Math.min(this.lightningProgress / this.lightningDuration, 1);
 
 			const startX = this.x + 100;
@@ -958,7 +957,7 @@ export class Wizard extends Actor {
 		}
 
 		if (this.isLightningBursting && this.lightningBurst) {
-			this.lightningBurstProgress += delta;
+			this.lightningBurstProgress += time.deltaMS;
 			const t = Math.min(this.lightningBurstProgress / this.lightningBurstDuration, 1);
 			this.lightningBurst.scale.set(30 * t);
 			this.lightningBurst.alpha = (1 - t) * 0.7;
@@ -978,7 +977,7 @@ export class Wizard extends Actor {
 
 		// Fire bolt animation
 		if (this.isCastingFireBolt && this.fireBoltOrb) {
-			this.fireBoltProgress += delta;
+			this.fireBoltProgress += time.deltaMS;
 			const t = Math.min(this.fireBoltProgress / this.fireBoltDuration, 1);
 			const eased = t * t;
 
@@ -1022,7 +1021,7 @@ export class Wizard extends Actor {
 		}
 
 		if (this.isFireBoltBursting && this.fireBoltBurst) {
-			this.fireBoltBurstProgress += delta;
+			this.fireBoltBurstProgress += time.deltaMS;
 			const t = Math.min(this.fireBoltBurstProgress / this.fireBoltBurstDuration, 1);
 			this.fireBoltBurst.scale.set(35 * t);
 			this.fireBoltBurst.alpha = (1 - t) * 0.7;
@@ -1046,7 +1045,7 @@ export class Wizard extends Actor {
 			for (const shard of this.frostShards) {
 				if (shard.hit) continue;
 
-				shard.progress += delta;
+				shard.progress += time.deltaMS;
 				if (shard.progress <= 0) {
 					allHit = false;
 					continue;
@@ -1105,7 +1104,7 @@ export class Wizard extends Actor {
 		// Frost shard bursts
 		for (let i = this.frostBursts.length - 1; i >= 0; i--) {
 			const burst = this.frostBursts[i]!;
-			burst.progress += delta;
+			burst.progress += time.deltaMS;
 			const t = Math.min(burst.progress / this.frostBurstDuration, 1);
 			burst.graphic.scale.set(15 * t);
 			burst.graphic.alpha = (1 - t) * 0.6;
@@ -1129,7 +1128,7 @@ export class Wizard extends Actor {
 
 		// Arcane beam animation
 		if (this.isCastingBeam && this.beamGraphic) {
-			this.beamProgress += delta;
+			this.beamProgress += time.deltaMS;
 			const t = Math.min(this.beamProgress / this.beamDuration, 1);
 
 			const startX = this.x + 100;
@@ -1211,7 +1210,7 @@ export class Wizard extends Actor {
 
 		// Meteor strike animation
 		if (this.isCastingMeteor && this.meteorGraphic) {
-			this.meteorProgress += delta;
+			this.meteorProgress += time.deltaMS;
 			const t = Math.min(this.meteorProgress / this.meteorDuration, 1);
 
 			// Falls diagonally from upper-right
@@ -1254,7 +1253,7 @@ export class Wizard extends Actor {
 		}
 
 		if (this.isMeteorBursting && this.meteorBurst) {
-			this.meteorBurstProgress += delta;
+			this.meteorBurstProgress += time.deltaMS;
 			const t = Math.min(this.meteorBurstProgress / this.meteorBurstDuration, 1);
 			this.meteorBurst.scale.set(50 * t);
 			this.meteorBurst.alpha = (1 - t) * 0.8;
@@ -1274,7 +1273,7 @@ export class Wizard extends Actor {
 
 		// Level-up animation
 		if (this.isLevelingUp) {
-			this.levelUpProgress += delta;
+			this.levelUpProgress += time.deltaMS;
 			const t = Math.min(this.levelUpProgress / this.levelUpDuration, 1);
 			const centerX = this.x;
 			const centerY = this.y - 80;
@@ -1355,10 +1354,10 @@ export class Wizard extends Actor {
 		// Update level-up particles
 		for (let i = this.levelUpParticles.length - 1; i >= 0; i--) {
 			const p = this.levelUpParticles[i]!;
-			p.life -= delta;
-			p.graphic.x += p.vx * delta;
-			p.graphic.y += p.vy * delta;
-			const lifeRatio = Math.max(0, p.life / 1.0);
+			p.life -= time.deltaMS;
+			p.graphic.x += p.vx * time.deltaMS;
+			p.graphic.y += p.vy * time.deltaMS;
+			const lifeRatio = Math.max(0, p.life);
 			p.graphic.alpha = lifeRatio * 0.8;
 			p.graphic.scale.set(Math.max(0.01, lifeRatio));
 			if (p.life <= 0) {
@@ -1370,7 +1369,7 @@ export class Wizard extends Actor {
 
 		// Impact burst animation
 		if (this.isBursting && this.magicBurst) {
-			this.burstProgress += delta;
+			this.burstProgress += time.deltaMS;
 			const t = Math.min(this.burstProgress / this.burstDuration, 1);
 			const maxScale = this.magicIsCritical ? 40 : 25;
 			this.magicBurst.scale.set(maxScale * t);
