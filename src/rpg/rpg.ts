@@ -19,6 +19,11 @@ async function init() {
 	});
 	document.body.appendChild(app.canvas);
 
+	const turbo = parseFloat(localStorage.getItem("turbo") ?? "");
+	if (!isNaN(turbo) && turbo > 0) {
+		app.ticker.speed = turbo;
+	}
+
 	// Create a container for the game world
 	const gameStage = new Container();
 	app.stage.addChild(gameStage);

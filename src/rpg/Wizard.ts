@@ -736,8 +736,7 @@ export class Wizard extends Actor {
 			return;
 		}
 
-		const delta = (time.lastTime - this.magicLastTime) / 1000;
-		this.magicLastTime = time.lastTime;
+		const delta = time.deltaMS / 1000;
 
 		// Update trail particles
 		for (let i = this.magicTrails.length - 1; i >= 0; i--) {
