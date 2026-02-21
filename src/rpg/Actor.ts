@@ -1,4 +1,4 @@
-import { Container, Sprite, Texture } from "pixi.js";
+import { Container, Graphics, Sprite, Text, Texture } from "pixi.js";
 import { HealthBar } from "./HealthBar.ts";
 
 export abstract class Actor extends Container {
@@ -123,6 +123,10 @@ export abstract class Actor extends Container {
 	private twitchDuration: number = 0.25;
 	private twitchDistance: number = 30;
 	private twitchDirection: number = 1; // 1 = forward, -1 = backward
+
+	private speechBubble: Container | null = null;
+	private speechBubbleTimeout: ReturnType<typeof setTimeout> | null = null;
+	private resolveSpeechBubble: (() => void) | null = null;
 
 	runLeft(): Promise<void> {
 		this.sprite.scale.x = this.sprite.scale.x * -1;
@@ -255,6 +259,91 @@ export abstract class Actor extends Container {
 		this.healthBar.update(delta);
 		this.healthBar.y = -this.sprite.height + offset - 20 + shakeY;
 		this.healthBar.x = shakeX;
+
+		if (this.speechBubble) {
+			this.speechBubble.y = -this.sprite.height + offset - 40 + shakeY;
+			this.speechBubble.x = shakeX;
+		}
+	}
+
+	async showSpeechBubble(text: string, duration: number): Promise<void> {
+		this.hideSpeechBubble();
+
+		const bubble = new Container();
+
+		const textObj = new Text({
+			text,
+			style: {
+				fontSize: 14,
+				fill: 0x000000,
+				wordWrap: true,
+				wordWrapWidth: 150,
+				fontFamily: "Arial",
+			},
+		});
+
+		const padding = 10;
+		const tailHeight = 10;
+		const bubbleWidth = textObj.width + padding * 2;
+		const bubbleHeight = textObj.height + padding * 2;
+		const r = 8;
+		const tw = 8;
+		const cx = bubbleWidth / 2;
+
+		const bg = new Graphics();
+		bg.moveTo(r, 0);
+		bg.lineTo(bubbleWidth - r, 0);
+		bg.arcTo(bubbleWidth, 0, bubbleWidth, r, r);
+		bg.lineTo(bubbleWidth, bubbleHeight - r);
+		bg.arcTo(bubbleWidth, bubbleHeight, bubbleWidth - r, bubbleHeight, r);
+		bg.lineTo(cx + tw, bubbleHeight);
+		bg.lineTo(cx, bubbleHeight + tailHeight);
+		bg.lineTo(cx - tw, bubbleHeight);
+		bg.lineTo(r, bubbleHeight);
+		bg.arcTo(0, bubbleHeight, 0, bubbleHeight - r, r);
+		bg.lineTo(0, r);
+		bg.arcTo(0, 0, r, 0, r);
+		bg.closePath();
+		bg.fill({ color: 0xffffff });
+		bg.stroke({ width: 2, color: 0x333333 });
+
+		textObj.x = padding;
+		textObj.y = padding;
+
+		bubble.addChild(bg);
+		bubble.addChild(textObj);
+
+		bubble.pivot.set(cx, bubbleHeight + tailHeight);
+
+		this.speechBubble = bubble;
+		this.addChild(bubble);
+
+		if (duration === -1) {
+			return;
+		}
+
+		return new Promise<void>((resolve) => {
+			this.resolveSpeechBubble = resolve;
+			this.speechBubbleTimeout = setTimeout(() => {
+				this.hideSpeechBubble();
+			}, duration * 1000);
+		});
+	}
+
+	hideSpeechBubble(): void {
+		if (this.speechBubbleTimeout !== null) {
+			clearTimeout(this.speechBubbleTimeout);
+			this.speechBubbleTimeout = null;
+		}
+		if (this.speechBubble) {
+			this.removeChild(this.speechBubble);
+			this.speechBubble.destroy();
+			this.speechBubble = null;
+		}
+		if (this.resolveSpeechBubble) {
+			this.resolveSpeechBubble();
+			this.resolveSpeechBubble = null;
+		}
 	}
 
 	async attack(targets: Actor[]): Promise<{
