@@ -84,7 +84,7 @@ export abstract class Actor extends Container {
 
 	private resolveShake: (() => void) | null = null;
 
-	shake(duration: number = 0.5, intensity: number = 10): Promise<void> {
+	shake(duration: number = 500, intensity: number = 10): Promise<void> {
 		if (duration <= 0) return Promise.resolve();
 		this.shakeTimer = duration;
 		this.shakeIntensity = intensity;
@@ -108,19 +108,20 @@ export abstract class Actor extends Container {
 
 	private isRunningLeft: boolean = false;
 	private resolveRunLeft: (() => void) | null = null;
-	private runSpeed: number = 400;
+	private runSpeed = 0.4; // pix per ms
+	private deathFadeSpeed = 1 / 1000 // in one seconds
 
 	private isEntering: boolean = false;
 	private resolveEnter: (() => void) | null = null;
 	private enterProgress: number = 0;
-	private enterDuration: number = 0.6;
+	private enterDuration: number = 600; // in ms
 	private enterStartX: number = 0;
 	private enterTargetX: number = 0;
 
 	private isTwitching: boolean = false;
 	private resolveTwitch: (() => void) | null = null;
 	private twitchProgress: number = 0;
-	private twitchDuration: number = 0.25;
+	private twitchDuration: number = 250; // in ms
 	private twitchDistance: number = 30;
 	private twitchDirection: number = 1; // 1 = forward, -1 = backward
 
@@ -158,11 +159,10 @@ export abstract class Actor extends Container {
 		if (this.lastTime === 0) {
 			this.lastTime = lastTime;
 		}
-		const delta = (lastTime - this.lastTime) / 1000;
 		this.lastTime = lastTime;
 
 		if (this.isDying) {
-			this.alpha -= delta;
+			this.alpha -= this.deathFadeSpeed * time.deltaMS;
 			if (this.alpha <= 0) {
 				this.alpha = 0;
 				if (this.resolveDeath) {
@@ -173,7 +173,7 @@ export abstract class Actor extends Container {
 		}
 
 		if (this.isRunningLeft) {
-			this.x -= this.runSpeed * delta;
+			this.x -= this.runSpeed * time.deltaMS;
 			if (this.x < -this.sprite.width) {
 				if (this.resolveRunLeft) {
 					this.resolveRunLeft();
@@ -184,7 +184,7 @@ export abstract class Actor extends Container {
 		}
 
 		if (this.isEntering) {
-			this.enterProgress += delta;
+			this.enterProgress += time.deltaMS;
 			if (this.enterProgress <= 0) {
 				return; // Still in delay period
 			}
@@ -207,7 +207,7 @@ export abstract class Actor extends Container {
 		}
 
 		if (this.isTwitching) {
-			this.twitchProgress += delta;
+			this.twitchProgress += time.deltaMS;
 			const halfDuration = this.twitchDuration / 2;
 
 			if (this.twitchProgress < halfDuration) {
@@ -236,7 +236,7 @@ export abstract class Actor extends Container {
 		let shakeY = 0;
 
 		if (this.shakeTimer > 0) {
-			this.shakeTimer -= delta;
+			this.shakeTimer -= time.deltaMS;
 			if (this.shakeTimer <= 0) {
 				this.shakeTimer = 0;
 				if (this.resolveShake) {

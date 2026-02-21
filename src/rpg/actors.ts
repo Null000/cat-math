@@ -161,9 +161,8 @@ async function init() {
 	// Animation loop
 	let sineToggle = true;
 	app.ticker.add((time) => {
-		const t = time.lastTime;
-		if (currentActor) currentActor.update(t, sineToggle);
-		if (dummyTarget) dummyTarget.update(t, !sineToggle);
+		if (currentActor) currentActor.update(time, sineToggle);
+		if (dummyTarget) dummyTarget.update(time, !sineToggle);
 	});
 
 	// Wire up create button
