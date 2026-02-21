@@ -558,9 +558,7 @@ export class Wizard extends Actor {
 	}
 
 	async levelUp(newXp: number): Promise<void> {
-		const newLevel = getWizardLevel(newXp);
-		const newTexturePath = `assets/wizard${newLevel}.png`;
-		this.levelUpNewTexture = await Assets.load(newTexturePath);
+		this.levelUpNewTexture = await initWizard(newXp);
 
 		// Update stats
 		this.levelUpStats(newXp);
@@ -1394,10 +1392,11 @@ let wizardTexture: Texture;
 let wizardTextureLevel: number;
 
 export async function initWizard(xp: number) {
-	const level = Math.max(getWizardLevel(xp), 7);
-	if (wizardTextureLevel === level) return;
+	const level = Math.min(getWizardLevel(xp), 7);
+	if (wizardTextureLevel === level) return wizardTexture;
 	wizardTextureLevel = level;
 	wizardTexture = await Assets.load(`assets/wizard${level}.png`);
+	return wizardTexture;
 }
 
 export function getWizardLevel(xp: number): number {

@@ -1,15 +1,9 @@
-import { Application, Assets, Sprite } from "pixi.js";
-import { getCategories, getYearGroupsSl } from "../app.ts";
-import { getRandomProblem } from "../problem.ts";
-import {
-	getCurrentLanguage,
-	setLanguage,
-	t,
-	getCategoryDisplayName,
-	Language,
-} from "../i18n.ts";
-import { Category } from "../common.ts";
-import { getWizardLevel } from "./Wizard.ts";
+import {Application, Sprite} from "pixi.js";
+import {getCategories, getYearGroupsSl} from "../app.ts";
+import {getRandomProblem} from "../problem.ts";
+import {getCategoryDisplayName, getCurrentLanguage, Language, setLanguage, t,} from "../i18n.ts";
+import {Category} from "../common.ts";
+import {initWizard} from "./Wizard.ts";
 
 document.addEventListener("DOMContentLoaded", () => {
 	// Initialize Language
@@ -268,8 +262,7 @@ async function initWizardCanvas() {
 
 	// Load wizard texture based on current XP
 	const xp = parseInt(localStorage.getItem("xp") || "0");
-	const level = getWizardLevel(xp);
-	const texture = await Assets.load(`assets/wizard${level}.png`);
+	const texture = await initWizard(xp);
 
 	const wizard = new Sprite(texture);
 	wizard.anchor.set(0.5, 1);
