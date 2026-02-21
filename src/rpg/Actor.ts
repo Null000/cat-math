@@ -1,5 +1,5 @@
-import { Container, Graphics, Sprite, Text, Texture, Ticker } from "pixi.js";
-import { HealthBar } from "./HealthBar.ts";
+import {Container, Graphics, Sprite, Text, Texture, Ticker} from "pixi.js";
+import {HealthBar} from "./HealthBar.ts";
 
 export abstract class Actor extends Container {
 	protected sprite: Sprite;
@@ -17,14 +17,14 @@ export abstract class Actor extends Container {
 	xp: number = 0;
 
 	constructor({
-		texture,
-		textureScale = 0.5,
-		health,
-		attackPower,
-		defensePower,
-		speed,
-		xpDrop,
-	}: {
+					texture,
+					textureScale = 0.5,
+					health,
+					attackPower,
+					defensePower,
+					speed,
+					xpDrop,
+				}: {
 		texture: Texture;
 		textureScale: number;
 		health: number;
@@ -257,7 +257,7 @@ export abstract class Actor extends Container {
 		this.sprite.y = offset + shakeY;
 		this.sprite.x = shakeX;
 
-		this.healthBar.update(delta);
+		this.healthBar.update(time);
 		this.healthBar.y = -this.sprite.height + offset - 20 + shakeY;
 		this.healthBar.x = shakeX;
 
@@ -305,8 +305,8 @@ export abstract class Actor extends Container {
 		bg.lineTo(0, r);
 		bg.arcTo(0, 0, r, 0, r);
 		bg.closePath();
-		bg.fill({ color: 0xffffff });
-		bg.stroke({ width: 2, color: 0x333333 });
+		bg.fill({color: 0xffffff});
+		bg.stroke({width: 2, color: 0x333333});
 
 		textObj.x = padding;
 		textObj.y = padding;
@@ -359,21 +359,21 @@ export abstract class Actor extends Container {
 	}
 
 	async magicMissileAttack(target: Actor): Promise<number> {
-        await this.twitch();
-        return this.attackPower;
-    }
+		await this.twitch();
+		return this.attackPower;
+	}
 
-    async twitch(): Promise<void> {
-        this.isTwitching = true;
-        this.twitchProgress = 0;
-        this.twitchDirection = this.x < 400 ? 1 : -1;
-        return new Promise((resolve) => {
-            if (this.resolveTwitch) {
-                this.resolveTwitch();
-            }
-            this.resolveTwitch = resolve;
-        });
-    }
+	async twitch(): Promise<void> {
+		this.isTwitching = true;
+		this.twitchProgress = 0;
+		this.twitchDirection = this.x < 400 ? 1 : -1;
+		return new Promise((resolve) => {
+			if (this.resolveTwitch) {
+				this.resolveTwitch();
+			}
+			this.resolveTwitch = resolve;
+		});
+	}
 
 	toString(): string {
 		return `${this.constructor.name} (HP: ${this.health}/${this.maxHealth}  ATK: ${this.attackPower}  DEF: ${this.defensePower}  SPD: ${this.speed})`;

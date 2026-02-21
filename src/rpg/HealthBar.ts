@@ -1,5 +1,5 @@
-import { Container, Graphics } from "pixi.js";
-import { standardWidth, standardHeight } from "./constants.ts";
+import {Container, Graphics, Ticker} from "pixi.js";
+import {standardHeight, standardWidth} from "./constants.ts";
 
 export class HealthBar extends Container {
 	private bg: Graphics;
@@ -9,7 +9,7 @@ export class HealthBar extends Container {
 
 	private currentRatio: number = 1;
 	private targetRatio: number = 1;
-	private animationSpeed: number = 1.5;
+	private animationSpeed: number = 1.5 / 1000; //in ms
 
 	constructor(width = standardWidth / 8, height = standardHeight / 60) {
 		super();
@@ -31,11 +31,11 @@ export class HealthBar extends Container {
 		this.targetRatio = ratio;
 	}
 
-	update(delta: number) {
+	update(time: Ticker) {
 		if (this.currentRatio === this.targetRatio) return;
 
 		const diff = this.targetRatio - this.currentRatio;
-		const step = this.animationSpeed * delta;
+		const step = this.animationSpeed * time.deltaMS;
 
 		if (Math.abs(diff) <= step) {
 			this.currentRatio = this.targetRatio;

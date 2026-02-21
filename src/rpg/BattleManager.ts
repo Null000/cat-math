@@ -24,10 +24,9 @@ export class BattleManager {
 	private fadeOverlay: Graphics;
 	private isFading: boolean = false;
 	private fadeProgress: number = 0;
-	private fadeDuration: number = 0.5;
+	private fadeDuration: number = 500; //ms
 	private fadeDirection: 1 | -1 = 1; // 1 = fade out (to black), -1 = fade in (from black)
 	private resolveFade: (() => void) | null = null;
-	private lastFadeTime: number = 0;
 	onXpChange?: (xp: number) => void;
 	onAreaChange?: (area: number) => void;
 
@@ -49,12 +48,11 @@ export class BattleManager {
 		this.stage.sortableChildren = true;
 	}
 
-	fadeOut(duration: number = 0.5): Promise<void> {
+	fadeOut(duration: number = 500): Promise<void> {
 		this.isFading = true;
 		this.fadeProgress = 0;
 		this.fadeDuration = duration;
 		this.fadeDirection = 1;
-		this.lastFadeTime = 0;
 		this.fadeOverlay.alpha = 0;
 		this.stage.addChild(this.fadeOverlay);
 		return new Promise((resolve) => {
@@ -62,12 +60,11 @@ export class BattleManager {
 		});
 	}
 
-	fadeIn(duration: number = 0.5): Promise<void> {
+	fadeIn(duration: number = 500): Promise<void> {
 		this.isFading = true;
 		this.fadeProgress = 0;
 		this.fadeDuration = duration;
 		this.fadeDirection = -1;
-		this.lastFadeTime = 0;
 		this.fadeOverlay.alpha = 1;
 		this.stage.addChild(this.fadeOverlay);
 		return new Promise((resolve) => {
@@ -78,13 +75,7 @@ export class BattleManager {
 	private updateFade(time: Ticker) {
 		if (!this.isFading) return;
 
-		if (this.lastFadeTime === 0) {
-			this.lastFadeTime = time.lastTime;
-		}
-		const delta = (time.lastTime - this.lastFadeTime) / 1000;
-		this.lastFadeTime = time.lastTime;
-
-		this.fadeProgress += delta;
+		this.fadeProgress += time.deltaMS;
 		const t = Math.min(this.fadeProgress / this.fadeDuration, 1);
 
 		if (this.fadeDirection === 1) {
