@@ -5,7 +5,7 @@ export class Spider extends Actor {
 	constructor() {
 		super({
 			texture: spiderTexture,
-			textureScale: 0.5,
+			textureScale: 0.25,
 			health: 100,
 			attackPower: 20,
 			defensePower: 1,
