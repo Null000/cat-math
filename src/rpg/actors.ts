@@ -1,4 +1,4 @@
-import {Application, Container, Graphics} from "pixi.js";
+import {Application, Container, Graphics, Sprite} from "pixi.js";
 import {standardHeight, standardWidth} from "./constants.ts";
 import {Actor} from "./Actor.ts";
 import {getWizardLevel, initWizard, Wizard} from "./Wizard.ts";
@@ -15,6 +15,7 @@ let world: Container;
 let currentActor: Actor | null = null;
 let dummyTarget: Actor | null = null;
 let wizardXp: number = 0;
+let currentBackground: Sprite | null = null;
 
 function $(id: string) {
 	return document.getElementById(id)!;
@@ -26,6 +27,16 @@ function log(msg: string) {
 	line.textContent = `> ${msg}`;
 	el.prepend(line);
 	while (el.children.length > 20) el.removeChild(el.lastChild!);
+}
+
+async function switchBackground(type: BackgroundType) {
+	if (currentBackground && currentBackground.parent) {
+		world.removeChild(currentBackground);
+	}
+	const bg = await makeBackground(type);
+	// Insert background right after the mask (index 1)
+	world.addChildAt(bg, 1);
+	currentBackground = bg;
 }
 
 function updateStats(actor: Actor | null) {
@@ -155,8 +166,17 @@ async function init() {
 	world.addChild(mask);
 
 	// Default background
-	const bg = await makeBackground(BackgroundType.Village);
-	world.addChild(bg);
+	await switchBackground(BackgroundType.Village);
+
+	// Background selector
+	($("background-type") as HTMLSelectElement).addEventListener(
+		"change",
+		async (e) => {
+			const type = (e.target as HTMLSelectElement).value as BackgroundType;
+			await switchBackground(type);
+			log(`Background changed to ${type}`);
+		},
+	);
 
 	// Animation loop
 	let sineToggle = true;
