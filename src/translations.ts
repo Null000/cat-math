@@ -94,6 +94,31 @@ export const translations = {
 		[Category.Comparison_Hundred]: "Comparison: 100",
 		[Category.Comparison_Thousand]: "Comparison: 1000",
 
+		[Category.NumberToText_Twenty]: "Number to Text: 20",
+		[Category.TextToNumber_Twenty]: "Text to Number: 20",
+
+		// Number words (0–20)
+		number_0: "zero",
+		number_1: "one",
+		number_2: "two",
+		number_3: "three",
+		number_4: "four",
+		number_5: "five",
+		number_6: "six",
+		number_7: "seven",
+		number_8: "eight",
+		number_9: "nine",
+		number_10: "ten",
+		number_11: "eleven",
+		number_12: "twelve",
+		number_13: "thirteen",
+		number_14: "fourteen",
+		number_15: "fifteen",
+		number_16: "sixteen",
+		number_17: "seventeen",
+		number_18: "eighteen",
+		number_19: "nineteen",
+		number_20: "twenty",
 		[Category.NextPrevious_Ten]: "Next/Previous: 10",
 		[Category.NextPrevious_Twenty]: "Next/Previous: 20",
 
@@ -103,6 +128,7 @@ export const translations = {
 		group_Multiplication: "Multiplication",
 		group_Division: "Division",
 		group_Comparison: "Comparison",
+		group_NumberText: "Number & Text",
 		group_NextPrevious: "Next/Previous",
 
 		// Grouping toggle
@@ -205,6 +231,31 @@ export const translations = {
 		[Category.Comparison_Hundred]: "Primerjanje: 100",
 		[Category.Comparison_Thousand]: "Primerjanje: 1000",
 
+		[Category.NumberToText_Twenty]: "Število v besedo: 20",
+		[Category.TextToNumber_Twenty]: "Beseda v število: 20",
+
+		// Number words (0–20)
+		number_0: "nič",
+		number_1: "ena",
+		number_2: "dve",
+		number_3: "tri",
+		number_4: "štiri",
+		number_5: "pet",
+		number_6: "šest",
+		number_7: "sedem",
+		number_8: "osem",
+		number_9: "devet",
+		number_10: "deset",
+		number_11: "enajst",
+		number_12: "dvanajst",
+		number_13: "trinajst",
+		number_14: "štirinajst",
+		number_15: "petnajst",
+		number_16: "šestnajst",
+		number_17: "sedemnajst",
+		number_18: "osemnajst",
+		number_19: "devetnajst",
+		number_20: "dvajset",
 		[Category.NextPrevious_Ten]: "Predhodnik/Naslednik: 10",
 		[Category.NextPrevious_Twenty]: "Predhodnik/Naslednik: 20",
 
@@ -214,6 +265,7 @@ export const translations = {
 		group_Multiplication: "Množenje",
 		group_Division: "Deljenje",
 		group_Comparison: "Primerjanje",
+		group_NumberText: "Številke in besede",
 		group_NextPrevious: "Predhodnik/Naslednik",
 
 		// Year Group Names
