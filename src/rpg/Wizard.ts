@@ -207,7 +207,7 @@ export class Wizard extends Actor {
 			this.missiles.push({
 				graphic: missile,
 				progress: 0,
-				startDelay: i * 0.07,
+				startDelay: i * 70,
 				offsetY: offsets[i]!,
 				hit: false
 			});
@@ -430,7 +430,7 @@ export class Wizard extends Actor {
 			this.parent!.addChild(shard);
 			this.frostShards.push({
 				graphic: shard,
-				progress: 0,
+				progress: -i * 50,
 				offsetY: offsets[i]!,
 				hit: false,
 			});
