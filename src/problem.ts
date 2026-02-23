@@ -6,6 +6,7 @@ import * as multiplication from "./multiplication.ts";
 import * as test from "./test.ts";
 import * as comparison from "./comparison.ts";
 import * as numberText from "./numberText.ts";
+import * as nextPrevious from "./nextPrevious.ts";
 import { categoryToGroup } from "./common.ts";
 
 export type ProblemCache = Record<string, Problem[]>;
@@ -17,6 +18,7 @@ const generateFnPerGroup: Record<string, (category: Category) => Problem[]> = {
 	Division: (category) => division.generate(category),
 	Comparison: (category) => comparison.generate(category),
 	NumberText: (category) => numberText.generate(category),
+	NextPrevious: (category) => nextPrevious.generate(category),
 	Test: (category) => test.generate(category),
 };
 

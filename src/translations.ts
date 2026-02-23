@@ -119,6 +119,8 @@ export const translations = {
 		number_18: "eighteen",
 		number_19: "nineteen",
 		number_20: "twenty",
+		[Category.NextPrevious_Ten]: "Next/Previous: 10",
+		[Category.NextPrevious_Twenty]: "Next/Previous: 20",
 
 		// Group Names
 		group_Addition: "Addition",
@@ -127,6 +129,7 @@ export const translations = {
 		group_Division: "Division",
 		group_Comparison: "Comparison",
 		group_NumberText: "Number & Text",
+		group_NextPrevious: "Next/Previous",
 
 		// Grouping toggle
 		grouping_by_type: "By Type",
@@ -253,6 +256,8 @@ export const translations = {
 		number_18: "osemnajst",
 		number_19: "devetnajst",
 		number_20: "dvajset",
+		[Category.NextPrevious_Ten]: "Predhodnik/Naslednik: 10",
+		[Category.NextPrevious_Twenty]: "Predhodnik/Naslednik: 20",
 
 		// Group Names
 		group_Addition: "Seštevanje",
@@ -261,6 +266,7 @@ export const translations = {
 		group_Division: "Deljenje",
 		group_Comparison: "Primerjanje",
 		group_NumberText: "Številke in besede",
+		group_NextPrevious: "Predhodnik/Naslednik",
 
 		// Year Group Names
 		"group_1. razred": "1. razred",
