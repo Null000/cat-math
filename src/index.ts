@@ -170,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				const solved = JSON.parse(
 					localStorage.getItem(category) || "[]",
 				);
-				const count = (solved as any[]).length;
+				const count = (solved as string[]).length;
 
 				const labelText = document.createTextNode(
 					getCategoryDisplayName(category as Category),
@@ -191,32 +191,50 @@ document.addEventListener("DOMContentLoaded", () => {
 				topDiv.appendChild(label);
 				checkboxItem.appendChild(topDiv);
 
-				// Add examples for this category
+				// Add examples container (populated lazily on group toggle)
 				const examplesDiv = document.createElement("div");
 				examplesDiv.className = "category-examples";
-
-				const examplesList = document.createElement("div");
-				examplesList.className = "examples-list";
-
-				// Generate 3 example problems
-				for (let i = 0; i < 3; i++) {
-					const exampleProblem = getRandomProblem(
-						category as Category,
-					);
-					const exampleDiv = document.createElement("div");
-					exampleDiv.className = "example-problem";
-					exampleDiv.textContent = exampleProblem.text;
-					examplesList.appendChild(exampleDiv);
-				}
-
-				examplesDiv.appendChild(examplesList);
 				checkboxItem.appendChild(examplesDiv);
 
 				checkboxGrid.appendChild(checkboxItem);
 			});
 
+			// Lazily generate example problems when the group is first opened
+			groupDetails.addEventListener(
+				"toggle",
+				() => {
+					if (!groupDetails.open) return;
+					const emptyExamples = checkboxGrid.querySelectorAll(
+						".category-examples:empty",
+					);
+					emptyExamples.forEach((examplesDiv) => {
+						const item = examplesDiv.closest(".checkbox-item");
+						const cat = item?.querySelector("input")?.value;
+						if (!cat) return;
+
+						const examplesList = document.createElement("div");
+						examplesList.className = "examples-list";
+						for (let i = 0; i < 3; i++) {
+							const exampleProblem = getRandomProblem(
+								cat as Category,
+							);
+							const exampleDiv = document.createElement("div");
+							exampleDiv.className = "example-problem";
+							exampleDiv.textContent = exampleProblem.text;
+							examplesList.appendChild(exampleDiv);
+						}
+						examplesDiv.appendChild(examplesList);
+					});
+				},
+			);
+
 			groupDetails.appendChild(checkboxGrid);
 			categoryGroupsEl.appendChild(groupDetails);
+
+			// If group was auto-opened (has checked items), populate examples now
+			if (groupDetails.open) {
+				groupDetails.dispatchEvent(new Event("toggle"));
+			}
 		});
 	}
 

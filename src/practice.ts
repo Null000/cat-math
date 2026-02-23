@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	) as HTMLButtonElement;
 
 	// State Variables
-	let currentProblem: any;
+	let currentProblem: Problem;
 	let currentCategory: Category;
 	let selectedCategories: string[] = [];
 	let currentRewardImageId: number | null = null;
@@ -259,7 +259,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	// Function to generate a new math problem
 	function newProblem() {
 		const result = getProblem(selectedCategories as Category[]);
-		console.log(JSON.stringify(result, null, 2));
 		currentProblem = result.problem;
 		currentCategory = result.category;
 

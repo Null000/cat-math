@@ -128,11 +128,11 @@ export const yearGroupsSl: Record<string, Category[]> = {
 };
 
 export const categoryToGroup: Record<Category, string> = (() => {
-	const dict: any = {};
+	const dict: Partial<Record<Category, string>> = {};
 	for (const group in categoryGroups) {
 		for (const category of categoryGroups[group]!) {
 			dict[category] = group;
 		}
 	}
-	return dict;
+	return dict as Record<Category, string>;
 })();
