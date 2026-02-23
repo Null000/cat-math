@@ -94,12 +94,16 @@ export const translations = {
 		[Category.Comparison_Hundred]: "Comparison: 100",
 		[Category.Comparison_Thousand]: "Comparison: 1000",
 
+		[Category.NextPrevious_Ten]: "Next/Previous: 10",
+		[Category.NextPrevious_Twenty]: "Next/Previous: 20",
+
 		// Group Names
 		group_Addition: "Addition",
 		group_Subtraction: "Subtraction",
 		group_Multiplication: "Multiplication",
 		group_Division: "Division",
 		group_Comparison: "Comparison",
+		group_NextPrevious: "Next/Previous",
 
 		// Grouping toggle
 		grouping_by_type: "By Type",
@@ -201,12 +205,16 @@ export const translations = {
 		[Category.Comparison_Hundred]: "Primerjanje: 100",
 		[Category.Comparison_Thousand]: "Primerjanje: 1000",
 
+		[Category.NextPrevious_Ten]: "Predhodnik/Naslednik: 10",
+		[Category.NextPrevious_Twenty]: "Predhodnik/Naslednik: 20",
+
 		// Group Names
 		group_Addition: "Seštevanje",
 		group_Subtraction: "Odštevanje",
 		group_Multiplication: "Množenje",
 		group_Division: "Deljenje",
 		group_Comparison: "Primerjanje",
+		group_NextPrevious: "Predhodnik/Naslednik",
 
 		// Year Group Names
 		"group_1. razred": "1. razred",

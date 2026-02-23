@@ -50,6 +50,8 @@ export enum Category {
 	Comparison_Twenty = "Comparison: 20",
 	Comparison_Hundred = "Comparison: 100",
 	Comparison_Thousand = "Comparison: 1000",
+	NextPrevious_Ten = "Next/Previous: 10",
+	NextPrevious_Twenty = "Next/Previous: 20",
 	Test = "test",
 }
 
@@ -108,16 +110,23 @@ export const categoryGroups: Record<string, Category[]> = {
 		Category.Comparison_Hundred,
 		Category.Comparison_Thousand,
 	],
+	NextPrevious: [
+		Category.NextPrevious_Ten,
+		Category.NextPrevious_Twenty,
+	],
 	Test: [Category.Test],
 };
 
 export const yearGroupsSl: Record<string, Category[]> = {
 	"1. razred": [
+		Category.NextPrevious_Ten,
+		Category.NextPrevious_Twenty,
 		Category.Addition_Ten,
 		Category.Addition_Ten_Missing,
 		Category.Subtraction_Ten,
 		Category.Subtraction_Ten_Missing,
 		Category.Comparison_Ten,
+		Category.Comparison_Twenty,
 	],
 	"2. razred": [
 		Category.Addition_TwentyWithoutCarry,
@@ -128,7 +137,6 @@ export const yearGroupsSl: Record<string, Category[]> = {
 		Category.Subtraction_Twenty,
 		Category.Subtraction_Twenty_Missing,
 		Category.Subtraction_Tens,
-		Category.Comparison_Twenty,
 	],
 	"3. razred": [
 		Category.Addition_HundredWithoutCarry,
