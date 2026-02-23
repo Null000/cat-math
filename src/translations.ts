@@ -45,6 +45,11 @@ export const translations = {
 		[Category.Addition_Hundred]: "Addition: 100",
 		[Category.Addition_Hundred_Missing]: "Addition: 100 (missing facts)",
 		[Category.Addition_Tens]: "Addition: Tens",
+		[Category.Addition_ThousandWithoutCarry]:
+			"Addition: 1000 (without carry)",
+		[Category.Addition_ThousandWithCarry]: "Addition: 1000 (with carry)",
+		[Category.Addition_Thousand]: "Addition: 1000",
+		[Category.Addition_Hundreds]: "Addition: Hundreds",
 
 		[Category.Subtraction_Ten]: "Subtraction: 10",
 		[Category.Subtraction_Ten_Missing]: "Subtraction: 10 (missing facts)",
@@ -59,6 +64,12 @@ export const translations = {
 		[Category.Subtraction_Hundred_Missing]:
 			"Subtraction: 100 (missing facts)",
 		[Category.Subtraction_Tens]: "Subtraction: Tens",
+		[Category.Subtraction_ThousandWithoutBorrow]:
+			"Subtraction: 1000 (without borrow)",
+		[Category.Subtraction_ThousandWithBorrow]:
+			"Subtraction: 1000 (with borrow)",
+		[Category.Subtraction_Thousand]: "Subtraction: 1000",
+		[Category.Subtraction_Hundreds]: "Subtraction: Hundreds",
 
 		[Category.Multiplication_Ten]: "Multiplication: 10",
 		[Category.Multiplication_Ten_Missing]:
@@ -71,10 +82,17 @@ export const translations = {
 		[Category.Division_Ten_Missing]: "Division: 10 (missing facts)",
 		[Category.Division_Twenty]: "Division: 20",
 		[Category.Division_Twenty_Missing]: "Division: 20 (missing facts)",
+		[Category.Division_Hundred]: "Division: 100",
+		[Category.Division_Hundred_Missing]: "Division: 100 (missing facts)",
+
+		[Category.Multiplication_Hundred]: "Multiplication: 100",
+		[Category.Multiplication_Hundred_Missing]:
+			"Multiplication: 100 (missing facts)",
 
 		[Category.Comparison_Ten]: "Comparison: 10",
 		[Category.Comparison_Twenty]: "Comparison: 20",
 		[Category.Comparison_Hundred]: "Comparison: 100",
+		[Category.Comparison_Thousand]: "Comparison: 1000",
 
 		// Group Names
 		group_Addition: "Addition",
@@ -137,6 +155,11 @@ export const translations = {
 		[Category.Addition_Hundred]: "Seštevanje: 100",
 		[Category.Addition_Hundred_Missing]: "Seštevanje: 100 (neznani člen)",
 		[Category.Addition_Tens]: "Seštevanje: desetice",
+		[Category.Addition_ThousandWithoutCarry]:
+			"Seštevanje: 1000 (brez prehoda)",
+		[Category.Addition_ThousandWithCarry]: "Seštevanje: 1000 (s prehodom)",
+		[Category.Addition_Thousand]: "Seštevanje: 1000",
+		[Category.Addition_Hundreds]: "Seštevanje: stotice",
 
 		[Category.Subtraction_Ten]: "Odštevanje: 10",
 		[Category.Subtraction_Ten_Missing]: "Odštevanje: 10 (neznani člen)",
@@ -150,6 +173,12 @@ export const translations = {
 		[Category.Subtraction_Hundred_Missing]:
 			"Odštevanje: 100 (neznani člen)",
 		[Category.Subtraction_Tens]: "Odštevanje: desetice",
+		[Category.Subtraction_ThousandWithoutBorrow]:
+			"Odštevanje: 1000 (brez prehoda)",
+		[Category.Subtraction_ThousandWithBorrow]:
+			"Odštevanje: 1000 (s prehodom)",
+		[Category.Subtraction_Thousand]: "Odštevanje: 1000",
+		[Category.Subtraction_Hundreds]: "Odštevanje: stotice",
 
 		[Category.Multiplication_Ten]: "Množenje: 10",
 		[Category.Multiplication_Ten_Missing]: "Množenje: 10 (neznani člen)",
@@ -160,10 +189,17 @@ export const translations = {
 		[Category.Division_Ten_Missing]: "Deljenje: 10 (neznani člen)",
 		[Category.Division_Twenty]: "Deljenje: 20",
 		[Category.Division_Twenty_Missing]: "Deljenje: 20 (neznani člen)",
+		[Category.Division_Hundred]: "Deljenje: 100",
+		[Category.Division_Hundred_Missing]: "Deljenje: 100 (neznani člen)",
+
+		[Category.Multiplication_Hundred]: "Množenje: 100",
+		[Category.Multiplication_Hundred_Missing]:
+			"Množenje: 100 (neznani člen)",
 
 		[Category.Comparison_Ten]: "Primerjanje: 10",
 		[Category.Comparison_Twenty]: "Primerjanje: 20",
 		[Category.Comparison_Hundred]: "Primerjanje: 100",
+		[Category.Comparison_Thousand]: "Primerjanje: 1000",
 
 		// Group Names
 		group_Addition: "Seštevanje",
@@ -177,6 +213,7 @@ export const translations = {
 		"group_2. razred": "2. razred",
 		"group_3. razred": "3. razred",
 		"group_4. razred": "4. razred",
+		"group_5. razred": "5. razred",
 
 		// Grouping toggle
 		grouping_by_type: "Po vrsti",
