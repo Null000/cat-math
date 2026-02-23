@@ -22,6 +22,12 @@ const generateProps: Record<
 		divisorMax: 20,
 		missingField: ["dividend", "divisor"],
 	},
+	[Category.Division_Hundred]: { answerMax: 100, divisorMax: 9 },
+	[Category.Division_Hundred_Missing]: {
+		answerMax: 100,
+		divisorMax: 9,
+		missingField: ["dividend", "divisor"],
+	},
 };
 
 export function generate(category: Category): Problem[] {

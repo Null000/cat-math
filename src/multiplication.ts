@@ -22,6 +22,12 @@ const generateProps: Record<
 		yMax: 20,
 		missingField: ["first", "second"],
 	},
+	[Category.Multiplication_Hundred]: { xMax: 100, yMax: 9 },
+	[Category.Multiplication_Hundred_Missing]: {
+		xMax: 100,
+		yMax: 9,
+		missingField: ["first", "second"],
+	},
 };
 
 export function generate(category: Category): Problem[] {

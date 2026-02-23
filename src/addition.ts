@@ -94,6 +94,43 @@ const generateProps: Record<
 		step: 10,
 		maxResult: 100,
 	},
+	[Category.Addition_ThousandWithoutCarry]: {
+		xMax: 990,
+		yMax: 990,
+		xMin: 100,
+		yMin: 100,
+		step: 10,
+		maxResult: 1000,
+		carryAllowed: false,
+	},
+	[Category.Addition_ThousandWithCarry]: {
+		xMax: 990,
+		yMax: 990,
+		xMin: 100,
+		yMin: 100,
+		step: 10,
+		maxResult: 1000,
+		carryAllowed: true,
+		carryForced: true,
+	},
+	[Category.Addition_Thousand]: {
+		xMax: 990,
+		yMax: 990,
+		xMin: 100,
+		yMin: 100,
+		step: 10,
+		maxResult: 1000,
+		carryAllowed: true,
+		carryForced: false,
+	},
+	[Category.Addition_Hundreds]: {
+		xMax: 900,
+		yMax: 900,
+		xMin: 100,
+		yMin: 100,
+		step: 100,
+		maxResult: 1000,
+	},
 };
 
 export function generate(category: Category): Problem[] {
@@ -123,7 +160,9 @@ export function generate(category: Category): Problem[] {
 
 	for (let i = xMin; i <= xMax; i += step) {
 		for (let j = yMin; j <= yMax; j += step) {
-			const hasCarry = carryAllowed && (i % 10) + (j % 10) >= 10;
+			const digitI = Math.floor(i / step) % 10;
+			const digitJ = Math.floor(j / step) % 10;
+			const hasCarry = carryAllowed && digitI + digitJ >= 10;
 			if (hasCarry && !carryForced) {
 				continue;
 			}

@@ -65,6 +65,39 @@ const generateProps: Record<
 		yMin: 10,
 		step: 10,
 	},
+	[Category.Subtraction_ThousandWithoutBorrow]: {
+		xMax: 1000,
+		yMax: 990,
+		xMin: 100,
+		yMin: 100,
+		step: 10,
+		borrowAllowed: false,
+	},
+	[Category.Subtraction_ThousandWithBorrow]: {
+		xMax: 1000,
+		yMax: 990,
+		xMin: 100,
+		yMin: 100,
+		step: 10,
+		borrowAllowed: true,
+		borrowForced: true,
+	},
+	[Category.Subtraction_Thousand]: {
+		xMax: 1000,
+		yMax: 990,
+		xMin: 100,
+		yMin: 100,
+		step: 10,
+		borrowAllowed: true,
+		borrowForced: false,
+	},
+	[Category.Subtraction_Hundreds]: {
+		xMax: 1000,
+		yMax: 900,
+		xMin: 100,
+		yMin: 100,
+		step: 100,
+	},
 };
 
 export function generate(category: Category): Problem[] {
@@ -94,7 +127,9 @@ export function generate(category: Category): Problem[] {
 	for (let i = xMin; i <= xMax; i += step) {
 		for (let j = yMin; j <= yMax; j += step) {
 			if (i < j) continue; // Can't subtract to get negative
-			const hasBorrow = borrowAllowed && i % 10 < j % 10;
+			const digitI = Math.floor(i / step) % 10;
+			const digitJ = Math.floor(j / step) % 10;
+			const hasBorrow = borrowAllowed && digitI < digitJ;
 			if (hasBorrow && !borrowForced) {
 				continue;
 			}
