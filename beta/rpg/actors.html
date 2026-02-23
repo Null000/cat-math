@@ -1,257 +1,370 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPG Actor Viewer</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png" />
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<title>RPG Actor Viewer</title>
+	<link
+		rel="icon"
+		type="image/png"
+		sizes="32x32"
+		href="../favicon-32x32.png"
+	/>
+	<style>
+		@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
 
-        body {
-            background: #1a1a2e;
-            color: #e0e0e0;
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
+		body {
+			background: #1a1a2e;
+			color: #e0e0e0;
+			font-family: "Inter", sans-serif;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			min-height: 100vh;
+		}
 
-        #canvas-wrapper {
-            position: relative;
-            width: 800px;
-            height: 600px;
-            margin-top: 16px;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
-        }
+		#canvas-wrapper {
+			position: relative;
+			width: 800px;
+			height: 600px;
+			margin-top: 16px;
+			border-radius: 8px;
+			overflow: hidden;
+			box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+		}
 
-        canvas {
-            display: block;
-        }
+		canvas {
+			display: block;
+		}
 
-        #controls {
-            width: 800px;
-            margin: 16px 0 32px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+		#controls {
+			width: 800px;
+			margin: 16px 0 32px;
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+		}
 
-        .panel {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 14px 18px;
-        }
+		.panel {
+			background: rgba(255, 255, 255, 0.06);
+			border: 1px solid rgba(255, 255, 255, 0.1);
+			border-radius: 8px;
+			padding: 14px 18px;
+		}
 
-        .panel h3 {
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #888;
-            margin-bottom: 10px;
-        }
+		.panel h3 {
+			font-size: 13px;
+			font-weight: 600;
+			text-transform: uppercase;
+			letter-spacing: 0.05em;
+			color: #888;
+			margin-bottom: 10px;
+		}
 
-        .row {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
+		.row {
+			display: flex;
+			gap: 8px;
+			flex-wrap: wrap;
+			align-items: center;
+		}
 
-        select, input[type="number"] {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 6px;
-            color: #e0e0e0;
-            font-family: inherit;
-            font-size: 14px;
-            padding: 6px 10px;
-            outline: none;
-        }
+		select,
+		input[type="number"] {
+			background: rgba(255, 255, 255, 0.08);
+			border: 1px solid rgba(255, 255, 255, 0.15);
+			border-radius: 6px;
+			color: #e0e0e0;
+			font-family: inherit;
+			font-size: 14px;
+			padding: 6px 10px;
+			outline: none;
+		}
 
-        select:focus, input[type="number"]:focus {
-            border-color: #667eea;
-        }
+		select:focus,
+		input[type="number"]:focus {
+			border-color: #667eea;
+		}
 
-        input[type="number"] {
-            width: 80px;
-        }
+		input[type="number"] {
+			width: 80px;
+		}
 
-        label {
-            font-size: 13px;
-            color: #aaa;
-        }
+		label {
+			font-size: 13px;
+			color: #aaa;
+		}
 
-        button {
-            background: rgba(102, 126, 234, 0.2);
-            border: 1px solid rgba(102, 126, 234, 0.4);
-            border-radius: 6px;
-            color: #99aaff;
-            font-family: inherit;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 6px 14px;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
+		button {
+			background: rgba(102, 126, 234, 0.2);
+			border: 1px solid rgba(102, 126, 234, 0.4);
+			border-radius: 6px;
+			color: #99aaff;
+			font-family: inherit;
+			font-size: 13px;
+			font-weight: 600;
+			padding: 6px 14px;
+			cursor: pointer;
+			transition: all 0.15s ease;
+		}
 
-        button:hover {
-            background: rgba(102, 126, 234, 0.35);
-            border-color: rgba(102, 126, 234, 0.6);
-            color: #c0ccff;
-        }
+		button:hover {
+			background: rgba(102, 126, 234, 0.35);
+			border-color: rgba(102, 126, 234, 0.6);
+			color: #c0ccff;
+		}
 
-        button:active {
-            transform: scale(0.97);
-        }
+		button:active {
+			transform: scale(0.97);
+		}
 
-        button:disabled {
-            opacity: 0.35;
-            cursor: not-allowed;
-        }
+		button:disabled {
+			opacity: 0.35;
+			cursor: not-allowed;
+		}
 
-        button.create {
-            background: rgba(46, 204, 113, 0.2);
-            border-color: rgba(46, 204, 113, 0.4);
-            color: #6fcf97;
-        }
+		button.create {
+			background: rgba(46, 204, 113, 0.2);
+			border-color: rgba(46, 204, 113, 0.4);
+			color: #6fcf97;
+		}
 
-        button.create:hover {
-            background: rgba(46, 204, 113, 0.35);
-            border-color: rgba(46, 204, 113, 0.6);
-            color: #98e7b7;
-        }
+		button.create:hover {
+			background: rgba(46, 204, 113, 0.35);
+			border-color: rgba(46, 204, 113, 0.6);
+			color: #98e7b7;
+		}
 
-        button.danger {
-            background: rgba(231, 76, 60, 0.2);
-            border-color: rgba(231, 76, 60, 0.4);
-            color: #e88;
-        }
+		button.danger {
+			background: rgba(231, 76, 60, 0.2);
+			border-color: rgba(231, 76, 60, 0.4);
+			color: #e88;
+		}
 
-        button.danger:hover {
-            background: rgba(231, 76, 60, 0.35);
-            border-color: rgba(231, 76, 60, 0.6);
-            color: #f9a;
-        }
+		button.danger:hover {
+			background: rgba(231, 76, 60, 0.35);
+			border-color: rgba(231, 76, 60, 0.6);
+			color: #f9a;
+		}
 
-        #stats {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 8px;
-        }
+		#stats {
+			display: grid;
+			grid-template-columns: repeat(6, 1fr);
+			gap: 8px;
+		}
 
-        .stat-box {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 6px;
-            padding: 8px 10px;
-            text-align: center;
-        }
+		.stat-box {
+			background: rgba(0, 0, 0, 0.2);
+			border-radius: 6px;
+			padding: 8px 10px;
+			text-align: center;
+		}
 
-        .stat-box .stat-label {
-            font-size: 11px;
-            color: #777;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
+		.stat-box .stat-label {
+			font-size: 11px;
+			color: #777;
+			text-transform: uppercase;
+			letter-spacing: 0.05em;
+		}
 
-        .stat-box .stat-value {
-            font-size: 20px;
-            font-weight: 700;
-            margin-top: 2px;
-        }
+		.stat-box .stat-value {
+			font-size: 20px;
+			font-weight: 700;
+			margin-top: 2px;
+		}
 
-        .stat-hp { color: #2ecc71; }
-        .stat-atk { color: #e74c3c; }
-        .stat-def { color: #3498db; }
-        .stat-spd { color: #f39c12; }
-        .stat-xp { color: #9b59b6; }
-        .stat-name { color: #ecf0f1; }
+		.stat-hp {
+			color: #2ecc71;
+		}
 
-        #log {
-            font-size: 12px;
-            color: #777;
-            max-height: 60px;
-            overflow-y: auto;
-            margin-top: 4px;
-        }
-    </style>
+		.stat-atk {
+			color: #e74c3c;
+		}
+
+		.stat-def {
+			color: #3498db;
+		}
+
+		.stat-spd {
+			color: #f39c12;
+		}
+
+		.stat-xp {
+			color: #9b59b6;
+		}
+
+		.stat-name {
+			color: #ecf0f1;
+		}
+
+		#log {
+			font-size: 12px;
+			color: #777;
+			max-height: 60px;
+			overflow-y: auto;
+			margin-top: 4px;
+		}
+	</style>
 </head>
 
 <body>
-    <div id="canvas-wrapper"></div>
+<div id="canvas-wrapper"></div>
 
-    <div id="controls">
-        <div class="panel">
-            <h3>Create Actor</h3>
-            <div class="row">
-                <select id="actor-type">
-                    <optgroup label="Hero">
-                        <option value="wizard">Wizard</option>
-                    </optgroup>
-                    <optgroup label="Enemies">
-                        <option value="rat">Rat</option>
-                        <option value="dire_rat">Dire Rat</option>
-                        <option value="bat">Bat</option>
-                        <option value="slime">Slime</option>
-                        <option value="goblin">Goblin</option>
-                        <option value="skeleton">Skeleton</option>
-                        <option value="zombie">Zombie</option>
-                        <option value="wolf">Wolf</option>
-                        <option value="treant">Treant</option>
-                        <option value="dummy">Dummy</option>
-                    </optgroup>
-                </select>
-                <label>XP <input type="number" id="wizard-xp" value="0" min="0" step="50"></label>
-                <button class="create" id="btn-create">Create</button>
-                <button class="danger" id="btn-clear">Clear All</button>
-            </div>
-        </div>
+<div id="controls">
+	<div class="panel">
+		<h3>Background</h3>
+		<div class="row">
+			<select id="background-type">
+				<option value="village">Village</option>
+				<option value="forest">Forest</option>
+				<option value="darkForest">Dark Forest</option>
+				<option value="dungeon">Dungeon</option>
+				<option value="swamp">Swamp</option>
+				<option value="mountains">Mountains</option>
+				<option value="graveyard">Graveyard</option>
+				<option value="volcano">Volcano</option>
+			</select>
+		</div>
+	</div>
 
-        <div class="panel">
-            <h3>Stats</h3>
-            <div id="stats">
-                <div class="stat-box"><div class="stat-label">Name</div><div class="stat-value stat-name" id="stat-name">-</div></div>
-                <div class="stat-box"><div class="stat-label">HP</div><div class="stat-value stat-hp" id="stat-hp">-</div></div>
-                <div class="stat-box"><div class="stat-label">Attack</div><div class="stat-value stat-atk" id="stat-atk">-</div></div>
-                <div class="stat-box"><div class="stat-label">Defense</div><div class="stat-value stat-def" id="stat-def">-</div></div>
-                <div class="stat-box"><div class="stat-label">Speed</div><div class="stat-value stat-spd" id="stat-spd">-</div></div>
-                <div class="stat-box"><div class="stat-label">XP Drop</div><div class="stat-value stat-xp" id="stat-xp">-</div></div>
-            </div>
-        </div>
+	<div class="panel">
+		<h3>Create Actor</h3>
+		<div class="row">
+			<select id="actor-type">
+				<optgroup label="Hero">
+					<option value="wizard">Wizard</option>
+				</optgroup>
+				<optgroup label="Enemies">
+					<option value="rat">Rat</option>
+					<option value="dire_rat">Dire Rat</option>
+					<option value="bat">Bat</option>
+					<option value="slime">Slime</option>
+					<option value="spider">Spider</option>
+					<option value="mushroom">Mushroom</option>
+					<option value="goblin">Goblin</option>
+					<option value="skeleton">Skeleton</option>
+					<option value="zombie">Zombie</option>
+					<option value="wolf">Wolf</option>
+					<option value="poison_slime">Poison Slime</option>
+					<option value="giant_bat">Giant Bat</option>
+					<option value="giant_spider">Giant Spider</option>
+					<option value="skeleton_warrior">Skeleton Warrior</option>
+					<option value="dire_wolf">Dire Wolf</option>
+					<option value="ghost">Ghost</option>
+					<option value="dark_skeleton">Dark Skeleton</option>
+					<option value="fire_slime">Fire Slime</option>
+					<option value="treant">Treant</option>
+					<option value="dragon">Dragon</option>
+					<option value="dummy">Dummy</option>
+				</optgroup>
+			</select>
+			<label
+			>XP
+				<input
+					type="number"
+					id="wizard-xp"
+					value="0"
+					min="0"
+					step="50"
+				/></label>
+			<button class="create" id="btn-create">Create</button>
+			<button class="danger" id="btn-clear">Clear All</button>
+		</div>
+	</div>
 
-        <div class="panel">
-            <h3>Animations</h3>
-            <div class="row">
-                <button id="btn-enter" disabled>Enter</button>
-                <button id="btn-shake" disabled>Shake</button>
-                <button id="btn-twitch" disabled>Twitch</button>
-                <button id="btn-attack" disabled>Attack</button>
-                <button id="btn-take-damage" disabled>Take Damage</button>
-                <button id="btn-die" disabled>Die</button>
-                <button id="btn-run-left" disabled>Run Left</button>
-                <button id="btn-cast-magic" disabled>Cast Magic</button>
-                <button id="btn-area-attack" disabled>Area Attack</button>
-                <button id="btn-level-up" disabled>Level Up</button>
-                <button id="btn-heal" disabled>Heal Max</button>
-                <button id="btn-reset" disabled>Reset Position</button>
-            </div>
-            <div id="log"></div>
-        </div>
-    </div>
+	<div class="panel">
+		<h3>Stats</h3>
+		<div id="stats">
+			<div class="stat-box">
+				<div class="stat-label">Name</div>
+				<div class="stat-value stat-name" id="stat-name">-</div>
+			</div>
+			<div class="stat-box">
+				<div class="stat-label">HP</div>
+				<div class="stat-value stat-hp" id="stat-hp">-</div>
+			</div>
+			<div class="stat-box">
+				<div class="stat-label">Attack</div>
+				<div class="stat-value stat-atk" id="stat-atk">-</div>
+			</div>
+			<div class="stat-box">
+				<div class="stat-label">Defense</div>
+				<div class="stat-value stat-def" id="stat-def">-</div>
+			</div>
+			<div class="stat-box">
+				<div class="stat-label">Speed</div>
+				<div class="stat-value stat-spd" id="stat-spd">-</div>
+			</div>
+			<div class="stat-box">
+				<div class="stat-label">XP Drop</div>
+				<div class="stat-value stat-xp" id="stat-xp">-</div>
+			</div>
+		</div>
+	</div>
 
-    <script src="actors.js"></script>
+	<div class="panel">
+		<h3>Animations</h3>
+		<div class="row">
+			<button id="btn-enter" disabled>Enter</button>
+			<button id="btn-shake" disabled>Shake</button>
+			<button id="btn-twitch" disabled>Twitch</button>
+			<button id="btn-attack" disabled>Attack</button>
+			<button id="btn-take-damage" disabled>Take Damage</button>
+			<button id="btn-die" disabled>Die</button>
+			<button id="btn-run-left" disabled>Run Left</button>
+			<button id="btn-cast-magic" disabled>Cast Magic</button>
+			<button id="btn-area-attack" disabled>Area Attack</button>
+			<button id="btn-magic-missile" disabled>Magic Missile</button>
+			<button id="btn-lightning-bolt" disabled>Lightning Bolt</button>
+			<button id="btn-fire-bolt" disabled>Fire Bolt</button>
+			<button id="btn-frost-shard" disabled>Frost Shard</button>
+			<button id="btn-arcane-beam" disabled>Arcane Beam</button>
+			<button id="btn-meteor-strike" disabled>Meteor Strike</button>
+			<button id="btn-level-up" disabled>Level Up</button>
+			<button id="btn-heal" disabled>Heal Max</button>
+			<button id="btn-reset" disabled>Reset Position</button>
+		</div>
+		<div class="row" style="margin-top: 8px">
+			<input
+				type="text"
+				id="bubble-text"
+				value="Hello!"
+				placeholder="Bubble text"
+				style="
+							background: rgba(255, 255, 255, 0.08);
+							border: 1px solid rgba(255, 255, 255, 0.15);
+							border-radius: 6px;
+							color: #e0e0e0;
+							font-family: inherit;
+							font-size: 14px;
+							padding: 6px 10px;
+							width: 160px;
+						"
+			/>
+			<label
+			>Duration
+				<input
+					type="number"
+					id="bubble-duration"
+					value="2000"
+					step="0.5"
+					style="width: 70px"
+				/></label>
+			<button id="btn-show-bubble" disabled>Show Bubble</button>
+			<button id="btn-show-bubble-forever" disabled>
+				Show Bubble (-1)
+			</button>
+			<button id="btn-hide-bubble" disabled>Hide Bubble</button>
+		</div>
+		<div id="log"></div>
+	</div>
+</div>
+
+<script src="actors.js"></script>
 </body>
-
 </html>

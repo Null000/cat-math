@@ -39,7 +39,11 @@ var categoryGroups = {
     "Addition: 100 (with carry)" /* Addition_HundredWithCarry */,
     "Addition: 100" /* Addition_Hundred */,
     "Addition: 100 (missing facts)" /* Addition_Hundred_Missing */,
-    "Addition: Tens" /* Addition_Tens */
+    "Addition: Tens" /* Addition_Tens */,
+    "Addition: 1000 (without carry)" /* Addition_ThousandWithoutCarry */,
+    "Addition: 1000 (with carry)" /* Addition_ThousandWithCarry */,
+    "Addition: 1000" /* Addition_Thousand */,
+    "Addition: Hundreds" /* Addition_Hundreds */
   ],
   Subtraction: [
     "Subtraction: 10" /* Subtraction_Ten */,
@@ -50,28 +54,35 @@ var categoryGroups = {
     "Subtraction: 100 (with borrow)" /* Subtraction_HundredWithBorrow */,
     "Subtraction: 100" /* Subtraction_Hundred */,
     "Subtraction: 100 (missing facts)" /* Subtraction_Hundred_Missing */,
-    "Subtraction: Tens" /* Subtraction_Tens */
+    "Subtraction: Tens" /* Subtraction_Tens */,
+    "Subtraction: 1000 (without borrow)" /* Subtraction_ThousandWithoutBorrow */,
+    "Subtraction: 1000 (with borrow)" /* Subtraction_ThousandWithBorrow */,
+    "Subtraction: 1000" /* Subtraction_Thousand */,
+    "Subtraction: Hundreds" /* Subtraction_Hundreds */
   ],
   Multiplication: [
     "Multiplication: 10" /* Multiplication_Ten */,
     "Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */,
     "Multiplication: 20" /* Multiplication_Twenty */,
-    "Multiplication: 20 (missing facts)" /* Multiplication_Twenty_Missing */
+    "Multiplication: 20 (missing facts)" /* Multiplication_Twenty_Missing */,
+    "Multiplication: 100" /* Multiplication_Hundred */,
+    "Multiplication: 100 (missing facts)" /* Multiplication_Hundred_Missing */
   ],
   Division: [
     "Division: 10" /* Division_Ten */,
     "Division: 10 (missing facts)" /* Division_Ten_Missing */,
     "Division: 20" /* Division_Twenty */,
-    "Division: 20 (missing facts)" /* Division_Twenty_Missing */
+    "Division: 20 (missing facts)" /* Division_Twenty_Missing */,
+    "Division: 100" /* Division_Hundred */,
+    "Division: 100 (missing facts)" /* Division_Hundred_Missing */
   ],
   Comparison: [
     "Comparison: 10" /* Comparison_Ten */,
     "Comparison: 20" /* Comparison_Twenty */,
-    "Comparison: 100" /* Comparison_Hundred */
+    "Comparison: 100" /* Comparison_Hundred */,
+    "Comparison: 1000" /* Comparison_Thousand */
   ],
-  Test: [
-    "test" /* Test */
-  ]
+  Test: ["test" /* Test */]
 };
 var yearGroupsSl = {
   "1. razred": [
@@ -97,10 +108,12 @@ var yearGroupsSl = {
     "Addition: 100 (with carry)" /* Addition_HundredWithCarry */,
     "Addition: 100" /* Addition_Hundred */,
     "Addition: 100 (missing facts)" /* Addition_Hundred_Missing */,
+    "Addition: Hundreds" /* Addition_Hundreds */,
     "Subtraction: 100 (without borrow)" /* Subtraction_HundredWithoutBorrow */,
     "Subtraction: 100 (with borrow)" /* Subtraction_HundredWithBorrow */,
     "Subtraction: 100" /* Subtraction_Hundred */,
     "Subtraction: 100 (missing facts)" /* Subtraction_Hundred_Missing */,
+    "Subtraction: Hundreds" /* Subtraction_Hundreds */,
     "Multiplication: 10" /* Multiplication_Ten */,
     "Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */,
     "Division: 10" /* Division_Ten */,
@@ -108,10 +121,23 @@ var yearGroupsSl = {
     "Comparison: 100" /* Comparison_Hundred */
   ],
   "4. razred": [
+    "Addition: 1000 (without carry)" /* Addition_ThousandWithoutCarry */,
+    "Addition: 1000 (with carry)" /* Addition_ThousandWithCarry */,
+    "Addition: 1000" /* Addition_Thousand */,
+    "Subtraction: 1000 (without borrow)" /* Subtraction_ThousandWithoutBorrow */,
+    "Subtraction: 1000 (with borrow)" /* Subtraction_ThousandWithBorrow */,
+    "Subtraction: 1000" /* Subtraction_Thousand */,
     "Multiplication: 20" /* Multiplication_Twenty */,
     "Multiplication: 20 (missing facts)" /* Multiplication_Twenty_Missing */,
     "Division: 20" /* Division_Twenty */,
-    "Division: 20 (missing facts)" /* Division_Twenty_Missing */
+    "Division: 20 (missing facts)" /* Division_Twenty_Missing */,
+    "Comparison: 1000" /* Comparison_Thousand */
+  ],
+  "5. razred": [
+    "Multiplication: 100" /* Multiplication_Hundred */,
+    "Multiplication: 100 (missing facts)" /* Multiplication_Hundred_Missing */,
+    "Division: 100" /* Division_Hundred */,
+    "Division: 100 (missing facts)" /* Division_Hundred_Missing */
   ]
 };
 var categoryToGroup = (() => {
@@ -203,6 +229,43 @@ var generateProps = {
     yMin: 10,
     step: 10,
     maxResult: 100
+  },
+  ["Addition: 1000 (without carry)" /* Addition_ThousandWithoutCarry */]: {
+    xMax: 990,
+    yMax: 990,
+    xMin: 100,
+    yMin: 100,
+    step: 10,
+    maxResult: 1000,
+    carryAllowed: false
+  },
+  ["Addition: 1000 (with carry)" /* Addition_ThousandWithCarry */]: {
+    xMax: 990,
+    yMax: 990,
+    xMin: 100,
+    yMin: 100,
+    step: 10,
+    maxResult: 1000,
+    carryAllowed: true,
+    carryForced: true
+  },
+  ["Addition: 1000" /* Addition_Thousand */]: {
+    xMax: 990,
+    yMax: 990,
+    xMin: 100,
+    yMin: 100,
+    step: 10,
+    maxResult: 1000,
+    carryAllowed: true,
+    carryForced: false
+  },
+  ["Addition: Hundreds" /* Addition_Hundreds */]: {
+    xMax: 900,
+    yMax: 900,
+    xMin: 100,
+    yMin: 100,
+    step: 100,
+    maxResult: 1000
   }
 };
 function generate(category) {
@@ -228,7 +291,9 @@ function generate(category) {
   const missingFacts = Array.isArray(missingFact) ? missingFact : [missingFact];
   for (let i = xMin;i <= xMax; i += step) {
     for (let j = yMin;j <= yMax; j += step) {
-      const hasCarry = carryAllowed && i % 10 + j % 10 >= 10;
+      const digitI = Math.floor(i / step) % 10;
+      const digitJ = Math.floor(j / step) % 10;
+      const hasCarry = carryAllowed && digitI + digitJ >= 10;
       if (hasCarry && !carryForced) {
         continue;
       }
@@ -323,11 +388,53 @@ var generateProps2 = {
     xMin: 10,
     yMin: 10,
     step: 10
+  },
+  ["Subtraction: 1000 (without borrow)" /* Subtraction_ThousandWithoutBorrow */]: {
+    xMax: 1000,
+    yMax: 990,
+    xMin: 100,
+    yMin: 100,
+    step: 10,
+    borrowAllowed: false
+  },
+  ["Subtraction: 1000 (with borrow)" /* Subtraction_ThousandWithBorrow */]: {
+    xMax: 1000,
+    yMax: 990,
+    xMin: 100,
+    yMin: 100,
+    step: 10,
+    borrowAllowed: true,
+    borrowForced: true
+  },
+  ["Subtraction: 1000" /* Subtraction_Thousand */]: {
+    xMax: 1000,
+    yMax: 990,
+    xMin: 100,
+    yMin: 100,
+    step: 10,
+    borrowAllowed: true,
+    borrowForced: false
+  },
+  ["Subtraction: Hundreds" /* Subtraction_Hundreds */]: {
+    xMax: 1000,
+    yMax: 900,
+    xMin: 100,
+    yMin: 100,
+    step: 100
   }
 };
 function generate2(category) {
   const props = generateProps2[category];
-  let { xMax, yMax, xMin, yMin, step, borrowAllowed, borrowForced, missingFact } = props;
+  let {
+    xMax,
+    yMax,
+    xMin,
+    yMin,
+    step,
+    borrowAllowed,
+    borrowForced,
+    missingFact
+  } = props;
   xMin = xMin ?? 0;
   yMin = yMin ?? 0;
   step = step ?? 1;
@@ -340,7 +447,9 @@ function generate2(category) {
     for (let j = yMin;j <= yMax; j += step) {
       if (i < j)
         continue;
-      const hasBorrow = borrowAllowed && i % 10 < j % 10;
+      const digitI = Math.floor(i / step) % 10;
+      const digitJ = Math.floor(j / step) % 10;
+      const hasBorrow = borrowAllowed && digitI < digitJ;
       if (hasBorrow && !borrowForced) {
         continue;
       }
@@ -383,9 +492,23 @@ function generate2(category) {
 // src/division.ts
 var generateProps3 = {
   ["Division: 10" /* Division_Ten */]: { answerMax: 10, divisorMax: 10 },
-  ["Division: 10 (missing facts)" /* Division_Ten_Missing */]: { answerMax: 10, divisorMax: 10, missingField: ["dividend", "divisor"] },
+  ["Division: 10 (missing facts)" /* Division_Ten_Missing */]: {
+    answerMax: 10,
+    divisorMax: 10,
+    missingField: ["dividend", "divisor"]
+  },
   ["Division: 20" /* Division_Twenty */]: { answerMax: 20, divisorMax: 20 },
-  ["Division: 20 (missing facts)" /* Division_Twenty_Missing */]: { answerMax: 20, divisorMax: 20, missingField: ["dividend", "divisor"] }
+  ["Division: 20 (missing facts)" /* Division_Twenty_Missing */]: {
+    answerMax: 20,
+    divisorMax: 20,
+    missingField: ["dividend", "divisor"]
+  },
+  ["Division: 100" /* Division_Hundred */]: { answerMax: 100, divisorMax: 9 },
+  ["Division: 100 (missing facts)" /* Division_Hundred_Missing */]: {
+    answerMax: 100,
+    divisorMax: 9,
+    missingField: ["dividend", "divisor"]
+  }
 };
 function generate3(category) {
   const props = generateProps3[category];
@@ -433,9 +556,23 @@ function generate3(category) {
 // src/multiplication.ts
 var generateProps4 = {
   ["Multiplication: 10" /* Multiplication_Ten */]: { xMax: 10, yMax: 10 },
-  ["Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */]: { xMax: 10, yMax: 10, missingField: ["first", "second"] },
+  ["Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */]: {
+    xMax: 10,
+    yMax: 10,
+    missingField: ["first", "second"]
+  },
   ["Multiplication: 20" /* Multiplication_Twenty */]: { xMax: 20, yMax: 20 },
-  ["Multiplication: 20 (missing facts)" /* Multiplication_Twenty_Missing */]: { xMax: 20, yMax: 20, missingField: ["first", "second"] }
+  ["Multiplication: 20 (missing facts)" /* Multiplication_Twenty_Missing */]: {
+    xMax: 20,
+    yMax: 20,
+    missingField: ["first", "second"]
+  },
+  ["Multiplication: 100" /* Multiplication_Hundred */]: { xMax: 100, yMax: 9 },
+  ["Multiplication: 100 (missing facts)" /* Multiplication_Hundred_Missing */]: {
+    xMax: 100,
+    yMax: 9,
+    missingField: ["first", "second"]
+  }
 };
 function generate4(category) {
   const props = generateProps4[category];
@@ -494,7 +631,8 @@ function generate5(category) {
 var generateProps5 = {
   ["Comparison: 10" /* Comparison_Ten */]: { max: 10 },
   ["Comparison: 20" /* Comparison_Twenty */]: { max: 20 },
-  ["Comparison: 100" /* Comparison_Hundred */]: { max: 100, min: 10 }
+  ["Comparison: 100" /* Comparison_Hundred */]: { max: 100, min: 10 },
+  ["Comparison: 1000" /* Comparison_Thousand */]: { max: 1000, min: 100, step: 10 }
 };
 var comparisonOptions = [
   { label: "<", value: -1 },
@@ -503,10 +641,10 @@ var comparisonOptions = [
 ];
 function generate6(category) {
   const props = generateProps5[category];
-  const { max, min = 0 } = props;
+  const { max, min = 0, step = 1 } = props;
   const allProblems = [];
-  for (let x = min;x <= max; x++) {
-    for (let y = min;y <= max; y++) {
+  for (let x = min;x <= max; x += step) {
+    for (let y = min;y <= max; y += step) {
       const answer = x < y ? -1 : x === y ? 0 : 1;
       allProblems.push({
         id: `${category}_${x}_${y}`,

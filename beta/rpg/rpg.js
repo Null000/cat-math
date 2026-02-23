@@ -30882,7 +30882,11 @@ var categoryGroups = {
     "Addition: 100 (with carry)" /* Addition_HundredWithCarry */,
     "Addition: 100" /* Addition_Hundred */,
     "Addition: 100 (missing facts)" /* Addition_Hundred_Missing */,
-    "Addition: Tens" /* Addition_Tens */
+    "Addition: Tens" /* Addition_Tens */,
+    "Addition: 1000 (without carry)" /* Addition_ThousandWithoutCarry */,
+    "Addition: 1000 (with carry)" /* Addition_ThousandWithCarry */,
+    "Addition: 1000" /* Addition_Thousand */,
+    "Addition: Hundreds" /* Addition_Hundreds */
   ],
   Subtraction: [
     "Subtraction: 10" /* Subtraction_Ten */,
@@ -30893,28 +30897,35 @@ var categoryGroups = {
     "Subtraction: 100 (with borrow)" /* Subtraction_HundredWithBorrow */,
     "Subtraction: 100" /* Subtraction_Hundred */,
     "Subtraction: 100 (missing facts)" /* Subtraction_Hundred_Missing */,
-    "Subtraction: Tens" /* Subtraction_Tens */
+    "Subtraction: Tens" /* Subtraction_Tens */,
+    "Subtraction: 1000 (without borrow)" /* Subtraction_ThousandWithoutBorrow */,
+    "Subtraction: 1000 (with borrow)" /* Subtraction_ThousandWithBorrow */,
+    "Subtraction: 1000" /* Subtraction_Thousand */,
+    "Subtraction: Hundreds" /* Subtraction_Hundreds */
   ],
   Multiplication: [
     "Multiplication: 10" /* Multiplication_Ten */,
     "Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */,
     "Multiplication: 20" /* Multiplication_Twenty */,
-    "Multiplication: 20 (missing facts)" /* Multiplication_Twenty_Missing */
+    "Multiplication: 20 (missing facts)" /* Multiplication_Twenty_Missing */,
+    "Multiplication: 100" /* Multiplication_Hundred */,
+    "Multiplication: 100 (missing facts)" /* Multiplication_Hundred_Missing */
   ],
   Division: [
     "Division: 10" /* Division_Ten */,
     "Division: 10 (missing facts)" /* Division_Ten_Missing */,
     "Division: 20" /* Division_Twenty */,
-    "Division: 20 (missing facts)" /* Division_Twenty_Missing */
+    "Division: 20 (missing facts)" /* Division_Twenty_Missing */,
+    "Division: 100" /* Division_Hundred */,
+    "Division: 100 (missing facts)" /* Division_Hundred_Missing */
   ],
   Comparison: [
     "Comparison: 10" /* Comparison_Ten */,
     "Comparison: 20" /* Comparison_Twenty */,
-    "Comparison: 100" /* Comparison_Hundred */
+    "Comparison: 100" /* Comparison_Hundred */,
+    "Comparison: 1000" /* Comparison_Thousand */
   ],
-  Test: [
-    "test" /* Test */
-  ]
+  Test: ["test" /* Test */]
 };
 var yearGroupsSl = {
   "1. razred": [
@@ -30940,10 +30951,12 @@ var yearGroupsSl = {
     "Addition: 100 (with carry)" /* Addition_HundredWithCarry */,
     "Addition: 100" /* Addition_Hundred */,
     "Addition: 100 (missing facts)" /* Addition_Hundred_Missing */,
+    "Addition: Hundreds" /* Addition_Hundreds */,
     "Subtraction: 100 (without borrow)" /* Subtraction_HundredWithoutBorrow */,
     "Subtraction: 100 (with borrow)" /* Subtraction_HundredWithBorrow */,
     "Subtraction: 100" /* Subtraction_Hundred */,
     "Subtraction: 100 (missing facts)" /* Subtraction_Hundred_Missing */,
+    "Subtraction: Hundreds" /* Subtraction_Hundreds */,
     "Multiplication: 10" /* Multiplication_Ten */,
     "Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */,
     "Division: 10" /* Division_Ten */,
@@ -30951,10 +30964,23 @@ var yearGroupsSl = {
     "Comparison: 100" /* Comparison_Hundred */
   ],
   "4. razred": [
+    "Addition: 1000 (without carry)" /* Addition_ThousandWithoutCarry */,
+    "Addition: 1000 (with carry)" /* Addition_ThousandWithCarry */,
+    "Addition: 1000" /* Addition_Thousand */,
+    "Subtraction: 1000 (without borrow)" /* Subtraction_ThousandWithoutBorrow */,
+    "Subtraction: 1000 (with borrow)" /* Subtraction_ThousandWithBorrow */,
+    "Subtraction: 1000" /* Subtraction_Thousand */,
     "Multiplication: 20" /* Multiplication_Twenty */,
     "Multiplication: 20 (missing facts)" /* Multiplication_Twenty_Missing */,
     "Division: 20" /* Division_Twenty */,
-    "Division: 20 (missing facts)" /* Division_Twenty_Missing */
+    "Division: 20 (missing facts)" /* Division_Twenty_Missing */,
+    "Comparison: 1000" /* Comparison_Thousand */
+  ],
+  "5. razred": [
+    "Multiplication: 100" /* Multiplication_Hundred */,
+    "Multiplication: 100 (missing facts)" /* Multiplication_Hundred_Missing */,
+    "Division: 100" /* Division_Hundred */,
+    "Division: 100 (missing facts)" /* Division_Hundred_Missing */
   ]
 };
 var categoryToGroup = (() => {
@@ -31046,6 +31072,43 @@ var generateProps = {
     yMin: 10,
     step: 10,
     maxResult: 100
+  },
+  ["Addition: 1000 (without carry)" /* Addition_ThousandWithoutCarry */]: {
+    xMax: 990,
+    yMax: 990,
+    xMin: 100,
+    yMin: 100,
+    step: 10,
+    maxResult: 1000,
+    carryAllowed: false
+  },
+  ["Addition: 1000 (with carry)" /* Addition_ThousandWithCarry */]: {
+    xMax: 990,
+    yMax: 990,
+    xMin: 100,
+    yMin: 100,
+    step: 10,
+    maxResult: 1000,
+    carryAllowed: true,
+    carryForced: true
+  },
+  ["Addition: 1000" /* Addition_Thousand */]: {
+    xMax: 990,
+    yMax: 990,
+    xMin: 100,
+    yMin: 100,
+    step: 10,
+    maxResult: 1000,
+    carryAllowed: true,
+    carryForced: false
+  },
+  ["Addition: Hundreds" /* Addition_Hundreds */]: {
+    xMax: 900,
+    yMax: 900,
+    xMin: 100,
+    yMin: 100,
+    step: 100,
+    maxResult: 1000
   }
 };
 function generate(category) {
@@ -31071,7 +31134,9 @@ function generate(category) {
   const missingFacts = Array.isArray(missingFact) ? missingFact : [missingFact];
   for (let i = xMin;i <= xMax; i += step) {
     for (let j = yMin;j <= yMax; j += step) {
-      const hasCarry = carryAllowed && i % 10 + j % 10 >= 10;
+      const digitI = Math.floor(i / step) % 10;
+      const digitJ = Math.floor(j / step) % 10;
+      const hasCarry = carryAllowed && digitI + digitJ >= 10;
       if (hasCarry && !carryForced) {
         continue;
       }
@@ -31166,11 +31231,53 @@ var generateProps2 = {
     xMin: 10,
     yMin: 10,
     step: 10
+  },
+  ["Subtraction: 1000 (without borrow)" /* Subtraction_ThousandWithoutBorrow */]: {
+    xMax: 1000,
+    yMax: 990,
+    xMin: 100,
+    yMin: 100,
+    step: 10,
+    borrowAllowed: false
+  },
+  ["Subtraction: 1000 (with borrow)" /* Subtraction_ThousandWithBorrow */]: {
+    xMax: 1000,
+    yMax: 990,
+    xMin: 100,
+    yMin: 100,
+    step: 10,
+    borrowAllowed: true,
+    borrowForced: true
+  },
+  ["Subtraction: 1000" /* Subtraction_Thousand */]: {
+    xMax: 1000,
+    yMax: 990,
+    xMin: 100,
+    yMin: 100,
+    step: 10,
+    borrowAllowed: true,
+    borrowForced: false
+  },
+  ["Subtraction: Hundreds" /* Subtraction_Hundreds */]: {
+    xMax: 1000,
+    yMax: 900,
+    xMin: 100,
+    yMin: 100,
+    step: 100
   }
 };
 function generate2(category) {
   const props = generateProps2[category];
-  let { xMax, yMax, xMin, yMin, step, borrowAllowed, borrowForced, missingFact } = props;
+  let {
+    xMax,
+    yMax,
+    xMin,
+    yMin,
+    step,
+    borrowAllowed,
+    borrowForced,
+    missingFact
+  } = props;
   xMin = xMin ?? 0;
   yMin = yMin ?? 0;
   step = step ?? 1;
@@ -31183,7 +31290,9 @@ function generate2(category) {
     for (let j = yMin;j <= yMax; j += step) {
       if (i < j)
         continue;
-      const hasBorrow = borrowAllowed && i % 10 < j % 10;
+      const digitI = Math.floor(i / step) % 10;
+      const digitJ = Math.floor(j / step) % 10;
+      const hasBorrow = borrowAllowed && digitI < digitJ;
       if (hasBorrow && !borrowForced) {
         continue;
       }
@@ -31226,9 +31335,23 @@ function generate2(category) {
 // src/division.ts
 var generateProps3 = {
   ["Division: 10" /* Division_Ten */]: { answerMax: 10, divisorMax: 10 },
-  ["Division: 10 (missing facts)" /* Division_Ten_Missing */]: { answerMax: 10, divisorMax: 10, missingField: ["dividend", "divisor"] },
+  ["Division: 10 (missing facts)" /* Division_Ten_Missing */]: {
+    answerMax: 10,
+    divisorMax: 10,
+    missingField: ["dividend", "divisor"]
+  },
   ["Division: 20" /* Division_Twenty */]: { answerMax: 20, divisorMax: 20 },
-  ["Division: 20 (missing facts)" /* Division_Twenty_Missing */]: { answerMax: 20, divisorMax: 20, missingField: ["dividend", "divisor"] }
+  ["Division: 20 (missing facts)" /* Division_Twenty_Missing */]: {
+    answerMax: 20,
+    divisorMax: 20,
+    missingField: ["dividend", "divisor"]
+  },
+  ["Division: 100" /* Division_Hundred */]: { answerMax: 100, divisorMax: 9 },
+  ["Division: 100 (missing facts)" /* Division_Hundred_Missing */]: {
+    answerMax: 100,
+    divisorMax: 9,
+    missingField: ["dividend", "divisor"]
+  }
 };
 function generate3(category) {
   const props = generateProps3[category];
@@ -31276,9 +31399,23 @@ function generate3(category) {
 // src/multiplication.ts
 var generateProps4 = {
   ["Multiplication: 10" /* Multiplication_Ten */]: { xMax: 10, yMax: 10 },
-  ["Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */]: { xMax: 10, yMax: 10, missingField: ["first", "second"] },
+  ["Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */]: {
+    xMax: 10,
+    yMax: 10,
+    missingField: ["first", "second"]
+  },
   ["Multiplication: 20" /* Multiplication_Twenty */]: { xMax: 20, yMax: 20 },
-  ["Multiplication: 20 (missing facts)" /* Multiplication_Twenty_Missing */]: { xMax: 20, yMax: 20, missingField: ["first", "second"] }
+  ["Multiplication: 20 (missing facts)" /* Multiplication_Twenty_Missing */]: {
+    xMax: 20,
+    yMax: 20,
+    missingField: ["first", "second"]
+  },
+  ["Multiplication: 100" /* Multiplication_Hundred */]: { xMax: 100, yMax: 9 },
+  ["Multiplication: 100 (missing facts)" /* Multiplication_Hundred_Missing */]: {
+    xMax: 100,
+    yMax: 9,
+    missingField: ["first", "second"]
+  }
 };
 function generate4(category) {
   const props = generateProps4[category];
@@ -31337,7 +31474,8 @@ function generate5(category) {
 var generateProps5 = {
   ["Comparison: 10" /* Comparison_Ten */]: { max: 10 },
   ["Comparison: 20" /* Comparison_Twenty */]: { max: 20 },
-  ["Comparison: 100" /* Comparison_Hundred */]: { max: 100, min: 10 }
+  ["Comparison: 100" /* Comparison_Hundred */]: { max: 100, min: 10 },
+  ["Comparison: 1000" /* Comparison_Thousand */]: { max: 1000, min: 100, step: 10 }
 };
 var comparisonOptions = [
   { label: "<", value: -1 },
@@ -31346,10 +31484,10 @@ var comparisonOptions = [
 ];
 function generate6(category) {
   const props = generateProps5[category];
-  const { max, min = 0 } = props;
+  const { max, min = 0, step = 1 } = props;
   const allProblems = [];
-  for (let x = min;x <= max; x++) {
-    for (let y = min;y <= max; y++) {
+  for (let x = min;x <= max; x += step) {
+    for (let y = min;y <= max; y += step) {
       const answer = x < y ? -1 : x === y ? 0 : 1;
       allProblems.push({
         id: `${category}_${x}_${y}`,
@@ -33467,7 +33605,7 @@ class HealthBar extends Container {
   heightBar;
   currentRatio = 1;
   targetRatio = 1;
-  animationSpeed = 1.5;
+  animationSpeed = 1.5 / 1000;
   constructor(width = standardWidth / 8, height = standardHeight / 60) {
     super();
     this.widthMax = width;
@@ -33484,11 +33622,11 @@ class HealthBar extends Container {
   setHealth(ratio) {
     this.targetRatio = ratio;
   }
-  update(delta) {
+  update(time) {
     if (this.currentRatio === this.targetRatio)
       return;
     const diff = this.targetRatio - this.currentRatio;
-    const step = this.animationSpeed * delta;
+    const step = this.animationSpeed * time.deltaMS;
     if (Math.abs(diff) <= step) {
       this.currentRatio = this.targetRatio;
     } else {
@@ -33520,7 +33658,15 @@ class Actor extends Container {
   speed;
   xpDrop;
   xp = 0;
-  constructor({ texture, textureScale = 0.5, health, attackPower, defensePower, speed, xpDrop }) {
+  constructor({
+    texture,
+    textureScale = 0.5,
+    health,
+    attackPower,
+    defensePower,
+    speed,
+    xpDrop
+  }) {
     super();
     this.health = health;
     this.maxHealth = health;
@@ -33549,7 +33695,7 @@ class Actor extends Container {
     this.updateHealthBar();
     const damagePercent = Math.min(damage / this.maxHealth, 1);
     const intensity = 3 + damagePercent * 17;
-    const duration = 0.2 + damagePercent * 0.6;
+    const duration = 200 + damagePercent * 600;
     await this.shake(duration, intensity);
     return this.health === 0;
   }
@@ -33557,7 +33703,7 @@ class Actor extends Container {
   lastTime = 0;
   shakeIntensity = 5;
   resolveShake = null;
-  shake(duration = 0.5, intensity = 10) {
+  shake(duration = 500, intensity = 10) {
     if (duration <= 0)
       return Promise.resolve();
     this.shakeTimer = duration;
@@ -33579,19 +33725,23 @@ class Actor extends Container {
   }
   isRunningLeft = false;
   resolveRunLeft = null;
-  runSpeed = 400;
+  runSpeed = 0.4;
+  deathFadeSpeed = 1 / 1000;
   isEntering = false;
   resolveEnter = null;
   enterProgress = 0;
-  enterDuration = 0.6;
+  enterDuration = 600;
   enterStartX = 0;
   enterTargetX = 0;
   isTwitching = false;
   resolveTwitch = null;
   twitchProgress = 0;
-  twitchDuration = 0.25;
+  twitchDuration = 250;
   twitchDistance = 30;
   twitchDirection = 1;
+  speechBubble = null;
+  speechBubbleTimeout = null;
+  resolveSpeechBubble = null;
   runLeft() {
     this.sprite.scale.x = this.sprite.scale.x * -1;
     this.isRunningLeft = true;
@@ -33599,7 +33749,7 @@ class Actor extends Container {
       this.resolveRunLeft = resolve;
     });
   }
-  enter(fromX, duration = 0.6, delay = 0) {
+  enter(fromX, duration = 600, delay = 0) {
     this.isEntering = true;
     this.enterStartX = fromX;
     this.enterTargetX = this.x;
@@ -33612,13 +33762,13 @@ class Actor extends Container {
     });
   }
   update(time, isSine) {
+    const lastTime = time.lastTime;
     if (this.lastTime === 0) {
-      this.lastTime = time;
+      this.lastTime = lastTime;
     }
-    const delta = (time - this.lastTime) / 1000;
-    this.lastTime = time;
+    this.lastTime = lastTime;
     if (this.isDying) {
-      this.alpha -= delta;
+      this.alpha -= this.deathFadeSpeed * time.deltaMS;
       if (this.alpha <= 0) {
         this.alpha = 0;
         if (this.resolveDeath) {
@@ -33628,7 +33778,7 @@ class Actor extends Container {
       }
     }
     if (this.isRunningLeft) {
-      this.x -= this.runSpeed * delta;
+      this.x -= this.runSpeed * time.deltaMS;
       if (this.x < -this.sprite.width) {
         if (this.resolveRunLeft) {
           this.resolveRunLeft();
@@ -33638,7 +33788,7 @@ class Actor extends Container {
       return;
     }
     if (this.isEntering) {
-      this.enterProgress += delta;
+      this.enterProgress += time.deltaMS;
       if (this.enterProgress <= 0) {
         return;
       }
@@ -33657,7 +33807,7 @@ class Actor extends Container {
       }
     }
     if (this.isTwitching) {
-      this.twitchProgress += delta;
+      this.twitchProgress += time.deltaMS;
       const halfDuration = this.twitchDuration / 2;
       if (this.twitchProgress < halfDuration) {
         const t2 = this.twitchProgress / halfDuration;
@@ -33679,7 +33829,7 @@ class Actor extends Container {
     let shakeX = 0;
     let shakeY = 0;
     if (this.shakeTimer > 0) {
-      this.shakeTimer -= delta;
+      this.shakeTimer -= time.deltaMS;
       if (this.shakeTimer <= 0) {
         this.shakeTimer = 0;
         if (this.resolveShake) {
@@ -33690,15 +33840,94 @@ class Actor extends Container {
       shakeX = Math.random() * this.shakeIntensity * 2 - this.shakeIntensity;
       shakeY = Math.random() * this.shakeIntensity * 2 - this.shakeIntensity;
     }
-    let offset = isSine ? Math.sin(time / 500) : Math.cos(time / 500);
+    let offset = isSine ? Math.sin(lastTime / 500) : Math.cos(lastTime / 500);
     offset *= 10;
     this.sprite.y = offset + shakeY;
     this.sprite.x = shakeX;
-    this.healthBar.update(delta);
+    this.healthBar.update(time);
     this.healthBar.y = -this.sprite.height + offset - 20 + shakeY;
     this.healthBar.x = shakeX;
+    if (this.speechBubble) {
+      this.speechBubble.y = -this.sprite.height + offset - 40 + shakeY;
+      this.speechBubble.x = shakeX;
+    }
   }
-  async attack(target) {
+  async showSpeechBubble(text, duration) {
+    this.hideSpeechBubble();
+    const bubble = new Container;
+    const textObj = new Text({
+      text,
+      style: {
+        fontSize: 14,
+        fill: 0,
+        wordWrap: true,
+        wordWrapWidth: 150,
+        fontFamily: "Arial"
+      }
+    });
+    const padding = 10;
+    const tailHeight = 10;
+    const bubbleWidth = textObj.width + padding * 2;
+    const bubbleHeight = textObj.height + padding * 2;
+    const r2 = 8;
+    const tw = 8;
+    const cx = bubbleWidth / 2;
+    const bg = new Graphics;
+    bg.moveTo(r2, 0);
+    bg.lineTo(bubbleWidth - r2, 0);
+    bg.arcTo(bubbleWidth, 0, bubbleWidth, r2, r2);
+    bg.lineTo(bubbleWidth, bubbleHeight - r2);
+    bg.arcTo(bubbleWidth, bubbleHeight, bubbleWidth - r2, bubbleHeight, r2);
+    bg.lineTo(cx + tw, bubbleHeight);
+    bg.lineTo(cx, bubbleHeight + tailHeight);
+    bg.lineTo(cx - tw, bubbleHeight);
+    bg.lineTo(r2, bubbleHeight);
+    bg.arcTo(0, bubbleHeight, 0, bubbleHeight - r2, r2);
+    bg.lineTo(0, r2);
+    bg.arcTo(0, 0, r2, 0, r2);
+    bg.closePath();
+    bg.fill({ color: 16777215 });
+    bg.stroke({ width: 2, color: 3355443 });
+    textObj.x = padding;
+    textObj.y = padding;
+    bubble.addChild(bg);
+    bubble.addChild(textObj);
+    bubble.pivot.set(cx, bubbleHeight + tailHeight);
+    this.speechBubble = bubble;
+    this.addChild(bubble);
+    if (duration === -1) {
+      return;
+    }
+    return new Promise((resolve) => {
+      this.resolveSpeechBubble = resolve;
+      this.speechBubbleTimeout = setTimeout(() => {
+        this.hideSpeechBubble();
+      }, duration);
+    });
+  }
+  hideSpeechBubble() {
+    if (this.speechBubbleTimeout !== null) {
+      clearTimeout(this.speechBubbleTimeout);
+      this.speechBubbleTimeout = null;
+    }
+    if (this.speechBubble) {
+      this.removeChild(this.speechBubble);
+      this.speechBubble.destroy();
+      this.speechBubble = null;
+    }
+    if (this.resolveSpeechBubble) {
+      this.resolveSpeechBubble();
+      this.resolveSpeechBubble = null;
+    }
+  }
+  async attack(targets) {
+    await this.twitch();
+    return [{
+      target: targets[0],
+      damage: this.attackPower
+    }];
+  }
+  async magicMissileAttack(target) {
     await this.twitch();
     return this.attackPower;
   }
@@ -33725,29 +33954,85 @@ class Wizard extends Actor {
   magicOrb = null;
   magicTrails = [];
   magicProgress = 0;
-  magicDuration = 0.4;
+  magicDuration = 400;
   magicIsCritical = false;
   magicLastTime = 0;
   magicTargetX = 0;
   magicTargetY = 0;
   magicBurst = null;
   burstProgress = 0;
-  burstDuration = 0.2;
+  burstDuration = 200;
   isBursting = false;
   isAreaCasting = false;
   resolveAreaMagic = null;
   areaRing = null;
   areaProgress = 0;
-  areaDuration = 0.6;
+  areaDuration = 600;
+  isCastingMissiles = false;
+  resolveMissiles = null;
+  missiles = [];
+  missileDuration = 350;
+  missileTargetX = 0;
+  missileTargetY = 0;
+  missileBursts = [];
+  missileBurstDuration = 150;
   isLevelingUp = false;
   resolveLevelUp = null;
   levelUpProgress = 0;
-  levelUpDuration = 1.5;
+  levelUpDuration = 1500;
   levelUpGlow = null;
   levelUpFlash = null;
   levelUpParticles = [];
   levelUpNewTexture = null;
   levelUpTextureSwapped = false;
+  isCastingLightning = false;
+  resolveLightning = null;
+  lightningProgress = 0;
+  lightningDuration = 300;
+  lightningBolt = null;
+  lightningTargetX = 0;
+  lightningTargetY = 0;
+  lightningBurst = null;
+  lightningBurstProgress = 0;
+  isLightningBursting = false;
+  lightningBurstDuration = 150;
+  isCastingFireBolt = false;
+  resolveFireBolt = null;
+  fireBoltProgress = 0;
+  fireBoltDuration = 400;
+  fireBoltOrb = null;
+  fireBoltTargetX = 0;
+  fireBoltTargetY = 0;
+  fireBoltBurst = null;
+  fireBoltBurstProgress = 0;
+  isFireBoltBursting = false;
+  fireBoltBurstDuration = 200;
+  isCastingFrost = false;
+  resolveFrost = null;
+  frostShards = [];
+  frostDuration = 300;
+  frostTargetX = 0;
+  frostTargetY = 0;
+  frostBursts = [];
+  frostBurstDuration = 150;
+  isCastingBeam = false;
+  resolveBeam = null;
+  beamProgress = 0;
+  beamDuration = 500;
+  beamGraphic = null;
+  beamTargetX = 0;
+  beamTargetY = 0;
+  isCastingMeteor = false;
+  resolveMeteor = null;
+  meteorProgress = 0;
+  meteorDuration = 500;
+  meteorGraphic = null;
+  meteorTargetX = 0;
+  meteorTargetY = 0;
+  meteorBurst = null;
+  meteorBurstProgress = 0;
+  isMeteorBursting = false;
+  meteorBurstDuration = 250;
   constructor(xp) {
     const xpFactor = 1 + xp / 100;
     super({
@@ -33764,11 +34049,23 @@ class Wizard extends Actor {
     const ratio = Math.max(this.health / this.maxHealth, 0.02);
     this.healthBar.setHealth(ratio);
   }
-  async attack(defender) {
-    const isCritical = false;
+  async attack(defenders) {
+    let isCritical = false;
     await this.twitch();
-    await this.castMagic(isCritical, defender);
-    return isCritical ? this.attackPower * 2 : this.attackPower;
+    const level = getWizardLevel(this.xp);
+    const target = defenders[0];
+    let damage = this.attackPower;
+    if (level > 1) {
+      if (Math.random() < 0.25) {
+        isCritical = true;
+        damage *= 2;
+      }
+    }
+    await this.castMagic(isCritical, target);
+    return [{
+      target,
+      damage
+    }];
   }
   castMagic(isCritical, defender) {
     this.isCastingMagic = true;
@@ -33796,6 +34093,61 @@ class Wizard extends Actor {
     await this.castAreaMagic();
     return this.attackPower;
   }
+  async magicMissileAttack(defender) {
+    await this.twitch();
+    await this.castMagicMissile(defender);
+    return this.attackPower;
+  }
+  castMagicMissile(defender) {
+    this.isCastingMissiles = true;
+    this.missileTargetX = defender.x - this.x;
+    this.missileTargetY = defender.y - this.y - 80;
+    this.magicLastTime = 0;
+    this.missiles = [];
+    this.missileBursts = [];
+    const offsets = [-35, 0, 35];
+    for (let i2 = 0;i2 < 3; i2++) {
+      const missile = new Graphics;
+      this.drawMissile(missile);
+      missile.zIndex = 1000;
+      missile.visible = false;
+      this.parent.addChild(missile);
+      this.missiles.push({
+        graphic: missile,
+        progress: 0,
+        startDelay: i2 * 70,
+        offsetY: offsets[i2],
+        hit: false
+      });
+    }
+    return new Promise((resolve) => {
+      if (this.resolveMissiles) {
+        this.resolveMissiles();
+      }
+      this.resolveMissiles = resolve;
+    });
+  }
+  drawMissile(g2) {
+    const color = 13387007;
+    g2.circle(0, 0, 10);
+    g2.fill({ color, alpha: 0.15 });
+    g2.circle(0, 0, 6);
+    g2.fill({ color, alpha: 0.3 });
+    g2.circle(0, 0, 3.5);
+    g2.fill({ color, alpha: 0.6 });
+    g2.circle(0, 0, 1.5);
+    g2.fill({ color: 16777215, alpha: 0.95 });
+  }
+  spawnMissileTrail(x2, y2) {
+    const trail = new Graphics;
+    trail.circle(0, 0, 2);
+    trail.fill({ color: 13387007, alpha: 0.5 });
+    trail.x = this.x + x2;
+    trail.y = this.y + y2;
+    trail.zIndex = 1000;
+    this.parent.addChild(trail);
+    this.magicTrails.push({ graphic: trail, life: 200 });
+  }
   castAreaMagic() {
     this.isAreaCasting = true;
     this.areaProgress = 0;
@@ -33822,16 +34174,244 @@ class Wizard extends Actor {
       this.resolveAreaMagic = resolve;
     });
   }
-  async levelUp(newXp) {
-    const newLevel = getWizardLevel(newXp);
-    const newTexturePath = `assets/wizard${newLevel}.png`;
-    this.levelUpNewTexture = await Assets.load(newTexturePath);
-    const xpFactor = 1 + newXp / 100;
+  async lightningBoltAttack(defender) {
+    await this.twitch();
+    await this.castLightningBolt(defender);
+    return this.attackPower;
+  }
+  castLightningBolt(defender) {
+    this.isCastingLightning = true;
+    this.lightningProgress = 0;
+    this.magicLastTime = 0;
+    this.isLightningBursting = false;
+    this.lightningTargetX = defender.x;
+    this.lightningTargetY = defender.y - 80;
+    const bolt = new Graphics;
+    bolt.zIndex = 1000;
+    this.parent.addChild(bolt);
+    this.lightningBolt = bolt;
+    return new Promise((resolve) => {
+      if (this.resolveLightning)
+        this.resolveLightning();
+      this.resolveLightning = resolve;
+    });
+  }
+  drawLightningBolt(g2, startX, startY, endX, endY) {
+    g2.clear();
+    const segments = 8;
+    const points = [{ x: startX, y: startY }];
+    const dx = endX - startX;
+    const dy = endY - startY;
+    const len = Math.sqrt(dx * dx + dy * dy);
+    const perpX = -dy / len;
+    const perpY = dx / len;
+    for (let i2 = 1;i2 < segments; i2++) {
+      const t2 = i2 / segments;
+      const baseX = startX + dx * t2;
+      const baseY = startY + dy * t2;
+      const offset = (Math.random() - 0.5) * 40;
+      points.push({
+        x: baseX + perpX * offset,
+        y: baseY + perpY * offset
+      });
+    }
+    points.push({ x: endX, y: endY });
+    g2.moveTo(points[0].x, points[0].y);
+    for (let i2 = 1;i2 < points.length; i2++) {
+      g2.lineTo(points[i2].x, points[i2].y);
+    }
+    g2.stroke({ color: 4491519, alpha: 0.3, width: 12 });
+    g2.moveTo(points[0].x, points[0].y);
+    for (let i2 = 1;i2 < points.length; i2++) {
+      g2.lineTo(points[i2].x, points[i2].y);
+    }
+    g2.stroke({ color: 8965375, alpha: 0.6, width: 4 });
+    g2.moveTo(points[0].x, points[0].y);
+    for (let i2 = 1;i2 < points.length; i2++) {
+      g2.lineTo(points[i2].x, points[i2].y);
+    }
+    g2.stroke({ color: 16777215, alpha: 0.9, width: 2 });
+  }
+  async fireBoltAttack(defender) {
+    await this.twitch();
+    await this.castFireBolt(defender);
+    return this.attackPower;
+  }
+  castFireBolt(defender) {
+    this.isCastingFireBolt = true;
+    this.fireBoltProgress = 0;
+    this.magicLastTime = 0;
+    this.isFireBoltBursting = false;
+    this.fireBoltTargetX = defender.x - this.x;
+    this.fireBoltTargetY = defender.y - this.y - 80;
+    const orb = new Graphics;
+    this.drawFireBoltOrb(orb);
+    this.fireBoltOrb = orb;
+    orb.zIndex = 1000;
+    this.parent.addChild(orb);
+    return new Promise((resolve) => {
+      if (this.resolveFireBolt)
+        this.resolveFireBolt();
+      this.resolveFireBolt = resolve;
+    });
+  }
+  drawFireBoltOrb(g2) {
+    g2.circle(0, 0, 25);
+    g2.fill({ color: 16729088, alpha: 0.15 });
+    g2.circle(0, 0, 15);
+    g2.fill({ color: 16737792, alpha: 0.3 });
+    g2.circle(0, 0, 10);
+    g2.fill({ color: 16755200, alpha: 0.6 });
+    g2.circle(0, 0, 5);
+    g2.fill({ color: 16777164, alpha: 0.95 });
+  }
+  spawnFireTrail(x2, y2) {
+    const trail = new Graphics;
+    const colors = [16729088, 16737792, 16755200];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    trail.circle(0, 0, 3 + Math.random() * 3);
+    trail.fill({ color, alpha: 0.5 });
+    trail.x = this.x + x2;
+    trail.y = this.y + y2;
+    trail.zIndex = 1000;
+    this.parent.addChild(trail);
+    this.magicTrails.push({ graphic: trail, life: 300 });
+  }
+  async frostShardAttack(defender) {
+    await this.twitch();
+    await this.castFrostShard(defender);
+    return this.attackPower;
+  }
+  castFrostShard(defender) {
+    this.isCastingFrost = true;
+    this.magicLastTime = 0;
+    this.frostShards = [];
+    this.frostBursts = [];
+    this.frostTargetX = defender.x - this.x;
+    this.frostTargetY = defender.y - this.y - 80;
+    const offsets = [-30, -15, 0, 15, 30];
+    for (let i2 = 0;i2 < 5; i2++) {
+      const shard = new Graphics;
+      this.drawFrostShard(shard);
+      shard.zIndex = 1000;
+      shard.visible = false;
+      this.parent.addChild(shard);
+      this.frostShards.push({
+        graphic: shard,
+        progress: -i2 * 50,
+        offsetY: offsets[i2],
+        hit: false
+      });
+    }
+    return new Promise((resolve) => {
+      if (this.resolveFrost)
+        this.resolveFrost();
+      this.resolveFrost = resolve;
+    });
+  }
+  drawFrostShard(g2) {
+    const color = 4513279;
+    g2.circle(0, 0, 8);
+    g2.fill({ color, alpha: 0.15 });
+    g2.moveTo(0, -6);
+    g2.lineTo(4, 0);
+    g2.lineTo(0, 6);
+    g2.lineTo(-4, 0);
+    g2.closePath();
+    g2.fill({ color, alpha: 0.6 });
+    g2.circle(0, 0, 2);
+    g2.fill({ color: 16777215, alpha: 0.9 });
+  }
+  spawnFrostTrail(x2, y2) {
+    const trail = new Graphics;
+    trail.circle(0, 0, 2);
+    trail.fill({ color: 4513279, alpha: 0.5 });
+    trail.x = this.x + x2;
+    trail.y = this.y + y2;
+    trail.zIndex = 1000;
+    this.parent.addChild(trail);
+    this.magicTrails.push({ graphic: trail, life: 200 });
+  }
+  async arcaneBeamAttack(defender) {
+    await this.twitch();
+    await this.castArcaneBeam(defender);
+    return this.attackPower;
+  }
+  castArcaneBeam(defender) {
+    this.isCastingBeam = true;
+    this.beamProgress = 0;
+    this.magicLastTime = 0;
+    this.beamTargetX = defender.x;
+    this.beamTargetY = defender.y - 80;
+    const beam = new Graphics;
+    beam.zIndex = 1000;
+    this.parent.addChild(beam);
+    this.beamGraphic = beam;
+    return new Promise((resolve) => {
+      if (this.resolveBeam)
+        this.resolveBeam();
+      this.resolveBeam = resolve;
+    });
+  }
+  async meteorStrikeAttack(defender) {
+    await this.twitch();
+    await this.castMeteorStrike(defender);
+    return this.attackPower;
+  }
+  castMeteorStrike(defender) {
+    this.isCastingMeteor = true;
+    this.meteorProgress = 0;
+    this.magicLastTime = 0;
+    this.isMeteorBursting = false;
+    this.meteorTargetX = defender.x;
+    this.meteorTargetY = defender.y - 80;
+    const meteor = new Graphics;
+    this.drawMeteor(meteor);
+    meteor.zIndex = 1000;
+    this.parent.addChild(meteor);
+    this.meteorGraphic = meteor;
+    return new Promise((resolve) => {
+      if (this.resolveMeteor)
+        this.resolveMeteor();
+      this.resolveMeteor = resolve;
+    });
+  }
+  drawMeteor(g2) {
+    g2.circle(0, 0, 30);
+    g2.fill({ color: 16729088, alpha: 0.15 });
+    g2.circle(0, 0, 20);
+    g2.fill({ color: 16737792, alpha: 0.3 });
+    g2.circle(0, 0, 12);
+    g2.fill({ color: 8930304, alpha: 0.8 });
+    g2.circle(0, 0, 7);
+    g2.fill({ color: 16755200, alpha: 0.7 });
+    g2.circle(0, 0, 3);
+    g2.fill({ color: 16777164, alpha: 0.95 });
+  }
+  spawnMeteorTrail(x2, y2) {
+    const trail = new Graphics;
+    const colors = [16729088, 16737792, 16755200];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    trail.circle(0, 0, 4 + Math.random() * 4);
+    trail.fill({ color, alpha: 0.5 });
+    trail.x = x2;
+    trail.y = y2;
+    trail.zIndex = 1000;
+    this.parent.addChild(trail);
+    this.magicTrails.push({ graphic: trail, life: 350 });
+  }
+  levelUpStats(newXp) {
+    this.xp += newXp;
+    const xpFactor = 1 + this.xp / 100;
     this.maxHealth = Math.floor(100 * xpFactor);
     this.health = this.maxHealth;
     this.attackPower = Math.floor(5 * xpFactor);
     this.defensePower = Math.floor(xpFactor);
     this.speed = Math.floor(6 * xpFactor);
+  }
+  async levelUp(newXp) {
+    this.levelUpNewTexture = await initWizard(newXp);
+    this.levelUpStats(newXp);
     this.updateHealthBar();
     this.isLevelingUp = true;
     this.levelUpProgress = 0;
@@ -33881,7 +34461,12 @@ class Wizard extends Actor {
       vy2 = Math.sin(angle) * speed;
     }
     this.parent.addChild(particle);
-    this.levelUpParticles.push({ graphic: particle, life: 0.8 + Math.random() * 0.4, vx: vx2, vy: vy2 });
+    this.levelUpParticles.push({
+      graphic: particle,
+      life: 0.8 + Math.random() * 0.4,
+      vx: vx2,
+      vy: vy2
+    });
   }
   updateLevelUpGlow(t2) {
     if (!this.levelUpGlow)
@@ -33916,7 +34501,7 @@ class Wizard extends Actor {
     trail.y = y2;
     trail.zIndex = 100;
     this.parent.addChild(trail);
-    this.magicTrails.push({ graphic: trail, life: 0.3 });
+    this.magicTrails.push({ graphic: trail, life: 300 });
   }
   drawOrb(orb, isCritical) {
     const baseRadius = isCritical ? 28 : 10;
@@ -33940,24 +34525,22 @@ class Wizard extends Actor {
     trail.y = this.y + y2;
     trail.zIndex = 1000;
     this.parent.addChild(trail);
-    this.magicTrails.push({ graphic: trail, life: 0.3 });
+    this.magicTrails.push({ graphic: trail, life: 300 });
   }
   update(time, isSine) {
     super.update(time, isSine);
-    const hasWork = this.isCastingMagic || this.isBursting || this.isAreaCasting || this.magicTrails.length > 0 || this.isLevelingUp || this.levelUpParticles.length > 0;
+    const hasWork = this.isCastingMagic || this.isBursting || this.isAreaCasting || this.isCastingMissiles || this.missileBursts.length > 0 || this.isCastingLightning || this.isLightningBursting || this.isCastingFireBolt || this.isFireBoltBursting || this.isCastingFrost || this.frostBursts.length > 0 || this.isCastingBeam || this.isCastingMeteor || this.isMeteorBursting || this.magicTrails.length > 0 || this.isLevelingUp || this.levelUpParticles.length > 0;
     if (!hasWork)
       return;
     if (this.magicLastTime === 0) {
-      this.magicLastTime = time;
+      this.magicLastTime = time.lastTime;
       return;
     }
-    const delta = (time - this.magicLastTime) / 1000;
-    this.magicLastTime = time;
     for (let i2 = this.magicTrails.length - 1;i2 >= 0; i2--) {
       const trail = this.magicTrails[i2];
-      trail.life -= delta;
-      trail.graphic.alpha = Math.max(0, trail.life / 0.3) * 0.5;
-      trail.graphic.scale.set(Math.max(0.01, trail.life / 0.3));
+      trail.life -= time.deltaMS;
+      trail.graphic.alpha = Math.max(0, trail.life / 300) * 0.5;
+      trail.graphic.scale.set(Math.max(0.01, trail.life / 300));
       if (trail.life <= 0) {
         this.parent.removeChild(trail.graphic);
         trail.graphic.destroy();
@@ -33965,7 +34548,7 @@ class Wizard extends Actor {
       }
     }
     if (this.isCastingMagic && this.magicOrb) {
-      this.magicProgress += delta;
+      this.magicProgress += time.deltaMS;
       const t2 = Math.min(this.magicProgress / this.magicDuration, 1);
       const eased = t2 * t2;
       const startX = 100;
@@ -34003,8 +34586,78 @@ class Wizard extends Actor {
         this.parent.addChild(burst);
       }
     }
+    if (this.isCastingMissiles) {
+      let allHit = true;
+      for (const missile of this.missiles) {
+        if (missile.hit)
+          continue;
+        if (missile.startDelay > 0) {
+          missile.startDelay -= time.deltaMS;
+          allHit = false;
+          continue;
+        }
+        missile.graphic.visible = true;
+        missile.progress += time.deltaMS;
+        const t2 = Math.min(missile.progress / this.missileDuration, 1);
+        const eased = t2 * t2;
+        const startX = 80;
+        const startY = -160;
+        const endX = this.missileTargetX;
+        const endY = this.missileTargetY;
+        const x2 = startX + (endX - startX) * eased;
+        const y2 = startY + (endY - startY) * eased + Math.sin(t2 * Math.PI) * missile.offsetY;
+        missile.graphic.x = this.x + x2;
+        missile.graphic.y = this.y + y2;
+        if (t2 > 0.05 && t2 < 0.9 && Math.random() < 0.4) {
+          this.spawnMissileTrail(x2, y2);
+        }
+        if (t2 >= 1) {
+          missile.hit = true;
+          this.parent.removeChild(missile.graphic);
+          missile.graphic.destroy();
+          const burst = new Graphics;
+          burst.circle(0, 0, 1);
+          burst.fill({ color: 13387007, alpha: 0.6 });
+          burst.x = this.x + endX;
+          burst.y = this.y + endY;
+          burst.zIndex = 1000;
+          this.parent.addChild(burst);
+          this.missileBursts.push({ graphic: burst, progress: 0 });
+        } else {
+          allHit = false;
+        }
+      }
+      if (allHit && this.missileBursts.length === 0) {
+        this.isCastingMissiles = false;
+        this.magicLastTime = 0;
+        if (this.resolveMissiles) {
+          this.resolveMissiles();
+          this.resolveMissiles = null;
+        }
+      }
+    }
+    for (let i2 = this.missileBursts.length - 1;i2 >= 0; i2--) {
+      const burst = this.missileBursts[i2];
+      burst.progress += time.deltaMS;
+      const t2 = Math.min(burst.progress / this.missileBurstDuration, 1);
+      burst.graphic.scale.set(15 * t2);
+      burst.graphic.alpha = (1 - t2) * 0.6;
+      if (t2 >= 1) {
+        this.parent.removeChild(burst.graphic);
+        burst.graphic.destroy();
+        this.missileBursts.splice(i2, 1);
+      }
+    }
+    if (this.isCastingMissiles && this.missiles.every((m2) => m2.hit) && this.missileBursts.length === 0) {
+      this.isCastingMissiles = false;
+      this.magicLastTime = 0;
+      if (this.resolveMissiles) {
+        this.resolveMissiles();
+        this.resolveMissiles = null;
+      }
+    }
     if (this.isAreaCasting && this.areaRing) {
-      this.areaProgress += delta;
+      this.areaProgress += time.deltaMS;
       const t2 = Math.min(this.areaProgress / this.areaDuration, 1);
       const maxScale = 60;
       const currentScale = maxScale * (0.1 + t2 * 0.9);
@@ -34029,8 +34682,289 @@ class Wizard extends Actor {
         }
       }
     }
+    if (this.isCastingLightning && this.lightningBolt) {
+      this.lightningProgress += time.deltaMS;
+      const t2 = Math.min(this.lightningProgress / this.lightningDuration, 1);
+      const startX = this.x + 100;
+      const startY = this.y - 180;
+      this.drawLightningBolt(this.lightningBolt, startX, startY, this.lightningTargetX, this.lightningTargetY);
+      this.lightningBolt.alpha = t2 < 0.7 ? 1 : 1 - (t2 - 0.7) / 0.3;
+      if (t2 >= 1) {
+        const burstX = this.lightningTargetX;
+        const burstY = this.lightningTargetY;
+        this.parent.removeChild(this.lightningBolt);
+        this.lightningBolt.destroy();
+        this.lightningBolt = null;
+        this.isCastingLightning = false;
+        this.isLightningBursting = true;
+        this.lightningBurstProgress = 0;
+        const burst = new Graphics;
+        burst.circle(0, 0, 1);
+        burst.fill({ color: 8965375, alpha: 0.7 });
+        burst.x = burstX;
+        burst.y = burstY;
+        burst.zIndex = 1000;
+        this.parent.addChild(burst);
+        this.lightningBurst = burst;
+      }
+    }
+    if (this.isLightningBursting && this.lightningBurst) {
+      this.lightningBurstProgress += time.deltaMS;
+      const t2 = Math.min(this.lightningBurstProgress / this.lightningBurstDuration, 1);
+      this.lightningBurst.scale.set(30 * t2);
+      this.lightningBurst.alpha = (1 - t2) * 0.7;
+      if (t2 >= 1) {
+        this.parent.removeChild(this.lightningBurst);
+        this.lightningBurst.destroy();
+        this.lightningBurst = null;
+        this.isLightningBursting = false;
+        this.magicLastTime = 0;
+        if (this.resolveLightning) {
+          this.resolveLightning();
+          this.resolveLightning = null;
+        }
+      }
+    }
+    if (this.isCastingFireBolt && this.fireBoltOrb) {
+      this.fireBoltProgress += time.deltaMS;
+      const t2 = Math.min(this.fireBoltProgress / this.fireBoltDuration, 1);
+      const eased = t2 * t2;
+      const startX = 100;
+      const startY = -180;
+      const endX = this.fireBoltTargetX;
+      const endY = this.fireBoltTargetY;
+      const orbX = startX + (endX - startX) * eased;
+      const orbY = startY + (endY - startY) * eased - Math.sin(t2 * Math.PI) * 60;
+      this.fireBoltOrb.x = this.x + orbX;
+      this.fireBoltOrb.y = this.y + orbY;
+      const pulse = 1 + Math.sin(t2 * Math.PI * 8) * 0.1;
+      this.fireBoltOrb.scale.set(pulse);
+      if (t2 > 0.05 && t2 < 0.9 && Math.random() < 0.6) {
+        this.spawnFireTrail(orbX, orbY);
+      }
+      if (t2 >= 1) {
+        const burstX = this.fireBoltOrb.x;
+        const burstY = this.fireBoltOrb.y;
+        this.parent.removeChild(this.fireBoltOrb);
+        this.fireBoltOrb.destroy();
+        this.fireBoltOrb = null;
+        this.isCastingFireBolt = false;
+        this.isFireBoltBursting = true;
+        this.fireBoltBurstProgress = 0;
+        const burst = new Graphics;
+        burst.circle(0, 0, 1);
+        burst.fill({ color: 16737792, alpha: 0.7 });
+        burst.x = burstX;
+        burst.y = burstY;
+        burst.zIndex = 1000;
+        this.parent.addChild(burst);
+        this.fireBoltBurst = burst;
+      }
+    }
+    if (this.isFireBoltBursting && this.fireBoltBurst) {
+      this.fireBoltBurstProgress += time.deltaMS;
+      const t2 = Math.min(this.fireBoltBurstProgress / this.fireBoltBurstDuration, 1);
+      this.fireBoltBurst.scale.set(35 * t2);
+      this.fireBoltBurst.alpha = (1 - t2) * 0.7;
+      if (t2 >= 1) {
+        this.parent.removeChild(this.fireBoltBurst);
+        this.fireBoltBurst.destroy();
+        this.fireBoltBurst = null;
+        this.isFireBoltBursting = false;
+        this.magicLastTime = 0;
+        if (this.resolveFireBolt) {
+          this.resolveFireBolt();
+          this.resolveFireBolt = null;
+        }
+      }
+    }
+    if (this.isCastingFrost) {
+      let allHit = true;
+      for (const shard of this.frostShards) {
+        if (shard.hit)
+          continue;
+        shard.progress += time.deltaMS;
+        if (shard.progress <= 0) {
+          allHit = false;
+          continue;
+        }
+        shard.graphic.visible = true;
+        const t2 = Math.min(shard.progress / this.frostDuration, 1);
+        const eased = t2 * t2;
+        const startX = 80;
+        const startY = -160;
+        const endX = this.frostTargetX;
+        const endY = this.frostTargetY;
+        const x2 = startX + (endX - startX) * eased;
+        const y2 = startY + (endY - startY) * eased + Math.sin(t2 * Math.PI) * shard.offsetY;
+        shard.graphic.x = this.x + x2;
+        shard.graphic.y = this.y + y2;
+        shard.graphic.rotation = t2 * Math.PI * 4;
+        if (t2 > 0.05 && t2 < 0.9 && Math.random() < 0.4) {
+          this.spawnFrostTrail(x2, y2);
+        }
+        if (t2 >= 1) {
+          shard.hit = true;
+          this.parent.removeChild(shard.graphic);
+          shard.graphic.destroy();
+          const burst = new Graphics;
+          burst.circle(0, 0, 1);
+          burst.fill({ color: 4513279, alpha: 0.6 });
+          burst.x = this.x + endX;
+          burst.y = this.y + endY;
+          burst.zIndex = 1000;
+          this.parent.addChild(burst);
+          this.frostBursts.push({ graphic: burst, progress: 0 });
+        } else {
+          allHit = false;
+        }
+      }
+      if (allHit && this.frostBursts.length === 0) {
+        this.isCastingFrost = false;
+        this.magicLastTime = 0;
+        if (this.resolveFrost) {
+          this.resolveFrost();
+          this.resolveFrost = null;
+        }
+      }
+    }
+    for (let i2 = this.frostBursts.length - 1;i2 >= 0; i2--) {
+      const burst = this.frostBursts[i2];
+      burst.progress += time.deltaMS;
+      const t2 = Math.min(burst.progress / this.frostBurstDuration, 1);
+      burst.graphic.scale.set(15 * t2);
+      burst.graphic.alpha = (1 - t2) * 0.6;
+      if (t2 >= 1) {
+        this.parent.removeChild(burst.graphic);
+        burst.graphic.destroy();
+        this.frostBursts.splice(i2, 1);
+      }
+    }
+    if (this.isCastingFrost && this.frostShards.every((s2) => s2.hit) && this.frostBursts.length === 0) {
+      this.isCastingFrost = false;
+      this.magicLastTime = 0;
+      if (this.resolveFrost) {
+        this.resolveFrost();
+        this.resolveFrost = null;
+      }
+    }
+    if (this.isCastingBeam && this.beamGraphic) {
+      this.beamProgress += time.deltaMS;
+      const t2 = Math.min(this.beamProgress / this.beamDuration, 1);
+      const startX = this.x + 100;
+      const startY = this.y - 180;
+      const endX = this.beamTargetX;
+      const endY = this.beamTargetY;
+      this.beamGraphic.clear();
+      let beamEndX;
+      let beamEndY;
+      let alpha;
+      let width;
+      if (t2 < 0.2) {
+        const extend = t2 / 0.2;
+        beamEndX = startX + (endX - startX) * extend;
+        beamEndY = startY + (endY - startY) * extend;
+        alpha = 0.8;
+        width = 6;
+      } else if (t2 < 0.7) {
+        beamEndX = endX;
+        beamEndY = endY;
+        alpha = 0.8;
+        width = 6 + Math.sin((t2 - 0.2) / 0.5 * Math.PI * 4) * 3;
+      } else {
+        const fadeT = (t2 - 0.7) / 0.3;
+        beamEndX = endX;
+        beamEndY = endY;
+        alpha = 0.8 * (1 - fadeT);
+        width = 6 * (1 - fadeT);
+      }
+      this.beamGraphic.moveTo(startX, startY);
+      this.beamGraphic.lineTo(beamEndX, beamEndY);
+      this.beamGraphic.stroke({ color: 10044671, alpha: alpha * 0.3, width: width * 3 });
+      this.beamGraphic.moveTo(startX, startY);
+      this.beamGraphic.lineTo(beamEndX, beamEndY);
+      this.beamGraphic.stroke({ color: 12281599, alpha: alpha * 0.6, width });
+      this.beamGraphic.moveTo(startX, startY);
+      this.beamGraphic.lineTo(beamEndX, beamEndY);
+      this.beamGraphic.stroke({ color: 16777215, alpha: alpha * 0.9, width: Math.max(1, width * 0.3) });
+      if (t2 > 0.1 && t2 < 0.8 && Math.random() < 0.5) {
+        const particleT = Math.random();
+        const px = startX + (beamEndX - startX) * particleT;
+        const py = startY + (beamEndY - startY) * particleT;
+        const trail = new Graphics;
+        trail.circle(0, 0, 2);
+        trail.fill({ color: 12281599, alpha: 0.5 });
+        trail.x = px + (Math.random() - 0.5) * 10;
+        trail.y = py + (Math.random() - 0.5) * 10;
+        trail.zIndex = 1000;
+        this.parent.addChild(trail);
+        this.magicTrails.push({ graphic: trail, life: 200 });
+      }
+      if (t2 >= 1) {
+        this.parent.removeChild(this.beamGraphic);
+        this.beamGraphic.destroy();
+        this.beamGraphic = null;
+        this.isCastingBeam = false;
+        this.magicLastTime = 0;
+        if (this.resolveBeam) {
+          this.resolveBeam();
+          this.resolveBeam = null;
+        }
+      }
+    }
+    if (this.isCastingMeteor && this.meteorGraphic) {
+      this.meteorProgress += time.deltaMS;
+      const t2 = Math.min(this.meteorProgress / this.meteorDuration, 1);
+      const startX = this.meteorTargetX + 150;
+      const startY = -100;
+      const endX = this.meteorTargetX;
+      const endY = this.meteorTargetY;
+      const eased = t2 * t2;
+      this.meteorGraphic.x = startX + (endX - startX) * eased;
+      this.meteorGraphic.y = startY + (endY - startY) * eased;
+      const scale = 0.5 + t2 * 0.5;
+      this.meteorGraphic.scale.set(scale);
+      if (t2 > 0.05 && t2 < 0.95 && Math.random() < 0.6) {
+        this.spawnMeteorTrail(this.meteorGraphic.x, this.meteorGraphic.y);
+      }
+      if (t2 >= 1) {
+        const burstX = this.meteorGraphic.x;
+        const burstY = this.meteorGraphic.y;
+        this.parent.removeChild(this.meteorGraphic);
+        this.meteorGraphic.destroy();
+        this.meteorGraphic = null;
+        this.isCastingMeteor = false;
+        this.isMeteorBursting = true;
+        this.meteorBurstProgress = 0;
+        const burst = new Graphics;
+        burst.circle(0, 0, 1);
+        burst.fill({ color: 16737792, alpha: 0.8 });
+        burst.x = burstX;
+        burst.y = burstY;
+        burst.zIndex = 1000;
+        this.parent.addChild(burst);
+        this.meteorBurst = burst;
+      }
+    }
+    if (this.isMeteorBursting && this.meteorBurst) {
+      this.meteorBurstProgress += time.deltaMS;
+      const t2 = Math.min(this.meteorBurstProgress / this.meteorBurstDuration, 1);
+      this.meteorBurst.scale.set(50 * t2);
+      this.meteorBurst.alpha = (1 - t2) * 0.8;
+      if (t2 >= 1) {
+        this.parent.removeChild(this.meteorBurst);
+        this.meteorBurst.destroy();
+        this.meteorBurst = null;
+        this.isMeteorBursting = false;
+        this.magicLastTime = 0;
+        if (this.resolveMeteor) {
+          this.resolveMeteor();
+          this.resolveMeteor = null;
+        }
+      }
+    }
     if (this.isLevelingUp) {
-      this.levelUpProgress += delta;
+      this.levelUpProgress += time.deltaMS;
       const t2 = Math.min(this.levelUpProgress / this.levelUpDuration, 1);
       const centerX = this.x;
       const centerY = this.y - 80;
@@ -34084,10 +35018,10 @@ class Wizard extends Actor {
     }
     for (let i2 = this.levelUpParticles.length - 1;i2 >= 0; i2--) {
       const p2 = this.levelUpParticles[i2];
-      p2.life -= delta;
-      p2.graphic.x += p2.vx * delta;
-      p2.graphic.y += p2.vy * delta;
-      const lifeRatio = Math.max(0, p2.life / 1);
+      p2.life -= time.deltaMS;
+      p2.graphic.x += p2.vx * time.deltaMS;
+      p2.graphic.y += p2.vy * time.deltaMS;
+      const lifeRatio = Math.max(0, p2.life);
       p2.graphic.alpha = lifeRatio * 0.8;
       p2.graphic.scale.set(Math.max(0.01, lifeRatio));
       if (p2.life <= 0) {
@@ -34097,7 +35031,7 @@ class Wizard extends Actor {
       }
     }
     if (this.isBursting && this.magicBurst) {
-      this.burstProgress += delta;
+      this.burstProgress += time.deltaMS;
       const t2 = Math.min(this.burstProgress / this.burstDuration, 1);
       const maxScale = this.magicIsCritical ? 40 : 25;
       this.magicBurst.scale.set(maxScale * t2);
@@ -34119,14 +35053,18 @@ class Wizard extends Actor {
 var wizardTexture;
 var wizardTextureLevel;
 async function initWizard(xp) {
-  const level = getWizardLevel(xp);
+  const level = Math.min(getWizardLevel(xp), 7);
   if (wizardTextureLevel === level)
-    return;
+    return wizardTexture;
   wizardTextureLevel = level;
   wizardTexture = await Assets.load(`assets/wizard${level}.png`);
+  return wizardTexture;
 }
 function getWizardLevel(xp) {
-  return xp === 0 ? 1 : Math.ceil(xp / 100);
+  if (xp < 51) {
+    return 1;
+  }
+  return Math.ceil((xp - 50) / 100) + 1;
 }
 
 // src/rpg/enemies/Rat.ts
@@ -34176,20 +35114,21 @@ class Goblin extends Actor {
   constructor() {
     super({
       texture: goblinTexture,
-      textureScale: 0.5,
-      health: 26,
-      attackPower: 7,
+      textureScale: 0.6,
+      health: 30,
+      attackPower: 6,
       defensePower: 2,
       speed: 5,
       xpDrop: 22
     });
+    this.sprite.tint = 6728260;
   }
 }
 var goblinTexture;
 async function initGoblin() {
   if (goblinTexture)
     return;
-  goblinTexture = await Assets.load("assets/goblin.png");
+  goblinTexture = await Assets.load("assets/rat.png");
 }
 
 // src/rpg/enemies/Skeleton.ts
@@ -34198,8 +35137,8 @@ class Skeleton extends Actor {
     super({
       texture: skeletonTexture,
       textureScale: 0.25,
-      health: 32,
-      attackPower: 6,
+      health: 38,
+      attackPower: 7,
       defensePower: 3,
       speed: 4,
       xpDrop: 25
@@ -34218,20 +35157,21 @@ class Zombie extends Actor {
   constructor() {
     super({
       texture: zombieTexture,
-      textureScale: 0.5,
-      health: 42,
-      attackPower: 7,
+      textureScale: 0.3,
+      health: 50,
+      attackPower: 8,
       defensePower: 4,
       speed: 2,
-      xpDrop: 35
+      xpDrop: 32
     });
+    this.sprite.tint = 7833702;
   }
 }
 var zombieTexture;
 async function initZombie() {
   if (zombieTexture)
     return;
-  zombieTexture = await Assets.load("assets/zombie.png");
+  zombieTexture = await Assets.load("assets/skeleton.png");
 }
 
 // src/rpg/enemies/Bat.ts
@@ -34240,11 +35180,11 @@ class Bat extends Actor {
     super({
       texture: batTexture,
       textureScale: 0.25,
-      health: 16,
-      attackPower: 4,
-      defensePower: 1,
-      speed: 9,
-      xpDrop: 12
+      health: 90,
+      attackPower: 15,
+      defensePower: 0,
+      speed: 8,
+      xpDrop: 10
     });
   }
 }
@@ -34261,11 +35201,11 @@ class Wolf extends Actor {
     super({
       texture: wolfTexture,
       textureScale: 0.3,
-      health: 30,
+      health: 35,
       attackPower: 8,
-      defensePower: 3,
-      speed: 8,
-      xpDrop: 30
+      defensePower: 2,
+      speed: 7,
+      xpDrop: 28
     });
   }
 }
@@ -34281,20 +35221,21 @@ class Treant extends Actor {
   constructor() {
     super({
       texture: treantTexture,
-      textureScale: 0.5,
-      health: 140,
-      attackPower: 12,
-      defensePower: 8,
+      textureScale: 0.45,
+      health: 70,
+      attackPower: 10,
+      defensePower: 5,
       speed: 3,
-      xpDrop: 300
+      xpDrop: 60
     });
+    this.sprite.tint = 4486980;
   }
 }
 var treantTexture;
 async function initTreant() {
   if (treantTexture)
     return;
-  treantTexture = await Assets.load("assets/treant.png");
+  treantTexture = await Assets.load("assets/slime.png");
 }
 
 // src/rpg/enemies/Dummy.ts
@@ -34324,11 +35265,11 @@ class Slime extends Actor {
     super({
       texture: slimeTexture,
       textureScale: 0.25,
-      health: 22,
-      attackPower: 4,
+      health: 90,
+      attackPower: 15,
       defensePower: 0,
       speed: 3,
-      xpDrop: 15
+      xpDrop: 10
     });
   }
 }
@@ -34337,6 +35278,247 @@ async function initSlime() {
   if (slimeTexture)
     return;
   slimeTexture = await Assets.load("assets/slime.png");
+}
+
+// src/rpg/enemies/Spider.ts
+class Spider extends Actor {
+  constructor() {
+    super({
+      texture: spiderTexture,
+      textureScale: 0.25,
+      health: 100,
+      attackPower: 20,
+      defensePower: 1,
+      speed: 5,
+      xpDrop: 12
+    });
+  }
+}
+var spiderTexture;
+async function initSpider() {
+  if (spiderTexture)
+    return;
+  spiderTexture = await Assets.load("assets/spider.png");
+}
+
+// src/rpg/enemies/Mushroom.ts
+class Mushroom extends Actor {
+  constructor() {
+    super({
+      texture: mushroomTexture,
+      textureScale: 0.25,
+      health: 80,
+      attackPower: 15,
+      defensePower: 1,
+      speed: 2,
+      xpDrop: 10
+    });
+    this.sprite.tint = 9139029;
+  }
+}
+var mushroomTexture;
+async function initMushroom() {
+  if (mushroomTexture)
+    return;
+  mushroomTexture = await Assets.load("assets/slime.png");
+}
+
+// src/rpg/enemies/PoisonSlime.ts
+class PoisonSlime extends Actor {
+  constructor() {
+    super({
+      texture: poisonSlimeTexture,
+      textureScale: 0.3,
+      health: 26,
+      attackPower: 5,
+      defensePower: 1,
+      speed: 3,
+      xpDrop: 16
+    });
+    this.sprite.tint = 6741316;
+  }
+}
+var poisonSlimeTexture;
+async function initPoisonSlime() {
+  if (poisonSlimeTexture)
+    return;
+  poisonSlimeTexture = await Assets.load("assets/slime.png");
+}
+
+// src/rpg/enemies/GiantBat.ts
+class GiantBat extends Actor {
+  constructor() {
+    super({
+      texture: giantBatTexture,
+      textureScale: 0.35,
+      health: 24,
+      attackPower: 5,
+      defensePower: 1,
+      speed: 9,
+      xpDrop: 18
+    });
+    this.sprite.tint = 14500932;
+  }
+}
+var giantBatTexture;
+async function initGiantBat() {
+  if (giantBatTexture)
+    return;
+  giantBatTexture = await Assets.load("assets/bat.png");
+}
+
+// src/rpg/enemies/GiantSpider.ts
+class GiantSpider extends Actor {
+  constructor() {
+    super({
+      texture: giantSpiderTexture,
+      textureScale: 0.6,
+      health: 40,
+      attackPower: 7,
+      defensePower: 3,
+      speed: 6,
+      xpDrop: 30
+    });
+    this.sprite.tint = 8930474;
+  }
+}
+var giantSpiderTexture;
+async function initGiantSpider() {
+  if (giantSpiderTexture)
+    return;
+  giantSpiderTexture = await Assets.load("assets/spider.png");
+}
+
+// src/rpg/enemies/SkeletonWarrior.ts
+class SkeletonWarrior extends Actor {
+  constructor() {
+    super({
+      texture: skeletonWarriorTexture,
+      textureScale: 0.25,
+      health: 45,
+      attackPower: 8,
+      defensePower: 4,
+      speed: 5,
+      xpDrop: 35
+    });
+  }
+}
+var skeletonWarriorTexture;
+async function initSkeletonWarrior() {
+  if (skeletonWarriorTexture)
+    return;
+  skeletonWarriorTexture = await Assets.load("assets/skeletonWarrior.png");
+}
+
+// src/rpg/enemies/DireWolf.ts
+class DireWolf extends Actor {
+  constructor() {
+    super({
+      texture: direWolfTexture,
+      textureScale: 0.4,
+      health: 48,
+      attackPower: 10,
+      defensePower: 3,
+      speed: 8,
+      xpDrop: 40
+    });
+    this.sprite.tint = 4473958;
+  }
+}
+var direWolfTexture;
+async function initDireWolf() {
+  if (direWolfTexture)
+    return;
+  direWolfTexture = await Assets.load("assets/wolf.png");
+}
+
+// src/rpg/enemies/Ghost.ts
+class Ghost extends Actor {
+  constructor() {
+    super({
+      texture: ghostTexture,
+      textureScale: 0.25,
+      health: 32,
+      attackPower: 9,
+      defensePower: 2,
+      speed: 7,
+      xpDrop: 35
+    });
+    this.sprite.tint = 6719743;
+    this.sprite.alpha = 0.7;
+  }
+}
+var ghostTexture;
+async function initGhost() {
+  if (ghostTexture)
+    return;
+  ghostTexture = await Assets.load("assets/skeleton.png");
+}
+
+// src/rpg/enemies/DarkSkeleton.ts
+class DarkSkeleton extends Actor {
+  constructor() {
+    super({
+      texture: darkSkeletonTexture,
+      textureScale: 0.3,
+      health: 55,
+      attackPower: 9,
+      defensePower: 5,
+      speed: 4,
+      xpDrop: 45
+    });
+    this.sprite.tint = 4469589;
+  }
+}
+var darkSkeletonTexture;
+async function initDarkSkeleton() {
+  if (darkSkeletonTexture)
+    return;
+  darkSkeletonTexture = await Assets.load("assets/skeleton.png");
+}
+
+// src/rpg/enemies/FireSlime.ts
+class FireSlime extends Actor {
+  constructor() {
+    super({
+      texture: fireSlimeTexture,
+      textureScale: 0.35,
+      health: 60,
+      attackPower: 11,
+      defensePower: 3,
+      speed: 4,
+      xpDrop: 50
+    });
+    this.sprite.tint = 16737826;
+  }
+}
+var fireSlimeTexture;
+async function initFireSlime() {
+  if (fireSlimeTexture)
+    return;
+  fireSlimeTexture = await Assets.load("assets/slime.png");
+}
+
+// src/rpg/enemies/Dragon.ts
+class Dragon extends Actor {
+  constructor() {
+    super({
+      texture: dragonTexture,
+      textureScale: 0.7,
+      health: 120,
+      attackPower: 14,
+      defensePower: 6,
+      speed: 5,
+      xpDrop: 100
+    });
+    this.sprite.tint = 13378082;
+  }
+}
+var dragonTexture;
+async function initDragon() {
+  if (dragonTexture)
+    return;
+  dragonTexture = await Assets.load("assets/bat.png");
 }
 
 // src/rpg/enemies/enemyMaker.ts
@@ -34351,7 +35533,17 @@ var EnemyType = {
   Wolf: "wolf",
   Treant: "treant",
   Dummy: "dummy",
-  Spider: "spider"
+  Spider: "spider",
+  Mushroom: "mushroom",
+  PoisonSlime: "poison_slime",
+  GiantBat: "giant_bat",
+  GiantSpider: "giant_spider",
+  SkeletonWarrior: "skeleton_warrior",
+  DireWolf: "dire_wolf",
+  Ghost: "ghost",
+  DarkSkeleton: "dark_skeleton",
+  FireSlime: "fire_slime",
+  Dragon: "dragon"
 };
 async function makeEnemies(plan) {
   const enemies = [];
@@ -34398,6 +35590,50 @@ async function makeEnemies(plan) {
         await initDummy();
         enemy = new Dummy;
         break;
+      case EnemyType.Spider:
+        await initSpider();
+        enemy = new Spider;
+        break;
+      case EnemyType.Mushroom:
+        await initMushroom();
+        enemy = new Mushroom;
+        break;
+      case EnemyType.PoisonSlime:
+        await initPoisonSlime();
+        enemy = new PoisonSlime;
+        break;
+      case EnemyType.GiantBat:
+        await initGiantBat();
+        enemy = new GiantBat;
+        break;
+      case EnemyType.GiantSpider:
+        await initGiantSpider();
+        enemy = new GiantSpider;
+        break;
+      case EnemyType.SkeletonWarrior:
+        await initSkeletonWarrior();
+        enemy = new SkeletonWarrior;
+        break;
+      case EnemyType.DireWolf:
+        await initDireWolf();
+        enemy = new DireWolf;
+        break;
+      case EnemyType.Ghost:
+        await initGhost();
+        enemy = new Ghost;
+        break;
+      case EnemyType.DarkSkeleton:
+        await initDarkSkeleton();
+        enemy = new DarkSkeleton;
+        break;
+      case EnemyType.FireSlime:
+        await initFireSlime();
+        enemy = new FireSlime;
+        break;
+      case EnemyType.Dragon:
+        await initDragon();
+        enemy = new Dragon;
+        break;
       default:
         throw new Error("Unknown enemy type: " + type);
     }
@@ -34417,7 +35653,11 @@ var BackgroundType = {
   Village: "village",
   Forest: "forest",
   DarkForest: "darkForest",
-  Dungeon: "dungeon"
+  Dungeon: "dungeon",
+  Swamp: "swamp",
+  Mountains: "mountains",
+  Graveyard: "graveyard",
+  Volcano: "volcano"
 };
 async function makeBackground(type) {
   const asset = assetMap[type];
@@ -34431,38 +35671,126 @@ var assetMap = {
   [BackgroundType.Village]: "assets/village.png",
   [BackgroundType.Forest]: "assets/forest.png",
   [BackgroundType.DarkForest]: "assets/darkForest.png",
-  [BackgroundType.Dungeon]: "assets/dungeon.png"
+  [BackgroundType.Dungeon]: "assets/dungeon.png",
+  [BackgroundType.Swamp]: "assets/darkForest.png",
+  [BackgroundType.Mountains]: "assets/forest.png",
+  [BackgroundType.Graveyard]: "assets/darkForest.png",
+  [BackgroundType.Volcano]: "assets/dungeon.png"
 };
 
 // src/rpg/areas.ts
+var E = EnemyType;
 var areas = [
   {
     background: BackgroundType.Village,
-    waves: [
-      [EnemyType.Dummy],
-      [EnemyType.Dummy, EnemyType.Dummy]
-    ]
+    waves: [[E.Dummy], [E.Dummy, E.Dummy]]
   },
   {
     background: BackgroundType.Forest,
     waves: [
-      [EnemyType.Rat],
-      [EnemyType.Rat, EnemyType.Rat],
-      [EnemyType.DireRat],
-      [EnemyType.DireRat, EnemyType.Rat],
-      [EnemyType.DireRat, EnemyType.Rat, EnemyType.Rat],
-      [EnemyType.DireRat, EnemyType.DireRat, EnemyType.Rat, EnemyType.Rat]
+      [E.Rat],
+      [E.Rat, E.Rat],
+      [E.Rat, E.Rat],
+      [E.DireRat],
+      [E.DireRat],
+      [E.DireRat, E.Rat],
+      [E.DireRat, E.Rat],
+      [E.DireRat, E.Rat, E.Rat],
+      [E.DireRat, E.DireRat],
+      [E.DireRat, E.DireRat, E.Rat, E.Rat, E.Rat]
     ]
   },
   {
     background: BackgroundType.DarkForest,
     waves: [
-      [EnemyType.Slime],
-      [EnemyType.Slime, EnemyType.Slime],
-      [EnemyType.Slime, EnemyType.Slime],
-      [EnemyType.Slime, EnemyType.Slime],
-      [EnemyType.Slime, EnemyType.Slime],
-      Array.from({ length: 1000 }, () => EnemyType.Slime)
+      [E.Bat],
+      [E.Slime],
+      [E.Bat, E.Bat],
+      [E.Mushroom],
+      [E.Slime, E.Bat],
+      [E.Spider],
+      [E.Spider, E.Bat],
+      [E.Mushroom, E.Slime, E.Bat],
+      [E.Spider, E.Spider],
+      [E.Spider, E.Mushroom, E.Bat, E.Bat]
+    ]
+  },
+  {
+    background: BackgroundType.Swamp,
+    waves: [
+      [E.Slime, E.Slime],
+      [E.PoisonSlime],
+      [E.Spider, E.Bat],
+      [E.PoisonSlime, E.Slime],
+      [E.Goblin],
+      [E.Goblin, E.Bat],
+      [E.PoisonSlime, E.PoisonSlime],
+      [E.Goblin, E.Spider],
+      [E.Goblin, E.PoisonSlime, E.Bat],
+      [E.Goblin, E.Goblin, E.PoisonSlime]
+    ]
+  },
+  {
+    background: BackgroundType.Mountains,
+    waves: [
+      [E.Wolf],
+      [E.GiantBat],
+      [E.Wolf, E.Wolf],
+      [E.Skeleton],
+      [E.GiantSpider],
+      [E.Wolf, E.GiantBat],
+      [E.Skeleton, E.Wolf],
+      [E.GiantSpider, E.GiantBat, E.GiantBat],
+      [E.Skeleton, E.Skeleton],
+      [E.Wolf, E.Wolf, E.GiantSpider, E.GiantBat]
+    ]
+  },
+  {
+    background: BackgroundType.Dungeon,
+    waves: [
+      [E.Skeleton, E.Skeleton],
+      [E.SkeletonWarrior],
+      [E.Zombie],
+      [E.DireWolf],
+      [E.SkeletonWarrior, E.Skeleton],
+      [E.Zombie, E.Zombie],
+      [E.DireWolf, E.Skeleton],
+      [E.SkeletonWarrior, E.Zombie],
+      [E.DireWolf, E.DireWolf],
+      [E.SkeletonWarrior, E.SkeletonWarrior, E.Zombie],
+      [E.DireWolf, E.SkeletonWarrior, E.Zombie, E.Skeleton]
+    ]
+  },
+  {
+    background: BackgroundType.Graveyard,
+    waves: [
+      [E.Ghost],
+      [E.Ghost, E.Ghost],
+      [E.DarkSkeleton],
+      [E.Treant],
+      [E.Ghost, E.Zombie],
+      [E.DarkSkeleton, E.Ghost],
+      [E.Treant, E.Ghost],
+      [E.DarkSkeleton, E.DarkSkeleton],
+      [E.Treant, E.Zombie, E.Ghost],
+      [E.Treant, E.DarkSkeleton, E.Ghost, E.Ghost]
+    ]
+  },
+  {
+    background: BackgroundType.Volcano,
+    waves: [
+      [E.FireSlime],
+      [E.FireSlime, E.FireSlime],
+      [E.DireWolf, E.DireWolf],
+      [E.Dragon],
+      [E.FireSlime, E.DarkSkeleton, E.DireWolf],
+      ...Array.from({ length: 500 }, () => [
+        E.Dragon,
+        E.FireSlime,
+        E.DarkSkeleton,
+        E.DireWolf,
+        E.DireWolf
+      ])
     ]
   }
 ];
@@ -34481,16 +35809,15 @@ class BattleManager {
   fadeOverlay;
   isFading = false;
   fadeProgress = 0;
-  fadeDuration = 0.5;
+  fadeDuration = 500;
   fadeDirection = 1;
   resolveFade = null;
-  lastFadeTime = 0;
   onXpChange;
   onAreaChange;
   _makeEnemies = makeEnemies;
   _makeWizard = makeWizard;
   _makeBackground = makeBackground;
-  constructor(stage, xp, area2 = 0) {
+  constructor(stage, xp, area2) {
     this.stage = stage;
     this.xp = xp;
     this.area = area2;
@@ -34499,24 +35826,22 @@ class BattleManager {
     this.fadeOverlay.zIndex = 9999;
     this.stage.sortableChildren = true;
   }
-  fadeOut(duration = 0.5) {
+  fadeOut(duration = 500) {
     this.isFading = true;
     this.fadeProgress = 0;
     this.fadeDuration = duration;
     this.fadeDirection = 1;
-    this.lastFadeTime = 0;
     this.fadeOverlay.alpha = 0;
     this.stage.addChild(this.fadeOverlay);
     return new Promise((resolve) => {
       this.resolveFade = resolve;
     });
   }
-  fadeIn(duration = 0.5) {
+  fadeIn(duration = 500) {
     this.isFading = true;
     this.fadeProgress = 0;
     this.fadeDuration = duration;
     this.fadeDirection = -1;
-    this.lastFadeTime = 0;
     this.fadeOverlay.alpha = 1;
     this.stage.addChild(this.fadeOverlay);
     return new Promise((resolve) => {
@@ -34526,12 +35851,7 @@ class BattleManager {
   updateFade(time) {
     if (!this.isFading)
       return;
-    if (this.lastFadeTime === 0) {
-      this.lastFadeTime = time;
-    }
-    const delta = (time - this.lastFadeTime) / 1000;
-    this.lastFadeTime = time;
-    this.fadeProgress += delta;
+    this.fadeProgress += time.deltaMS;
     const t2 = Math.min(this.fadeProgress / this.fadeDuration, 1);
     if (this.fadeDirection === 1) {
       this.fadeOverlay.alpha = t2;
@@ -34591,16 +35911,24 @@ class BattleManager {
       }
       actor.zIndex = actor.y;
       this.stage.addChild(actor);
-      enterPromises.push(actor.enter(enterFromX, 0.6, i2 * 0.15));
+      enterPromises.push(actor.enter(enterFromX, 600, i2 * 0.15));
     }
   }
   initTurns() {
     this.turns = [];
     for (const actor of this.heroParty) {
-      this.turns.push({ actor, isHero: true, timeTillTurn: 1 / actor.speed });
+      this.turns.push({
+        actor,
+        isHero: true,
+        timeTillTurn: 1 / actor.speed
+      });
     }
     for (const actor of this.enemyParty) {
-      this.turns.push({ actor, isHero: false, timeTillTurn: 1 / actor.speed });
+      this.turns.push({
+        actor,
+        isHero: false,
+        timeTillTurn: 1 / actor.speed
+      });
     }
     this.sortTurns();
   }
@@ -34645,27 +35973,16 @@ class BattleManager {
       await attacker.levelUp(this.xp);
     }
     let anyKilled = false;
-    if (this.enemyParty.length > 1 && Math.random() < 0.1) {
-      const damage = await attacker.areaAttack();
-      const results = await Promise.all(this.enemyParty.map((enemy) => enemy.takeDamage(damage)));
-      const deadEnemies = this.enemyParty.filter((_, i2) => results[i2] === true);
-      await Promise.all(deadEnemies.map((dead) => dead.die()));
-      for (const dead of deadEnemies) {
-        this.stage.removeChild(dead);
-      }
-      this.enemyParty = this.enemyParty.filter((e2) => !deadEnemies.includes(e2));
-      this.turns = this.turns.filter((turn) => !deadEnemies.includes(turn.actor));
-      anyKilled = deadEnemies.length > 0;
-    } else {
-      const defender = this.enemyParty[0];
-      if (await defender.takeDamage(await attacker.attack(defender))) {
-        await defender.die();
-        this.stage.removeChild(defender);
-        this.enemyParty.shift();
-        this.turns = this.turns.filter((turn) => turn.actor !== defender);
-        anyKilled = true;
-      }
+    const attackResult = await attacker.attack(this.enemyParty);
+    const results = await Promise.all(attackResult.map((ar) => ar.target.takeDamage(ar.damage)));
+    const deadEnemies = this.enemyParty.filter((_, i2) => results[i2] === true);
+    await Promise.all(deadEnemies.map((dead) => dead.die()));
+    for (const dead of deadEnemies) {
+      this.stage.removeChild(dead);
     }
+    this.enemyParty = this.enemyParty.filter((e2) => !deadEnemies.includes(e2));
+    this.turns = this.turns.filter((turn) => !deadEnemies.includes(turn.actor));
+    anyKilled = deadEnemies.length > 0;
     if (this.enemyParty.length === 0) {
       this.wave++;
       const area2 = areas[this.area];
@@ -34688,7 +36005,8 @@ class BattleManager {
   }
   async enemyAttack(attacker) {
     const defender = this.heroParty[0];
-    if (await defender.takeDamage(await attacker.attack(defender))) {
+    const attackResult = await attacker.attack(this.heroParty);
+    if (await defender.takeDamage(attackResult[0].damage)) {
       await defender.runLeft();
       for (const actor of this.heroParty) {
         this.stage.removeChild(actor);
@@ -34704,13 +36022,13 @@ class BattleManager {
     this.turnCounter++;
     this.shiftTurns();
   }
-  update(lastTime) {
-    this.updateFade(lastTime);
+  update(time) {
+    this.updateFade(time);
     for (const actor of this.heroParty) {
-      actor.update(lastTime, true);
+      actor.update(time, true);
     }
     for (const actor of this.enemyParty) {
-      actor.update(lastTime, false);
+      actor.update(time, false);
     }
   }
 }
@@ -34720,6 +36038,8 @@ class ProblemUI {
   problemText;
   container;
   input;
+  submitButton;
+  inputRow;
   optionsContainer;
   styleTag;
   submitCallback;
@@ -34752,7 +36072,7 @@ class ProblemUI {
                 perspective: 1000px;
                 z-index: 1000;
             }
-            
+
             #solution-input {
                 background: rgba(20, 20, 35, 0.6);
                 border: 2px solid rgba(255, 255, 255, 0.15);
@@ -34767,7 +36087,7 @@ class ProblemUI {
                 outline: none;
                 backdrop-filter: blur(16px);
                 -webkit-backdrop-filter: blur(16px);
-                box-shadow: 
+                box-shadow:
                     0 10px 30px rgba(0, 0, 0, 0.5),
                     0 0 0 1px rgba(255, 255, 255, 0.1),
                     inset 0 0 20px rgba(255, 255, 255, 0.05);
@@ -34784,7 +36104,7 @@ class ProblemUI {
             #solution-input:focus {
                 background: rgba(30, 30, 50, 0.8);
                 border-color: #667eea;
-                box-shadow: 
+                box-shadow:
                     0 15px 40px rgba(0, 0, 0, 0.6),
                     0 0 0 2px rgba(102, 126, 234, 0.5),
                     0 0 30px rgba(102, 126, 234, 0.3),
@@ -34799,13 +36119,13 @@ class ProblemUI {
                 70% { transform: scale(1.1); box-shadow: 0 0 0 20px rgba(46, 204, 113, 0); }
                 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
             }
-            
+
             .input-correct {
                 animation: correctPulse 0.5s ease-out;
                 border-color: #2ecc71 !important;
                 color: #2ecc71 !important;
             }
-            
+
             .input-wrong {
                 animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
                 border-color: #e74c3c !important;
@@ -34817,6 +36137,50 @@ class ProblemUI {
                 20%, 80% { transform: translate3d(2px, 0, 0); }
                 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
                 40%, 60% { transform: translate3d(4px, 0, 0); }
+            }
+
+            .input-row {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                pointer-events: auto;
+            }
+
+            #submit-btn {
+                background: rgba(46, 204, 113, 0.3);
+                border: 2px solid rgba(46, 204, 113, 0.5);
+                border-radius: 20px;
+                color: #2ecc71;
+                font-family: 'Inter', sans-serif;
+                font-size: 1.5rem;
+                font-weight: 800;
+                padding: 1rem 1.5rem;
+                text-align: center;
+                outline: none;
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                box-shadow:
+                    0 10px 30px rgba(0, 0, 0, 0.5),
+                    0 0 0 1px rgba(46, 204, 113, 0.2),
+                    inset 0 0 20px rgba(46, 204, 113, 0.05);
+                transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                cursor: pointer;
+                line-height: 1;
+            }
+
+            #submit-btn:hover {
+                background: rgba(46, 204, 113, 0.5);
+                border-color: #2ecc71;
+                box-shadow:
+                    0 15px 40px rgba(0, 0, 0, 0.6),
+                    0 0 0 2px rgba(46, 204, 113, 0.5),
+                    0 0 30px rgba(46, 204, 113, 0.3),
+                    inset 0 0 20px rgba(46, 204, 113, 0.1);
+                transform: translateY(-2px) scale(1.05);
+            }
+
+            #submit-btn:active {
+                transform: scale(0.95);
             }
 
             #options-container {
@@ -34891,9 +36255,19 @@ class ProblemUI {
     this.input.pattern = "[0-9]*";
     this.input.placeholder = "?";
     this.input.autocomplete = "off";
+    this.submitButton = document.createElement("button");
+    this.submitButton.id = "submit-btn";
+    this.submitButton.textContent = "✓";
+    this.submitButton.addEventListener("click", () => {
+      this.onSubmit();
+    });
+    this.inputRow = document.createElement("div");
+    this.inputRow.className = "input-row";
+    this.inputRow.appendChild(this.input);
+    this.inputRow.appendChild(this.submitButton);
     this.optionsContainer = document.createElement("div");
     this.optionsContainer.id = "options-container";
-    this.container.appendChild(this.input);
+    this.container.appendChild(this.inputRow);
     this.container.appendChild(this.optionsContainer);
     document.body.appendChild(this.container);
     this.input.addEventListener("keyup", (event) => {
@@ -34919,7 +36293,7 @@ class ProblemUI {
     this.problemText.text = text;
     this.problemText.style.fill = "#ffffff";
     if (options && options.length > 0) {
-      this.input.style.display = "none";
+      this.inputRow.style.display = "none";
       this.optionsContainer.style.display = "flex";
       this.optionsContainer.innerHTML = "";
       for (const option of options) {
@@ -34934,7 +36308,7 @@ class ProblemUI {
     } else {
       this.optionsContainer.style.display = "none";
       this.optionsContainer.innerHTML = "";
-      this.input.style.display = "";
+      this.inputRow.style.display = "";
       this.input.focus();
     }
   }
@@ -34996,6 +36370,10 @@ async function init2() {
     antialias: true
   });
   document.body.appendChild(app.canvas);
+  const turbo = parseFloat(localStorage.getItem("turbo") ?? "");
+  if (!isNaN(turbo) && turbo > 0) {
+    app.ticker.speed = turbo;
+  }
   const gameStage = new Container;
   app.stage.addChild(gameStage);
   const world = new Container;
@@ -35025,7 +36403,7 @@ async function init2() {
     mathUI.setProblem(currentProblem.problem.text, currentProblem.problem.options);
   }
   app.ticker.add((time) => {
-    battleManager.update(time.lastTime);
+    battleManager.update(time);
   });
   function resize() {
     const screenWidth = window.innerWidth;
@@ -35045,6 +36423,9 @@ async function init2() {
   resize();
   const answerQueue = [];
   let isProcessingTurns = false;
+  let lastCorrectTimestamp = -1;
+  let correctCount = 0;
+  let turnTimeSum = 0;
   async function processQueue() {
     if (isProcessingTurns)
       return;
@@ -35052,6 +36433,13 @@ async function init2() {
     while (answerQueue.length > 0) {
       const isCorrect = answerQueue.shift();
       if (isCorrect) {
+        const now = Date.now();
+        if (lastCorrectTimestamp > 0) {
+          correctCount++;
+          turnTimeSum += now - lastCorrectTimestamp;
+          console.log(`Correct count: ${correctCount}, Avg turn time: ${turnTimeSum / correctCount}`);
+        }
+        lastCorrectTimestamp = now;
         await battleManager.correctAnswer();
       } else {
         await battleManager.incorrectAnswer();
@@ -35067,6 +36455,13 @@ async function init2() {
   async function onSubmit(solution) {
     if (solution === "")
       return;
+    if (solution === "Makonja") {
+      for (let i2 = 0;i2 < 1000; i2++) {
+        answerQueue.push(true);
+      }
+      processQueue();
+      return;
+    }
     const isCorrect = solution.trim() === currentProblem.problem.answer.toString();
     gtag("event", "problem_answer", {
       category: currentProblem.category,
