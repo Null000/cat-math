@@ -94,8 +94,14 @@ export const translations = {
 		[Category.Comparison_Hundred]: "Comparison: 100",
 		[Category.Comparison_Thousand]: "Comparison: 1000",
 
+		[Category.NumberToText_Ten]: "Number to Text: 10",
+		[Category.TextToNumber_Ten]: "Text to Number: 10",
 		[Category.NumberToText_Twenty]: "Number to Text: 20",
 		[Category.TextToNumber_Twenty]: "Text to Number: 20",
+		[Category.NumberToText_Hundred]: "Number to Text: 100",
+		[Category.TextToNumber_Hundred]: "Text to Number: 100",
+		[Category.NumberToText_Thousand]: "Number to Text: 1000",
+		[Category.TextToNumber_Thousand]: "Text to Number: 1000",
 
 		// Number words (0–20)
 		number_0: "zero",
@@ -231,8 +237,14 @@ export const translations = {
 		[Category.Comparison_Hundred]: "Primerjanje: 100",
 		[Category.Comparison_Thousand]: "Primerjanje: 1000",
 
+		[Category.NumberToText_Ten]: "Število v besedo: 10",
+		[Category.TextToNumber_Ten]: "Beseda v število: 10",
 		[Category.NumberToText_Twenty]: "Število v besedo: 20",
 		[Category.TextToNumber_Twenty]: "Beseda v število: 20",
+		[Category.NumberToText_Hundred]: "Število v besedo: 100",
+		[Category.TextToNumber_Hundred]: "Beseda v število: 100",
+		[Category.NumberToText_Thousand]: "Število v besedo: 1000",
+		[Category.TextToNumber_Thousand]: "Beseda v število: 1000",
 
 		// Number words (0–20)
 		number_0: "nič",
