@@ -87,6 +87,14 @@ export const translations = {
 		grouping_by_type: "By Type",
 		grouping_by_year: "By Year",
 
+		// Progress Page
+		progress_title: "Your Progress",
+		progress_solved: "Problems Solved",
+		progress_total: "Total Problems",
+		progress_complete: "Complete",
+		progress_mastered: "Mastered",
+		view_progress: "View Progress",
+
 		// RPG Index Page
 		rpg_title: "Choose Your Spells",
 		rpg_subtitle: "Select the math spells you wish to master",
@@ -181,6 +189,14 @@ export const translations = {
 		// Grouping toggle
 		grouping_by_type: "Po vrsti",
 		grouping_by_year: "Po razredu",
+
+		// Progress Page
+		progress_title: "Tvoj Napredek",
+		progress_solved: "Rešene naloge",
+		progress_total: "Vse naloge",
+		progress_complete: "Dokončano",
+		progress_mastered: "Obvladano",
+		view_progress: "Poglej Napredek",
 
 		// RPG Index Page
 		rpg_title: "Izberi Uroke",
