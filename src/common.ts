@@ -50,6 +50,8 @@ export enum Category {
 	Comparison_Twenty = "Comparison: 20",
 	Comparison_Hundred = "Comparison: 100",
 	Comparison_Thousand = "Comparison: 1000",
+	NumberToText_Twenty = "Number to Text: 20",
+	TextToNumber_Twenty = "Text to Number: 20",
 	Test = "test",
 }
 
@@ -108,11 +110,17 @@ export const categoryGroups: Record<string, Category[]> = {
 		Category.Comparison_Hundred,
 		Category.Comparison_Thousand,
 	],
+	NumberText: [
+		Category.NumberToText_Twenty,
+		Category.TextToNumber_Twenty,
+	],
 	Test: [Category.Test],
 };
 
 export const yearGroupsSl: Record<string, Category[]> = {
 	"1. razred": [
+		Category.NumberToText_Twenty,
+		Category.TextToNumber_Twenty,
 		Category.Addition_Ten,
 		Category.Addition_Ten_Missing,
 		Category.Subtraction_Ten,
