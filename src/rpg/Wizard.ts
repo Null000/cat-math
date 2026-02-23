@@ -27,7 +27,7 @@ export class Wizard extends Actor {
 	private isCastingMissiles: boolean = false;
 	private resolveMissiles: (() => void) | null = null;
 	private missiles: { graphic: Graphics; progress: number; startDelay: number; offsetY: number; hit: boolean }[] = [];
-	private missileDuration: number = 0.35;
+	private missileDuration: number = 350;
 	private missileTargetX: number = 0;
 	private missileTargetY: number = 0;
 	private missileBursts: { graphic: Graphics; progress: number }[] = [];
@@ -549,7 +549,7 @@ export class Wizard extends Actor {
 
 	levelUpStats(newXp: number) {
 		this.xp += newXp;
-		const xpFactor = 1 + newXp / 100;
+		const xpFactor = 1 + this.xp / 100;
 		this.maxHealth = Math.floor(100 * xpFactor);
 		this.health = this.maxHealth;
 		this.attackPower = Math.floor(5 * xpFactor);
@@ -1190,7 +1190,7 @@ export class Wizard extends Actor {
 				trail.y = py + (Math.random() - 0.5) * 10;
 				trail.zIndex = 1000;
 				this.parent!.addChild(trail);
-				this.magicTrails.push({graphic: trail, life: 0.2});
+				this.magicTrails.push({graphic: trail, life: 200});
 			}
 
 			if (t >= 1) {

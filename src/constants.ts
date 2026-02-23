@@ -1,1 +1,1 @@
-export const numberOfRewardImages = 5;
+export const numberOfRewardImages = 12;

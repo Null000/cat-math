@@ -3,7 +3,8 @@ import { readdirSync, writeFileSync, readFileSync } from 'fs';
 import { join } from 'path';
 
 const rewardImagesDir = join(process.cwd(), 'src', 'rewardImages');
-const constantsFile = join(process.cwd(), 'src', 'rpg', 'constants.ts');
+const rpgConstantsFile = join(process.cwd(), 'src', 'rpg', 'constants.ts');
+const mainConstantsFile = join(process.cwd(), 'src', 'constants.ts');
 
 try {
     const files = readdirSync(rewardImagesDir);
@@ -11,18 +12,33 @@ try {
 
     console.log(`Found ${count} reward images.`);
 
-    let content = readFileSync(constantsFile, 'utf-8');
-    const regex = /export const rewardImageCount = \d+;/;
-    const newText = `export const rewardImageCount = ${count};`;
+    // Update RPG constants
+    let rpgContent = readFileSync(rpgConstantsFile, 'utf-8');
+    const rpgRegex = /export const rewardImageCount = \d+;/;
+    const rpgNewText = `export const rewardImageCount = ${count};`;
 
-    if (regex.test(content)) {
-        content = content.replace(regex, newText);
+    if (rpgRegex.test(rpgContent)) {
+        rpgContent = rpgContent.replace(rpgRegex, rpgNewText);
     } else {
-        content += `\n${newText}\n`;
+        rpgContent += `\n${rpgNewText}\n`;
     }
 
-    writeFileSync(constantsFile, content);
-    console.log(`Updated ${constantsFile} with rewardImageCount = ${count}`);
+    writeFileSync(rpgConstantsFile, rpgContent);
+    console.log(`Updated ${rpgConstantsFile} with rewardImageCount = ${count}`);
+
+    // Update main constants
+    let mainContent = readFileSync(mainConstantsFile, 'utf-8');
+    const mainRegex = /export const numberOfRewardImages = \d+;/;
+    const mainNewText = `export const numberOfRewardImages = ${count};`;
+
+    if (mainRegex.test(mainContent)) {
+        mainContent = mainContent.replace(mainRegex, mainNewText);
+    } else {
+        mainContent += `\n${mainNewText}\n`;
+    }
+
+    writeFileSync(mainConstantsFile, mainContent);
+    console.log(`Updated ${mainConstantsFile} with numberOfRewardImages = ${count}`);
 } catch (error) {
     console.error('Error updating reward image count:', error);
     process.exit(1);
