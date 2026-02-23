@@ -288,9 +288,17 @@ export class ProblemUI {
 		this.container.style.transform = `translate(-50%, -50%) scale(${scale})`;
 	}
 
-	setProblem(text: string, options?: { label: string; value: number }[]) {
+	setProblem(text: string, options?: { label: string; value: number }[], answerType: "string" | "number" = "number") {
 		this.problemText.text = text;
 		this.problemText.style.fill = "#ffffff"; // Reset color if changed
+
+		if (answerType === "string") {
+			this.input.inputMode = "text";
+			this.input.removeAttribute("pattern");
+		} else {
+			this.input.inputMode = "numeric";
+			this.input.setAttribute("pattern", "[0-9]*");
+		}
 
 		if (options && options.length > 0) {
 			this.inputRow.style.display = "none";
@@ -323,9 +331,9 @@ export class ProblemUI {
 	}
 
 	private setOptionButtonsDisabled(disabled: boolean) {
-		for (const btn of this.optionsContainer.querySelectorAll(
+		for (const btn of Array.from(this.optionsContainer.querySelectorAll(
 			".rpg-option-btn",
-		)) {
+		))) {
 			(btn as HTMLButtonElement).disabled = disabled;
 		}
 	}

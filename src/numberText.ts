@@ -24,22 +24,12 @@ function generateNumberToText(): Problem[] {
 	const problems: Problem[] = [];
 
 	for (let n = 0; n <= 20; n++) {
-		const distractors = shuffled(allNumbers.filter((x) => x !== n)).slice(
-			0,
-			3,
-		);
-		const optionNumbers = shuffled([n, ...distractors]);
-
-		const options = optionNumbers.map((num) => ({
-			label: getNumberWord(num),
-			value: num,
-		}));
+		// Generate direct text inputs
 
 		problems.push({
 			id: `${Category.NumberToText_Twenty}_${n}`,
 			text: `${n} = ?`,
-			answer: n,
-			options,
+			answer: getNumberWord(n),
 		});
 	}
 

@@ -1,7 +1,7 @@
 export interface Problem {
 	id: string;
 	text: string;
-	answer: number;
+	answer: number | string;
 	options?: { label: string; value: number }[];
 }
 
@@ -115,7 +115,7 @@ export const categoryGroups: Record<string, Category[]> = {
 	NumberText: [
 		Category.NumberToText_Twenty,
 		Category.TextToNumber_Twenty,
-  ],
+	],
 	NextPrevious: [
 		Category.NextPrevious_Ten,
 		Category.NextPrevious_Twenty,

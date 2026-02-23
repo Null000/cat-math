@@ -1,9 +1,9 @@
-import {Application, Container, Graphics} from "pixi.js";
-import {standardHeight, standardWidth} from "./constants.ts";
-import {BattleManager} from "./BattleManager.ts";
-import {getProblem} from "../app.ts";
-import {Category} from "../common.ts";
-import {ProblemUI} from "./ProblemUI.ts";
+import { Application, Container, Graphics } from "pixi.js";
+import { standardHeight, standardWidth } from "./constants.ts";
+import { BattleManager } from "./BattleManager.ts";
+import { getProblem } from "../app.ts";
+import { Category } from "../common.ts";
+import { ProblemUI } from "./ProblemUI.ts";
 
 declare function gtag(...args: any[]): void;
 
@@ -65,6 +65,7 @@ async function init() {
 	mathUI.setProblem(
 		currentProblem.problem.text,
 		currentProblem.problem.options,
+		typeof currentProblem.problem.answer as "string" | "number"
 	);
 
 	function nextProblem() {
@@ -72,6 +73,7 @@ async function init() {
 		mathUI.setProblem(
 			currentProblem.problem.text,
 			currentProblem.problem.options,
+			typeof currentProblem.problem.answer as "string" | "number"
 		);
 	}
 
@@ -154,8 +156,12 @@ async function init() {
 			return;
 		}
 
-		const isCorrect =
-			solution.trim() === currentProblem.problem.answer.toString();
+		let isCorrect = false;
+		if (typeof currentProblem.problem.answer === "string") {
+			isCorrect = solution.trim().toLowerCase() === (currentProblem.problem.answer as string).toLowerCase();
+		} else {
+			isCorrect = solution.trim() === currentProblem.problem.answer.toString();
+		}
 
 		gtag("event", "problem_answer", {
 			category: currentProblem.category,

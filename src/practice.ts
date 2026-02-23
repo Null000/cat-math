@@ -85,7 +85,8 @@ document.addEventListener("DOMContentLoaded", () => {
 		return problem.options !== undefined && problem.options.length > 0;
 	}
 
-	function getOptionLabel(problem: Problem, value: number): string {
+	function getOptionLabel(problem: Problem, value: number | string): string {
+		if (typeof value === "string") return value;
 		const option = problem.options?.find((o) => o.value === value);
 		return option ? option.label : String(value);
 	}
@@ -158,16 +159,16 @@ document.addEventListener("DOMContentLoaded", () => {
 		const medianTime =
 			stats.allTimes.length > 0
 				? (() => {
-						const sorted = [...stats.allTimes].sort(
-							(a, b) => a - b,
-						);
-						const mid = Math.floor(sorted.length / 2);
-						const median =
-							sorted.length % 2 !== 0
-								? sorted[mid]!
-								: (sorted[mid - 1]! + sorted[mid]!) / 2;
-						return (median / 1000).toFixed(1);
-					})()
+					const sorted = [...stats.allTimes].sort(
+						(a, b) => a - b,
+					);
+					const mid = Math.floor(sorted.length / 2);
+					const median =
+						sorted.length % 2 !== 0
+							? sorted[mid]!
+							: (sorted[mid - 1]! + sorted[mid]!) / 2;
+					return (median / 1000).toFixed(1);
+				})()
 				: "0.0";
 
 		// Format total time as minutes:seconds
@@ -272,6 +273,15 @@ document.addEventListener("DOMContentLoaded", () => {
 		} else {
 			if (optionsSection) optionsSection.style.display = "none";
 			if (answerSection) answerSection.style.display = "flex";
+
+			if (typeof currentProblem.answer === "string") {
+				answerInput.inputMode = "text";
+				answerInput.removeAttribute("pattern");
+			} else {
+				answerInput.inputMode = "numeric";
+				answerInput.setAttribute("pattern", "[0-9]*");
+			}
+
 			resetState();
 		}
 
@@ -294,26 +304,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	function setOptionButtonsDisabled(disabled: boolean) {
 		if (!optionsSection) return;
-		for (const btn of optionsSection.querySelectorAll(".option-btn")) {
+		for (const btn of Array.from(optionsSection.querySelectorAll(".option-btn"))) {
 			(btn as HTMLButtonElement).disabled = disabled;
 		}
 	}
 
 	// Function to check the user's answer
-	function checkAnswer(optionValue?: number) {
+	function checkAnswer(optionValue?: number | string) {
 		if (!feedbackElement) return;
 
-		let userAnswer: number;
+		let userAnswer: number | string;
 		if (optionValue !== undefined) {
 			userAnswer = optionValue;
 		} else {
 			if (!answerInput) return;
-			userAnswer = parseInt(answerInput.value, 10);
 
-			if (isNaN(userAnswer)) {
-				feedbackElement.textContent = t("nan_error");
-				feedbackElement.className = "incorrect";
-				return;
+			if (typeof currentProblem.answer === "string") {
+				userAnswer = answerInput.value.trim().toLowerCase();
+			} else {
+				userAnswer = parseInt(answerInput.value, 10);
+
+				if (isNaN(userAnswer)) {
+					feedbackElement.textContent = t("nan_error");
+					feedbackElement.className = "incorrect";
+					return;
+				}
 			}
 		}
 
@@ -322,7 +337,12 @@ document.addEventListener("DOMContentLoaded", () => {
 		stats.totalTime += elapsed;
 		stats.allTimes.push(elapsed);
 
-		const isCorrect = userAnswer === currentProblem.answer;
+		let isCorrect = false;
+		if (typeof currentProblem.answer === "string") {
+			isCorrect = userAnswer === currentProblem.answer.toLowerCase();
+		} else {
+			isCorrect = userAnswer === currentProblem.answer;
+		}
 		gtag("event", "problem_answer", {
 			category: currentCategory,
 			correct: isCorrect,
