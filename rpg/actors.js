@@ -32921,7 +32921,7 @@ class HealthBar extends Container {
   heightBar;
   currentRatio = 1;
   targetRatio = 1;
-  animationSpeed = 1.5;
+  animationSpeed = 1.5 / 1000;
   constructor(width = standardWidth / 8, height = standardHeight / 60) {
     super();
     this.widthMax = width;
@@ -32938,11 +32938,11 @@ class HealthBar extends Container {
   setHealth(ratio) {
     this.targetRatio = ratio;
   }
-  update(delta) {
+  update(time) {
     if (this.currentRatio === this.targetRatio)
       return;
     const diff = this.targetRatio - this.currentRatio;
-    const step = this.animationSpeed * delta;
+    const step = this.animationSpeed * time.deltaMS;
     if (Math.abs(diff) <= step) {
       this.currentRatio = this.targetRatio;
     } else {
@@ -32974,7 +32974,15 @@ class Actor extends Container {
   speed;
   xpDrop;
   xp = 0;
-  constructor({ texture, textureScale = 0.5, health, attackPower, defensePower, speed, xpDrop }) {
+  constructor({
+    texture,
+    textureScale = 0.5,
+    health,
+    attackPower,
+    defensePower,
+    speed,
+    xpDrop
+  }) {
     super();
     this.health = health;
     this.maxHealth = health;
@@ -33001,14 +33009,17 @@ class Actor extends Container {
     const damage = Math.max(0, amount - this.defensePower);
     this.health = Math.max(0, this.health - damage);
     this.updateHealthBar();
-    await this.shake();
+    const damagePercent = Math.min(damage / this.maxHealth, 1);
+    const intensity = 3 + damagePercent * 17;
+    const duration = 200 + damagePercent * 600;
+    await this.shake(duration, intensity);
     return this.health === 0;
   }
   shakeTimer = 0;
   lastTime = 0;
   shakeIntensity = 5;
   resolveShake = null;
-  shake(duration = 0.5, intensity = 10) {
+  shake(duration = 500, intensity = 10) {
     if (duration <= 0)
       return Promise.resolve();
     this.shakeTimer = duration;
@@ -33030,19 +33041,23 @@ class Actor extends Container {
   }
   isRunningLeft = false;
   resolveRunLeft = null;
-  runSpeed = 400;
+  runSpeed = 0.4;
+  deathFadeSpeed = 1 / 1000;
   isEntering = false;
   resolveEnter = null;
   enterProgress = 0;
-  enterDuration = 0.6;
+  enterDuration = 600;
   enterStartX = 0;
   enterTargetX = 0;
   isTwitching = false;
   resolveTwitch = null;
   twitchProgress = 0;
-  twitchDuration = 0.25;
+  twitchDuration = 250;
   twitchDistance = 30;
   twitchDirection = 1;
+  speechBubble = null;
+  speechBubbleTimeout = null;
+  resolveSpeechBubble = null;
   runLeft() {
     this.sprite.scale.x = this.sprite.scale.x * -1;
     this.isRunningLeft = true;
@@ -33050,7 +33065,7 @@ class Actor extends Container {
       this.resolveRunLeft = resolve;
     });
   }
-  enter(fromX, duration = 0.6, delay = 0) {
+  enter(fromX, duration = 600, delay = 0) {
     this.isEntering = true;
     this.enterStartX = fromX;
     this.enterTargetX = this.x;
@@ -33063,13 +33078,13 @@ class Actor extends Container {
     });
   }
   update(time, isSine) {
+    const lastTime = time.lastTime;
     if (this.lastTime === 0) {
-      this.lastTime = time;
+      this.lastTime = lastTime;
     }
-    const delta = (time - this.lastTime) / 1000;
-    this.lastTime = time;
+    this.lastTime = lastTime;
     if (this.isDying) {
-      this.alpha -= delta;
+      this.alpha -= this.deathFadeSpeed * time.deltaMS;
       if (this.alpha <= 0) {
         this.alpha = 0;
         if (this.resolveDeath) {
@@ -33079,7 +33094,7 @@ class Actor extends Container {
       }
     }
     if (this.isRunningLeft) {
-      this.x -= this.runSpeed * delta;
+      this.x -= this.runSpeed * time.deltaMS;
       if (this.x < -this.sprite.width) {
         if (this.resolveRunLeft) {
           this.resolveRunLeft();
@@ -33089,7 +33104,7 @@ class Actor extends Container {
       return;
     }
     if (this.isEntering) {
-      this.enterProgress += delta;
+      this.enterProgress += time.deltaMS;
       if (this.enterProgress <= 0) {
         return;
       }
@@ -33108,7 +33123,7 @@ class Actor extends Container {
       }
     }
     if (this.isTwitching) {
-      this.twitchProgress += delta;
+      this.twitchProgress += time.deltaMS;
       const halfDuration = this.twitchDuration / 2;
       if (this.twitchProgress < halfDuration) {
         const t2 = this.twitchProgress / halfDuration;
@@ -33130,7 +33145,7 @@ class Actor extends Container {
     let shakeX = 0;
     let shakeY = 0;
     if (this.shakeTimer > 0) {
-      this.shakeTimer -= delta;
+      this.shakeTimer -= time.deltaMS;
       if (this.shakeTimer <= 0) {
         this.shakeTimer = 0;
         if (this.resolveShake) {
@@ -33141,15 +33156,94 @@ class Actor extends Container {
       shakeX = Math.random() * this.shakeIntensity * 2 - this.shakeIntensity;
       shakeY = Math.random() * this.shakeIntensity * 2 - this.shakeIntensity;
     }
-    let offset = isSine ? Math.sin(time / 500) : Math.cos(time / 500);
+    let offset = isSine ? Math.sin(lastTime / 500) : Math.cos(lastTime / 500);
     offset *= 10;
     this.sprite.y = offset + shakeY;
     this.sprite.x = shakeX;
-    this.healthBar.update(delta);
+    this.healthBar.update(time);
     this.healthBar.y = -this.sprite.height + offset - 20 + shakeY;
     this.healthBar.x = shakeX;
+    if (this.speechBubble) {
+      this.speechBubble.y = -this.sprite.height + offset - 40 + shakeY;
+      this.speechBubble.x = shakeX;
+    }
   }
-  async attack(target) {
+  async showSpeechBubble(text, duration) {
+    this.hideSpeechBubble();
+    const bubble = new Container;
+    const textObj = new Text({
+      text,
+      style: {
+        fontSize: 14,
+        fill: 0,
+        wordWrap: true,
+        wordWrapWidth: 150,
+        fontFamily: "Arial"
+      }
+    });
+    const padding = 10;
+    const tailHeight = 10;
+    const bubbleWidth = textObj.width + padding * 2;
+    const bubbleHeight = textObj.height + padding * 2;
+    const r2 = 8;
+    const tw = 8;
+    const cx = bubbleWidth / 2;
+    const bg = new Graphics;
+    bg.moveTo(r2, 0);
+    bg.lineTo(bubbleWidth - r2, 0);
+    bg.arcTo(bubbleWidth, 0, bubbleWidth, r2, r2);
+    bg.lineTo(bubbleWidth, bubbleHeight - r2);
+    bg.arcTo(bubbleWidth, bubbleHeight, bubbleWidth - r2, bubbleHeight, r2);
+    bg.lineTo(cx + tw, bubbleHeight);
+    bg.lineTo(cx, bubbleHeight + tailHeight);
+    bg.lineTo(cx - tw, bubbleHeight);
+    bg.lineTo(r2, bubbleHeight);
+    bg.arcTo(0, bubbleHeight, 0, bubbleHeight - r2, r2);
+    bg.lineTo(0, r2);
+    bg.arcTo(0, 0, r2, 0, r2);
+    bg.closePath();
+    bg.fill({ color: 16777215 });
+    bg.stroke({ width: 2, color: 3355443 });
+    textObj.x = padding;
+    textObj.y = padding;
+    bubble.addChild(bg);
+    bubble.addChild(textObj);
+    bubble.pivot.set(cx, bubbleHeight + tailHeight);
+    this.speechBubble = bubble;
+    this.addChild(bubble);
+    if (duration === -1) {
+      return;
+    }
+    return new Promise((resolve) => {
+      this.resolveSpeechBubble = resolve;
+      this.speechBubbleTimeout = setTimeout(() => {
+        this.hideSpeechBubble();
+      }, duration);
+    });
+  }
+  hideSpeechBubble() {
+    if (this.speechBubbleTimeout !== null) {
+      clearTimeout(this.speechBubbleTimeout);
+      this.speechBubbleTimeout = null;
+    }
+    if (this.speechBubble) {
+      this.removeChild(this.speechBubble);
+      this.speechBubble.destroy();
+      this.speechBubble = null;
+    }
+    if (this.resolveSpeechBubble) {
+      this.resolveSpeechBubble();
+      this.resolveSpeechBubble = null;
+    }
+  }
+  async attack(targets) {
+    await this.twitch();
+    return [{
+      target: targets[0],
+      damage: this.attackPower
+    }];
+  }
+  async magicMissileAttack(target) {
     await this.twitch();
     return this.attackPower;
   }
@@ -33176,15 +33270,85 @@ class Wizard extends Actor {
   magicOrb = null;
   magicTrails = [];
   magicProgress = 0;
-  magicDuration = 0.4;
+  magicDuration = 400;
   magicIsCritical = false;
   magicLastTime = 0;
   magicTargetX = 0;
   magicTargetY = 0;
   magicBurst = null;
   burstProgress = 0;
-  burstDuration = 0.2;
+  burstDuration = 200;
   isBursting = false;
+  isAreaCasting = false;
+  resolveAreaMagic = null;
+  areaRing = null;
+  areaProgress = 0;
+  areaDuration = 600;
+  isCastingMissiles = false;
+  resolveMissiles = null;
+  missiles = [];
+  missileDuration = 350;
+  missileTargetX = 0;
+  missileTargetY = 0;
+  missileBursts = [];
+  missileBurstDuration = 150;
+  isLevelingUp = false;
+  resolveLevelUp = null;
+  levelUpProgress = 0;
+  levelUpDuration = 1500;
+  levelUpGlow = null;
+  levelUpFlash = null;
+  levelUpParticles = [];
+  levelUpNewTexture = null;
+  levelUpTextureSwapped = false;
+  isCastingLightning = false;
+  resolveLightning = null;
+  lightningProgress = 0;
+  lightningDuration = 300;
+  lightningBolt = null;
+  lightningTargetX = 0;
+  lightningTargetY = 0;
+  lightningBurst = null;
+  lightningBurstProgress = 0;
+  isLightningBursting = false;
+  lightningBurstDuration = 150;
+  isCastingFireBolt = false;
+  resolveFireBolt = null;
+  fireBoltProgress = 0;
+  fireBoltDuration = 400;
+  fireBoltOrb = null;
+  fireBoltTargetX = 0;
+  fireBoltTargetY = 0;
+  fireBoltBurst = null;
+  fireBoltBurstProgress = 0;
+  isFireBoltBursting = false;
+  fireBoltBurstDuration = 200;
+  isCastingFrost = false;
+  resolveFrost = null;
+  frostShards = [];
+  frostDuration = 300;
+  frostTargetX = 0;
+  frostTargetY = 0;
+  frostBursts = [];
+  frostBurstDuration = 150;
+  isCastingBeam = false;
+  resolveBeam = null;
+  beamProgress = 0;
+  beamDuration = 500;
+  beamGraphic = null;
+  beamTargetX = 0;
+  beamTargetY = 0;
+  isCastingMeteor = false;
+  resolveMeteor = null;
+  meteorProgress = 0;
+  meteorDuration = 500;
+  meteorGraphic = null;
+  meteorTargetX = 0;
+  meteorTargetY = 0;
+  meteorBurst = null;
+  meteorBurstProgress = 0;
+  isMeteorBursting = false;
+  meteorBurstDuration = 250;
   constructor(xp) {
     const xpFactor = 1 + xp / 100;
     super({
@@ -33201,11 +33365,23 @@ class Wizard extends Actor {
     const ratio = Math.max(this.health / this.maxHealth, 0.02);
     this.healthBar.setHealth(ratio);
   }
-  async attack(defender) {
-    const isCritical = false;
+  async attack(defenders) {
+    let isCritical = false;
     await this.twitch();
-    await this.castMagic(isCritical, defender);
-    return isCritical ? this.attackPower * 2 : this.attackPower;
+    const level = getWizardLevel(this.xp);
+    const target = defenders[0];
+    let damage = this.attackPower;
+    if (level > 1) {
+      if (Math.random() < 0.25) {
+        isCritical = true;
+        damage *= 2;
+      }
+    }
+    await this.castMagic(isCritical, target);
+    return [{
+      target,
+      damage
+    }];
   }
   castMagic(isCritical, defender) {
     this.isCastingMagic = true;
@@ -33219,7 +33395,7 @@ class Wizard extends Actor {
     const orb = new Graphics;
     this.drawOrb(orb, isCritical);
     this.magicOrb = orb;
-    orb.zIndex = 100;
+    orb.zIndex = 1000;
     this.parent.addChild(orb);
     return new Promise((resolve) => {
       if (this.resolveMagic) {
@@ -33227,6 +33403,421 @@ class Wizard extends Actor {
       }
       this.resolveMagic = resolve;
     });
+  }
+  async areaAttack() {
+    await this.twitch();
+    await this.castAreaMagic();
+    return this.attackPower;
+  }
+  async magicMissileAttack(defender) {
+    await this.twitch();
+    await this.castMagicMissile(defender);
+    return this.attackPower;
+  }
+  castMagicMissile(defender) {
+    this.isCastingMissiles = true;
+    this.missileTargetX = defender.x - this.x;
+    this.missileTargetY = defender.y - this.y - 80;
+    this.magicLastTime = 0;
+    this.missiles = [];
+    this.missileBursts = [];
+    const offsets = [-35, 0, 35];
+    for (let i2 = 0;i2 < 3; i2++) {
+      const missile = new Graphics;
+      this.drawMissile(missile);
+      missile.zIndex = 1000;
+      missile.visible = false;
+      this.parent.addChild(missile);
+      this.missiles.push({
+        graphic: missile,
+        progress: 0,
+        startDelay: i2 * 70,
+        offsetY: offsets[i2],
+        hit: false
+      });
+    }
+    return new Promise((resolve) => {
+      if (this.resolveMissiles) {
+        this.resolveMissiles();
+      }
+      this.resolveMissiles = resolve;
+    });
+  }
+  drawMissile(g2) {
+    const color = 13387007;
+    g2.circle(0, 0, 10);
+    g2.fill({ color, alpha: 0.15 });
+    g2.circle(0, 0, 6);
+    g2.fill({ color, alpha: 0.3 });
+    g2.circle(0, 0, 3.5);
+    g2.fill({ color, alpha: 0.6 });
+    g2.circle(0, 0, 1.5);
+    g2.fill({ color: 16777215, alpha: 0.95 });
+  }
+  spawnMissileTrail(x2, y2) {
+    const trail = new Graphics;
+    trail.circle(0, 0, 2);
+    trail.fill({ color: 13387007, alpha: 0.5 });
+    trail.x = this.x + x2;
+    trail.y = this.y + y2;
+    trail.zIndex = 1000;
+    this.parent.addChild(trail);
+    this.magicTrails.push({ graphic: trail, life: 200 });
+  }
+  castAreaMagic() {
+    this.isAreaCasting = true;
+    this.areaProgress = 0;
+    this.magicLastTime = 0;
+    const ring = new Graphics;
+    const color = 11158783;
+    ring.circle(0, 0, 10);
+    ring.stroke({ color, alpha: 0.2, width: 12 });
+    ring.circle(0, 0, 10);
+    ring.stroke({ color, alpha: 0.5, width: 4 });
+    ring.circle(0, 0, 10);
+    ring.stroke({ color: 14527231, alpha: 0.7, width: 2 });
+    ring.circle(0, 0, 8);
+    ring.fill({ color, alpha: 0.1 });
+    ring.x = this.x;
+    ring.y = this.y - 80;
+    ring.zIndex = 100;
+    this.parent.addChild(ring);
+    this.areaRing = ring;
+    return new Promise((resolve) => {
+      if (this.resolveAreaMagic) {
+        this.resolveAreaMagic();
+      }
+      this.resolveAreaMagic = resolve;
+    });
+  }
+  async lightningBoltAttack(defender) {
+    await this.twitch();
+    await this.castLightningBolt(defender);
+    return this.attackPower;
+  }
+  castLightningBolt(defender) {
+    this.isCastingLightning = true;
+    this.lightningProgress = 0;
+    this.magicLastTime = 0;
+    this.isLightningBursting = false;
+    this.lightningTargetX = defender.x;
+    this.lightningTargetY = defender.y - 80;
+    const bolt = new Graphics;
+    bolt.zIndex = 1000;
+    this.parent.addChild(bolt);
+    this.lightningBolt = bolt;
+    return new Promise((resolve) => {
+      if (this.resolveLightning)
+        this.resolveLightning();
+      this.resolveLightning = resolve;
+    });
+  }
+  drawLightningBolt(g2, startX, startY, endX, endY) {
+    g2.clear();
+    const segments = 8;
+    const points = [{ x: startX, y: startY }];
+    const dx = endX - startX;
+    const dy = endY - startY;
+    const len = Math.sqrt(dx * dx + dy * dy);
+    const perpX = -dy / len;
+    const perpY = dx / len;
+    for (let i2 = 1;i2 < segments; i2++) {
+      const t2 = i2 / segments;
+      const baseX = startX + dx * t2;
+      const baseY = startY + dy * t2;
+      const offset = (Math.random() - 0.5) * 40;
+      points.push({
+        x: baseX + perpX * offset,
+        y: baseY + perpY * offset
+      });
+    }
+    points.push({ x: endX, y: endY });
+    g2.moveTo(points[0].x, points[0].y);
+    for (let i2 = 1;i2 < points.length; i2++) {
+      g2.lineTo(points[i2].x, points[i2].y);
+    }
+    g2.stroke({ color: 4491519, alpha: 0.3, width: 12 });
+    g2.moveTo(points[0].x, points[0].y);
+    for (let i2 = 1;i2 < points.length; i2++) {
+      g2.lineTo(points[i2].x, points[i2].y);
+    }
+    g2.stroke({ color: 8965375, alpha: 0.6, width: 4 });
+    g2.moveTo(points[0].x, points[0].y);
+    for (let i2 = 1;i2 < points.length; i2++) {
+      g2.lineTo(points[i2].x, points[i2].y);
+    }
+    g2.stroke({ color: 16777215, alpha: 0.9, width: 2 });
+  }
+  async fireBoltAttack(defender) {
+    await this.twitch();
+    await this.castFireBolt(defender);
+    return this.attackPower;
+  }
+  castFireBolt(defender) {
+    this.isCastingFireBolt = true;
+    this.fireBoltProgress = 0;
+    this.magicLastTime = 0;
+    this.isFireBoltBursting = false;
+    this.fireBoltTargetX = defender.x - this.x;
+    this.fireBoltTargetY = defender.y - this.y - 80;
+    const orb = new Graphics;
+    this.drawFireBoltOrb(orb);
+    this.fireBoltOrb = orb;
+    orb.zIndex = 1000;
+    this.parent.addChild(orb);
+    return new Promise((resolve) => {
+      if (this.resolveFireBolt)
+        this.resolveFireBolt();
+      this.resolveFireBolt = resolve;
+    });
+  }
+  drawFireBoltOrb(g2) {
+    g2.circle(0, 0, 25);
+    g2.fill({ color: 16729088, alpha: 0.15 });
+    g2.circle(0, 0, 15);
+    g2.fill({ color: 16737792, alpha: 0.3 });
+    g2.circle(0, 0, 10);
+    g2.fill({ color: 16755200, alpha: 0.6 });
+    g2.circle(0, 0, 5);
+    g2.fill({ color: 16777164, alpha: 0.95 });
+  }
+  spawnFireTrail(x2, y2) {
+    const trail = new Graphics;
+    const colors = [16729088, 16737792, 16755200];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    trail.circle(0, 0, 3 + Math.random() * 3);
+    trail.fill({ color, alpha: 0.5 });
+    trail.x = this.x + x2;
+    trail.y = this.y + y2;
+    trail.zIndex = 1000;
+    this.parent.addChild(trail);
+    this.magicTrails.push({ graphic: trail, life: 300 });
+  }
+  async frostShardAttack(defender) {
+    await this.twitch();
+    await this.castFrostShard(defender);
+    return this.attackPower;
+  }
+  castFrostShard(defender) {
+    this.isCastingFrost = true;
+    this.magicLastTime = 0;
+    this.frostShards = [];
+    this.frostBursts = [];
+    this.frostTargetX = defender.x - this.x;
+    this.frostTargetY = defender.y - this.y - 80;
+    const offsets = [-30, -15, 0, 15, 30];
+    for (let i2 = 0;i2 < 5; i2++) {
+      const shard = new Graphics;
+      this.drawFrostShard(shard);
+      shard.zIndex = 1000;
+      shard.visible = false;
+      this.parent.addChild(shard);
+      this.frostShards.push({
+        graphic: shard,
+        progress: -i2 * 50,
+        offsetY: offsets[i2],
+        hit: false
+      });
+    }
+    return new Promise((resolve) => {
+      if (this.resolveFrost)
+        this.resolveFrost();
+      this.resolveFrost = resolve;
+    });
+  }
+  drawFrostShard(g2) {
+    const color = 4513279;
+    g2.circle(0, 0, 8);
+    g2.fill({ color, alpha: 0.15 });
+    g2.moveTo(0, -6);
+    g2.lineTo(4, 0);
+    g2.lineTo(0, 6);
+    g2.lineTo(-4, 0);
+    g2.closePath();
+    g2.fill({ color, alpha: 0.6 });
+    g2.circle(0, 0, 2);
+    g2.fill({ color: 16777215, alpha: 0.9 });
+  }
+  spawnFrostTrail(x2, y2) {
+    const trail = new Graphics;
+    trail.circle(0, 0, 2);
+    trail.fill({ color: 4513279, alpha: 0.5 });
+    trail.x = this.x + x2;
+    trail.y = this.y + y2;
+    trail.zIndex = 1000;
+    this.parent.addChild(trail);
+    this.magicTrails.push({ graphic: trail, life: 200 });
+  }
+  async arcaneBeamAttack(defender) {
+    await this.twitch();
+    await this.castArcaneBeam(defender);
+    return this.attackPower;
+  }
+  castArcaneBeam(defender) {
+    this.isCastingBeam = true;
+    this.beamProgress = 0;
+    this.magicLastTime = 0;
+    this.beamTargetX = defender.x;
+    this.beamTargetY = defender.y - 80;
+    const beam = new Graphics;
+    beam.zIndex = 1000;
+    this.parent.addChild(beam);
+    this.beamGraphic = beam;
+    return new Promise((resolve) => {
+      if (this.resolveBeam)
+        this.resolveBeam();
+      this.resolveBeam = resolve;
+    });
+  }
+  async meteorStrikeAttack(defender) {
+    await this.twitch();
+    await this.castMeteorStrike(defender);
+    return this.attackPower;
+  }
+  castMeteorStrike(defender) {
+    this.isCastingMeteor = true;
+    this.meteorProgress = 0;
+    this.magicLastTime = 0;
+    this.isMeteorBursting = false;
+    this.meteorTargetX = defender.x;
+    this.meteorTargetY = defender.y - 80;
+    const meteor = new Graphics;
+    this.drawMeteor(meteor);
+    meteor.zIndex = 1000;
+    this.parent.addChild(meteor);
+    this.meteorGraphic = meteor;
+    return new Promise((resolve) => {
+      if (this.resolveMeteor)
+        this.resolveMeteor();
+      this.resolveMeteor = resolve;
+    });
+  }
+  drawMeteor(g2) {
+    g2.circle(0, 0, 30);
+    g2.fill({ color: 16729088, alpha: 0.15 });
+    g2.circle(0, 0, 20);
+    g2.fill({ color: 16737792, alpha: 0.3 });
+    g2.circle(0, 0, 12);
+    g2.fill({ color: 8930304, alpha: 0.8 });
+    g2.circle(0, 0, 7);
+    g2.fill({ color: 16755200, alpha: 0.7 });
+    g2.circle(0, 0, 3);
+    g2.fill({ color: 16777164, alpha: 0.95 });
+  }
+  spawnMeteorTrail(x2, y2) {
+    const trail = new Graphics;
+    const colors = [16729088, 16737792, 16755200];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    trail.circle(0, 0, 4 + Math.random() * 4);
+    trail.fill({ color, alpha: 0.5 });
+    trail.x = x2;
+    trail.y = y2;
+    trail.zIndex = 1000;
+    this.parent.addChild(trail);
+    this.magicTrails.push({ graphic: trail, life: 350 });
+  }
+  levelUpStats(newXp) {
+    this.xp += newXp;
+    const xpFactor = 1 + this.xp / 100;
+    this.maxHealth = Math.floor(100 * xpFactor);
+    this.health = this.maxHealth;
+    this.attackPower = Math.floor(5 * xpFactor);
+    this.defensePower = Math.floor(xpFactor);
+    this.speed = Math.floor(6 * xpFactor);
+  }
+  async levelUp(newXp) {
+    this.levelUpNewTexture = await initWizard(newXp);
+    this.levelUpStats(newXp);
+    this.updateHealthBar();
+    this.isLevelingUp = true;
+    this.levelUpProgress = 0;
+    this.levelUpTextureSwapped = false;
+    this.magicLastTime = 0;
+    this.levelUpParticles = [];
+    const glow = new Graphics;
+    glow.x = this.x;
+    glow.y = this.y - 80;
+    glow.zIndex = this.zIndex - 1;
+    this.parent.addChild(glow);
+    this.levelUpGlow = glow;
+    const flash = new Graphics;
+    flash.rect(-400, -300, 800, 600);
+    flash.fill({ color: 16777215, alpha: 0 });
+    flash.zIndex = 9000;
+    this.parent.addChild(flash);
+    this.levelUpFlash = flash;
+    return new Promise((resolve) => {
+      if (this.resolveLevelUp) {
+        this.resolveLevelUp();
+      }
+      this.resolveLevelUp = resolve;
+    });
+  }
+  spawnLevelUpParticle(centerX, centerY, phase) {
+    const particle = new Graphics;
+    const size = 2 + Math.random() * 4;
+    const colors = [16766720, 16771584, 16777215, 16758784];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    particle.circle(0, 0, size);
+    particle.fill({ color, alpha: 0.8 });
+    particle.zIndex = 9001;
+    let vx2;
+    let vy2;
+    if (phase === "rise") {
+      particle.x = centerX + (Math.random() - 0.5) * 60;
+      particle.y = centerY + Math.random() * 40;
+      vx2 = (Math.random() - 0.5) * 30;
+      vy2 = -(60 + Math.random() * 100);
+    } else {
+      particle.x = centerX;
+      particle.y = centerY;
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 100 + Math.random() * 200;
+      vx2 = Math.cos(angle) * speed;
+      vy2 = Math.sin(angle) * speed;
+    }
+    this.parent.addChild(particle);
+    this.levelUpParticles.push({
+      graphic: particle,
+      life: 0.8 + Math.random() * 0.4,
+      vx: vx2,
+      vy: vy2
+    });
+  }
+  updateLevelUpGlow(t2) {
+    if (!this.levelUpGlow)
+      return;
+    this.levelUpGlow.clear();
+    let glowAlpha;
+    let glowRadius;
+    if (t2 < 0.35) {
+      const p2 = t2 / 0.35;
+      glowAlpha = p2 * 0.4;
+      glowRadius = 30 + p2 * 40;
+    } else if (t2 < 0.5) {
+      glowAlpha = 0.4 + (t2 - 0.35) / 0.15 * 0.3;
+      glowRadius = 70 + (t2 - 0.35) / 0.15 * 20;
+    } else {
+      const p2 = Math.min((t2 - 0.5) / 0.5, 1);
+      glowAlpha = 0.7 * (1 - p2);
+      glowRadius = 90 * (1 - p2 * 0.3);
+    }
+    this.levelUpGlow.circle(0, 0, glowRadius);
+    this.levelUpGlow.fill({ color: 16766720, alpha: glowAlpha * 0.3 });
+    this.levelUpGlow.circle(0, 0, glowRadius * 0.6);
+    this.levelUpGlow.fill({ color: 16771584, alpha: glowAlpha * 0.5 });
+    this.levelUpGlow.circle(0, 0, glowRadius * 0.3);
+    this.levelUpGlow.fill({ color: 16777215, alpha: glowAlpha * 0.7 });
+  }
+  spawnAreaTrail(x2, y2) {
+    const trail = new Graphics;
+    trail.circle(0, 0, 3);
+    trail.fill({ color: 11158783, alpha: 0.5 });
+    trail.x = x2;
+    trail.y = y2;
+    trail.zIndex = 100;
+    this.parent.addChild(trail);
+    this.magicTrails.push({ graphic: trail, life: 300 });
   }
   drawOrb(orb, isCritical) {
     const baseRadius = isCritical ? 28 : 10;
@@ -33248,26 +33839,24 @@ class Wizard extends Actor {
     trail.fill({ color, alpha: 0.5 });
     trail.x = this.x + x2;
     trail.y = this.y + y2;
-    trail.zIndex = 100;
+    trail.zIndex = 1000;
     this.parent.addChild(trail);
-    this.magicTrails.push({ graphic: trail, life: 0.3 });
+    this.magicTrails.push({ graphic: trail, life: 300 });
   }
   update(time, isSine) {
     super.update(time, isSine);
-    const hasWork = this.isCastingMagic || this.isBursting || this.magicTrails.length > 0;
+    const hasWork = this.isCastingMagic || this.isBursting || this.isAreaCasting || this.isCastingMissiles || this.missileBursts.length > 0 || this.isCastingLightning || this.isLightningBursting || this.isCastingFireBolt || this.isFireBoltBursting || this.isCastingFrost || this.frostBursts.length > 0 || this.isCastingBeam || this.isCastingMeteor || this.isMeteorBursting || this.magicTrails.length > 0 || this.isLevelingUp || this.levelUpParticles.length > 0;
     if (!hasWork)
       return;
     if (this.magicLastTime === 0) {
-      this.magicLastTime = time;
+      this.magicLastTime = time.lastTime;
       return;
     }
-    const delta = (time - this.magicLastTime) / 1000;
-    this.magicLastTime = time;
     for (let i2 = this.magicTrails.length - 1;i2 >= 0; i2--) {
       const trail = this.magicTrails[i2];
-      trail.life -= delta;
-      trail.graphic.alpha = Math.max(0, trail.life / 0.3) * 0.5;
-      trail.graphic.scale.set(Math.max(0.01, trail.life / 0.3));
+      trail.life -= time.deltaMS;
+      trail.graphic.alpha = Math.max(0, trail.life / 300) * 0.5;
+      trail.graphic.scale.set(Math.max(0.01, trail.life / 300));
       if (trail.life <= 0) {
         this.parent.removeChild(trail.graphic);
         trail.graphic.destroy();
@@ -33275,7 +33864,7 @@ class Wizard extends Actor {
       }
     }
     if (this.isCastingMagic && this.magicOrb) {
-      this.magicProgress += delta;
+      this.magicProgress += time.deltaMS;
       const t2 = Math.min(this.magicProgress / this.magicDuration, 1);
       const eased = t2 * t2;
       const startX = 100;
@@ -33309,12 +33898,456 @@ class Wizard extends Actor {
         burst.x = burstX;
         burst.y = burstY;
         this.magicBurst = burst;
-        burst.zIndex = 100;
+        burst.zIndex = 1000;
         this.parent.addChild(burst);
       }
     }
+    if (this.isCastingMissiles) {
+      let allHit = true;
+      for (const missile of this.missiles) {
+        if (missile.hit)
+          continue;
+        if (missile.startDelay > 0) {
+          missile.startDelay -= time.deltaMS;
+          allHit = false;
+          continue;
+        }
+        missile.graphic.visible = true;
+        missile.progress += time.deltaMS;
+        const t2 = Math.min(missile.progress / this.missileDuration, 1);
+        const eased = t2 * t2;
+        const startX = 80;
+        const startY = -160;
+        const endX = this.missileTargetX;
+        const endY = this.missileTargetY;
+        const x2 = startX + (endX - startX) * eased;
+        const y2 = startY + (endY - startY) * eased + Math.sin(t2 * Math.PI) * missile.offsetY;
+        missile.graphic.x = this.x + x2;
+        missile.graphic.y = this.y + y2;
+        if (t2 > 0.05 && t2 < 0.9 && Math.random() < 0.4) {
+          this.spawnMissileTrail(x2, y2);
+        }
+        if (t2 >= 1) {
+          missile.hit = true;
+          this.parent.removeChild(missile.graphic);
+          missile.graphic.destroy();
+          const burst = new Graphics;
+          burst.circle(0, 0, 1);
+          burst.fill({ color: 13387007, alpha: 0.6 });
+          burst.x = this.x + endX;
+          burst.y = this.y + endY;
+          burst.zIndex = 1000;
+          this.parent.addChild(burst);
+          this.missileBursts.push({ graphic: burst, progress: 0 });
+        } else {
+          allHit = false;
+        }
+      }
+      if (allHit && this.missileBursts.length === 0) {
+        this.isCastingMissiles = false;
+        this.magicLastTime = 0;
+        if (this.resolveMissiles) {
+          this.resolveMissiles();
+          this.resolveMissiles = null;
+        }
+      }
+    }
+    for (let i2 = this.missileBursts.length - 1;i2 >= 0; i2--) {
+      const burst = this.missileBursts[i2];
+      burst.progress += time.deltaMS;
+      const t2 = Math.min(burst.progress / this.missileBurstDuration, 1);
+      burst.graphic.scale.set(15 * t2);
+      burst.graphic.alpha = (1 - t2) * 0.6;
+      if (t2 >= 1) {
+        this.parent.removeChild(burst.graphic);
+        burst.graphic.destroy();
+        this.missileBursts.splice(i2, 1);
+      }
+    }
+    if (this.isCastingMissiles && this.missiles.every((m2) => m2.hit) && this.missileBursts.length === 0) {
+      this.isCastingMissiles = false;
+      this.magicLastTime = 0;
+      if (this.resolveMissiles) {
+        this.resolveMissiles();
+        this.resolveMissiles = null;
+      }
+    }
+    if (this.isAreaCasting && this.areaRing) {
+      this.areaProgress += time.deltaMS;
+      const t2 = Math.min(this.areaProgress / this.areaDuration, 1);
+      const maxScale = 60;
+      const currentScale = maxScale * (0.1 + t2 * 0.9);
+      this.areaRing.scale.set(currentScale);
+      this.areaRing.alpha = (1 - t2 * t2) * 0.8;
+      if (t2 > 0.05 && t2 < 0.8 && Math.random() < 0.6) {
+        const actualRadius = 10 * currentScale;
+        const angle = Math.random() * Math.PI * 2;
+        const px = this.x + Math.cos(angle) * actualRadius;
+        const py = this.y - 80 + Math.sin(angle) * actualRadius;
+        this.spawnAreaTrail(px, py);
+      }
+      if (t2 >= 1) {
+        this.parent.removeChild(this.areaRing);
+        this.areaRing.destroy();
+        this.areaRing = null;
+        this.isAreaCasting = false;
+        this.magicLastTime = 0;
+        if (this.resolveAreaMagic) {
+          this.resolveAreaMagic();
+          this.resolveAreaMagic = null;
+        }
+      }
+    }
+    if (this.isCastingLightning && this.lightningBolt) {
+      this.lightningProgress += time.deltaMS;
+      const t2 = Math.min(this.lightningProgress / this.lightningDuration, 1);
+      const startX = this.x + 100;
+      const startY = this.y - 180;
+      this.drawLightningBolt(this.lightningBolt, startX, startY, this.lightningTargetX, this.lightningTargetY);
+      this.lightningBolt.alpha = t2 < 0.7 ? 1 : 1 - (t2 - 0.7) / 0.3;
+      if (t2 >= 1) {
+        const burstX = this.lightningTargetX;
+        const burstY = this.lightningTargetY;
+        this.parent.removeChild(this.lightningBolt);
+        this.lightningBolt.destroy();
+        this.lightningBolt = null;
+        this.isCastingLightning = false;
+        this.isLightningBursting = true;
+        this.lightningBurstProgress = 0;
+        const burst = new Graphics;
+        burst.circle(0, 0, 1);
+        burst.fill({ color: 8965375, alpha: 0.7 });
+        burst.x = burstX;
+        burst.y = burstY;
+        burst.zIndex = 1000;
+        this.parent.addChild(burst);
+        this.lightningBurst = burst;
+      }
+    }
+    if (this.isLightningBursting && this.lightningBurst) {
+      this.lightningBurstProgress += time.deltaMS;
+      const t2 = Math.min(this.lightningBurstProgress / this.lightningBurstDuration, 1);
+      this.lightningBurst.scale.set(30 * t2);
+      this.lightningBurst.alpha = (1 - t2) * 0.7;
+      if (t2 >= 1) {
+        this.parent.removeChild(this.lightningBurst);
+        this.lightningBurst.destroy();
+        this.lightningBurst = null;
+        this.isLightningBursting = false;
+        this.magicLastTime = 0;
+        if (this.resolveLightning) {
+          this.resolveLightning();
+          this.resolveLightning = null;
+        }
+      }
+    }
+    if (this.isCastingFireBolt && this.fireBoltOrb) {
+      this.fireBoltProgress += time.deltaMS;
+      const t2 = Math.min(this.fireBoltProgress / this.fireBoltDuration, 1);
+      const eased = t2 * t2;
+      const startX = 100;
+      const startY = -180;
+      const endX = this.fireBoltTargetX;
+      const endY = this.fireBoltTargetY;
+      const orbX = startX + (endX - startX) * eased;
+      const orbY = startY + (endY - startY) * eased - Math.sin(t2 * Math.PI) * 60;
+      this.fireBoltOrb.x = this.x + orbX;
+      this.fireBoltOrb.y = this.y + orbY;
+      const pulse = 1 + Math.sin(t2 * Math.PI * 8) * 0.1;
+      this.fireBoltOrb.scale.set(pulse);
+      if (t2 > 0.05 && t2 < 0.9 && Math.random() < 0.6) {
+        this.spawnFireTrail(orbX, orbY);
+      }
+      if (t2 >= 1) {
+        const burstX = this.fireBoltOrb.x;
+        const burstY = this.fireBoltOrb.y;
+        this.parent.removeChild(this.fireBoltOrb);
+        this.fireBoltOrb.destroy();
+        this.fireBoltOrb = null;
+        this.isCastingFireBolt = false;
+        this.isFireBoltBursting = true;
+        this.fireBoltBurstProgress = 0;
+        const burst = new Graphics;
+        burst.circle(0, 0, 1);
+        burst.fill({ color: 16737792, alpha: 0.7 });
+        burst.x = burstX;
+        burst.y = burstY;
+        burst.zIndex = 1000;
+        this.parent.addChild(burst);
+        this.fireBoltBurst = burst;
+      }
+    }
+    if (this.isFireBoltBursting && this.fireBoltBurst) {
+      this.fireBoltBurstProgress += time.deltaMS;
+      const t2 = Math.min(this.fireBoltBurstProgress / this.fireBoltBurstDuration, 1);
+      this.fireBoltBurst.scale.set(35 * t2);
+      this.fireBoltBurst.alpha = (1 - t2) * 0.7;
+      if (t2 >= 1) {
+        this.parent.removeChild(this.fireBoltBurst);
+        this.fireBoltBurst.destroy();
+        this.fireBoltBurst = null;
+        this.isFireBoltBursting = false;
+        this.magicLastTime = 0;
+        if (this.resolveFireBolt) {
+          this.resolveFireBolt();
+          this.resolveFireBolt = null;
+        }
+      }
+    }
+    if (this.isCastingFrost) {
+      let allHit = true;
+      for (const shard of this.frostShards) {
+        if (shard.hit)
+          continue;
+        shard.progress += time.deltaMS;
+        if (shard.progress <= 0) {
+          allHit = false;
+          continue;
+        }
+        shard.graphic.visible = true;
+        const t2 = Math.min(shard.progress / this.frostDuration, 1);
+        const eased = t2 * t2;
+        const startX = 80;
+        const startY = -160;
+        const endX = this.frostTargetX;
+        const endY = this.frostTargetY;
+        const x2 = startX + (endX - startX) * eased;
+        const y2 = startY + (endY - startY) * eased + Math.sin(t2 * Math.PI) * shard.offsetY;
+        shard.graphic.x = this.x + x2;
+        shard.graphic.y = this.y + y2;
+        shard.graphic.rotation = t2 * Math.PI * 4;
+        if (t2 > 0.05 && t2 < 0.9 && Math.random() < 0.4) {
+          this.spawnFrostTrail(x2, y2);
+        }
+        if (t2 >= 1) {
+          shard.hit = true;
+          this.parent.removeChild(shard.graphic);
+          shard.graphic.destroy();
+          const burst = new Graphics;
+          burst.circle(0, 0, 1);
+          burst.fill({ color: 4513279, alpha: 0.6 });
+          burst.x = this.x + endX;
+          burst.y = this.y + endY;
+          burst.zIndex = 1000;
+          this.parent.addChild(burst);
+          this.frostBursts.push({ graphic: burst, progress: 0 });
+        } else {
+          allHit = false;
+        }
+      }
+      if (allHit && this.frostBursts.length === 0) {
+        this.isCastingFrost = false;
+        this.magicLastTime = 0;
+        if (this.resolveFrost) {
+          this.resolveFrost();
+          this.resolveFrost = null;
+        }
+      }
+    }
+    for (let i2 = this.frostBursts.length - 1;i2 >= 0; i2--) {
+      const burst = this.frostBursts[i2];
+      burst.progress += time.deltaMS;
+      const t2 = Math.min(burst.progress / this.frostBurstDuration, 1);
+      burst.graphic.scale.set(15 * t2);
+      burst.graphic.alpha = (1 - t2) * 0.6;
+      if (t2 >= 1) {
+        this.parent.removeChild(burst.graphic);
+        burst.graphic.destroy();
+        this.frostBursts.splice(i2, 1);
+      }
+    }
+    if (this.isCastingFrost && this.frostShards.every((s2) => s2.hit) && this.frostBursts.length === 0) {
+      this.isCastingFrost = false;
+      this.magicLastTime = 0;
+      if (this.resolveFrost) {
+        this.resolveFrost();
+        this.resolveFrost = null;
+      }
+    }
+    if (this.isCastingBeam && this.beamGraphic) {
+      this.beamProgress += time.deltaMS;
+      const t2 = Math.min(this.beamProgress / this.beamDuration, 1);
+      const startX = this.x + 100;
+      const startY = this.y - 180;
+      const endX = this.beamTargetX;
+      const endY = this.beamTargetY;
+      this.beamGraphic.clear();
+      let beamEndX;
+      let beamEndY;
+      let alpha;
+      let width;
+      if (t2 < 0.2) {
+        const extend = t2 / 0.2;
+        beamEndX = startX + (endX - startX) * extend;
+        beamEndY = startY + (endY - startY) * extend;
+        alpha = 0.8;
+        width = 6;
+      } else if (t2 < 0.7) {
+        beamEndX = endX;
+        beamEndY = endY;
+        alpha = 0.8;
+        width = 6 + Math.sin((t2 - 0.2) / 0.5 * Math.PI * 4) * 3;
+      } else {
+        const fadeT = (t2 - 0.7) / 0.3;
+        beamEndX = endX;
+        beamEndY = endY;
+        alpha = 0.8 * (1 - fadeT);
+        width = 6 * (1 - fadeT);
+      }
+      this.beamGraphic.moveTo(startX, startY);
+      this.beamGraphic.lineTo(beamEndX, beamEndY);
+      this.beamGraphic.stroke({ color: 10044671, alpha: alpha * 0.3, width: width * 3 });
+      this.beamGraphic.moveTo(startX, startY);
+      this.beamGraphic.lineTo(beamEndX, beamEndY);
+      this.beamGraphic.stroke({ color: 12281599, alpha: alpha * 0.6, width });
+      this.beamGraphic.moveTo(startX, startY);
+      this.beamGraphic.lineTo(beamEndX, beamEndY);
+      this.beamGraphic.stroke({ color: 16777215, alpha: alpha * 0.9, width: Math.max(1, width * 0.3) });
+      if (t2 > 0.1 && t2 < 0.8 && Math.random() < 0.5) {
+        const particleT = Math.random();
+        const px = startX + (beamEndX - startX) * particleT;
+        const py = startY + (beamEndY - startY) * particleT;
+        const trail = new Graphics;
+        trail.circle(0, 0, 2);
+        trail.fill({ color: 12281599, alpha: 0.5 });
+        trail.x = px + (Math.random() - 0.5) * 10;
+        trail.y = py + (Math.random() - 0.5) * 10;
+        trail.zIndex = 1000;
+        this.parent.addChild(trail);
+        this.magicTrails.push({ graphic: trail, life: 200 });
+      }
+      if (t2 >= 1) {
+        this.parent.removeChild(this.beamGraphic);
+        this.beamGraphic.destroy();
+        this.beamGraphic = null;
+        this.isCastingBeam = false;
+        this.magicLastTime = 0;
+        if (this.resolveBeam) {
+          this.resolveBeam();
+          this.resolveBeam = null;
+        }
+      }
+    }
+    if (this.isCastingMeteor && this.meteorGraphic) {
+      this.meteorProgress += time.deltaMS;
+      const t2 = Math.min(this.meteorProgress / this.meteorDuration, 1);
+      const startX = this.meteorTargetX + 150;
+      const startY = -100;
+      const endX = this.meteorTargetX;
+      const endY = this.meteorTargetY;
+      const eased = t2 * t2;
+      this.meteorGraphic.x = startX + (endX - startX) * eased;
+      this.meteorGraphic.y = startY + (endY - startY) * eased;
+      const scale = 0.5 + t2 * 0.5;
+      this.meteorGraphic.scale.set(scale);
+      if (t2 > 0.05 && t2 < 0.95 && Math.random() < 0.6) {
+        this.spawnMeteorTrail(this.meteorGraphic.x, this.meteorGraphic.y);
+      }
+      if (t2 >= 1) {
+        const burstX = this.meteorGraphic.x;
+        const burstY = this.meteorGraphic.y;
+        this.parent.removeChild(this.meteorGraphic);
+        this.meteorGraphic.destroy();
+        this.meteorGraphic = null;
+        this.isCastingMeteor = false;
+        this.isMeteorBursting = true;
+        this.meteorBurstProgress = 0;
+        const burst = new Graphics;
+        burst.circle(0, 0, 1);
+        burst.fill({ color: 16737792, alpha: 0.8 });
+        burst.x = burstX;
+        burst.y = burstY;
+        burst.zIndex = 1000;
+        this.parent.addChild(burst);
+        this.meteorBurst = burst;
+      }
+    }
+    if (this.isMeteorBursting && this.meteorBurst) {
+      this.meteorBurstProgress += time.deltaMS;
+      const t2 = Math.min(this.meteorBurstProgress / this.meteorBurstDuration, 1);
+      this.meteorBurst.scale.set(50 * t2);
+      this.meteorBurst.alpha = (1 - t2) * 0.8;
+      if (t2 >= 1) {
+        this.parent.removeChild(this.meteorBurst);
+        this.meteorBurst.destroy();
+        this.meteorBurst = null;
+        this.isMeteorBursting = false;
+        this.magicLastTime = 0;
+        if (this.resolveMeteor) {
+          this.resolveMeteor();
+          this.resolveMeteor = null;
+        }
+      }
+    }
+    if (this.isLevelingUp) {
+      this.levelUpProgress += time.deltaMS;
+      const t2 = Math.min(this.levelUpProgress / this.levelUpDuration, 1);
+      const centerX = this.x;
+      const centerY = this.y - 80;
+      this.updateLevelUpGlow(t2);
+      if (t2 < 0.45 && Math.random() < 0.6) {
+        this.spawnLevelUpParticle(centerX, centerY, "rise");
+      }
+      if (this.levelUpFlash) {
+        if (t2 >= 0.4 && t2 < 0.55) {
+          const flashT = (t2 - 0.4) / 0.15;
+          const flashAlpha = flashT < 0.5 ? flashT * 2 * 0.7 : (1 - (flashT - 0.5) * 2) * 0.7;
+          this.levelUpFlash.alpha = Math.max(0, flashAlpha);
+        } else {
+          this.levelUpFlash.alpha = 0;
+        }
+      }
+      if (!this.levelUpTextureSwapped && t2 >= 0.475 && this.levelUpNewTexture) {
+        this.sprite.texture = this.levelUpNewTexture;
+        this.levelUpTextureSwapped = true;
+      }
+      if (t2 >= 0.35 && t2 < 0.7) {
+        const pulseT = (t2 - 0.35) / 0.35;
+        const pulse = 1 + Math.sin(pulseT * Math.PI) * 0.15;
+        this.sprite.scale.set(0.1 * pulse);
+      } else {
+        this.sprite.scale.set(0.1);
+      }
+      if (t2 >= 0.5 && t2 < 0.7 && Math.random() < 0.5) {
+        this.spawnLevelUpParticle(centerX, centerY, "burst");
+      }
+      if (t2 >= 1) {
+        this.isLevelingUp = false;
+        this.sprite.scale.set(0.1);
+        if (this.levelUpGlow) {
+          this.parent.removeChild(this.levelUpGlow);
+          this.levelUpGlow.destroy();
+          this.levelUpGlow = null;
+        }
+        if (this.levelUpFlash) {
+          this.parent.removeChild(this.levelUpFlash);
+          this.levelUpFlash.destroy();
+          this.levelUpFlash = null;
+        }
+        this.levelUpNewTexture = null;
+        this.magicLastTime = 0;
+        if (this.resolveLevelUp) {
+          this.resolveLevelUp();
+          this.resolveLevelUp = null;
+        }
+      }
+    }
+    for (let i2 = this.levelUpParticles.length - 1;i2 >= 0; i2--) {
+      const p2 = this.levelUpParticles[i2];
+      p2.life -= time.deltaMS;
+      p2.graphic.x += p2.vx * time.deltaMS;
+      p2.graphic.y += p2.vy * time.deltaMS;
+      const lifeRatio = Math.max(0, p2.life);
+      p2.graphic.alpha = lifeRatio * 0.8;
+      p2.graphic.scale.set(Math.max(0.01, lifeRatio));
+      if (p2.life <= 0) {
+        this.parent.removeChild(p2.graphic);
+        p2.graphic.destroy();
+        this.levelUpParticles.splice(i2, 1);
+      }
+    }
     if (this.isBursting && this.magicBurst) {
-      this.burstProgress += delta;
+      this.burstProgress += time.deltaMS;
       const t2 = Math.min(this.burstProgress / this.burstDuration, 1);
       const maxScale = this.magicIsCritical ? 40 : 25;
       this.magicBurst.scale.set(maxScale * t2);
@@ -33336,14 +34369,18 @@ class Wizard extends Actor {
 var wizardTexture;
 var wizardTextureLevel;
 async function initWizard(xp) {
-  const level = getWizardLevel(xp);
+  const level = Math.min(getWizardLevel(xp), 7);
   if (wizardTextureLevel === level)
-    return;
+    return wizardTexture;
   wizardTextureLevel = level;
   wizardTexture = await Assets.load(`assets/wizard${level}.png`);
+  return wizardTexture;
 }
 function getWizardLevel(xp) {
-  return xp === 0 ? 1 : Math.ceil(xp / 100);
+  if (xp < 51) {
+    return 1;
+  }
+  return Math.ceil((xp - 50) / 100) + 1;
 }
 
 // src/rpg/enemies/Rat.ts
@@ -33393,20 +34430,21 @@ class Goblin extends Actor {
   constructor() {
     super({
       texture: goblinTexture,
-      textureScale: 0.5,
-      health: 26,
-      attackPower: 7,
+      textureScale: 0.6,
+      health: 30,
+      attackPower: 6,
       defensePower: 2,
       speed: 5,
       xpDrop: 22
     });
+    this.sprite.tint = 6728260;
   }
 }
 var goblinTexture;
 async function initGoblin() {
   if (goblinTexture)
     return;
-  goblinTexture = await Assets.load("assets/goblin.png");
+  goblinTexture = await Assets.load("assets/rat.png");
 }
 
 // src/rpg/enemies/Skeleton.ts
@@ -33415,8 +34453,8 @@ class Skeleton extends Actor {
     super({
       texture: skeletonTexture,
       textureScale: 0.25,
-      health: 32,
-      attackPower: 6,
+      health: 38,
+      attackPower: 7,
       defensePower: 3,
       speed: 4,
       xpDrop: 25
@@ -33435,20 +34473,21 @@ class Zombie extends Actor {
   constructor() {
     super({
       texture: zombieTexture,
-      textureScale: 0.5,
-      health: 42,
-      attackPower: 7,
+      textureScale: 0.3,
+      health: 50,
+      attackPower: 8,
       defensePower: 4,
       speed: 2,
-      xpDrop: 35
+      xpDrop: 32
     });
+    this.sprite.tint = 7833702;
   }
 }
 var zombieTexture;
 async function initZombie() {
   if (zombieTexture)
     return;
-  zombieTexture = await Assets.load("assets/zombie.png");
+  zombieTexture = await Assets.load("assets/skeleton.png");
 }
 
 // src/rpg/enemies/Bat.ts
@@ -33457,11 +34496,11 @@ class Bat extends Actor {
     super({
       texture: batTexture,
       textureScale: 0.25,
-      health: 16,
-      attackPower: 4,
-      defensePower: 1,
-      speed: 9,
-      xpDrop: 12
+      health: 90,
+      attackPower: 15,
+      defensePower: 0,
+      speed: 8,
+      xpDrop: 10
     });
   }
 }
@@ -33478,11 +34517,11 @@ class Wolf extends Actor {
     super({
       texture: wolfTexture,
       textureScale: 0.3,
-      health: 30,
+      health: 35,
       attackPower: 8,
-      defensePower: 3,
-      speed: 8,
-      xpDrop: 30
+      defensePower: 2,
+      speed: 7,
+      xpDrop: 28
     });
   }
 }
@@ -33498,20 +34537,21 @@ class Treant extends Actor {
   constructor() {
     super({
       texture: treantTexture,
-      textureScale: 0.5,
-      health: 140,
-      attackPower: 12,
-      defensePower: 8,
+      textureScale: 0.45,
+      health: 70,
+      attackPower: 10,
+      defensePower: 5,
       speed: 3,
-      xpDrop: 300
+      xpDrop: 60
     });
+    this.sprite.tint = 4486980;
   }
 }
 var treantTexture;
 async function initTreant() {
   if (treantTexture)
     return;
-  treantTexture = await Assets.load("assets/treant.png");
+  treantTexture = await Assets.load("assets/slime.png");
 }
 
 // src/rpg/enemies/Dummy.ts
@@ -33541,11 +34581,11 @@ class Slime extends Actor {
     super({
       texture: slimeTexture,
       textureScale: 0.25,
-      health: 22,
-      attackPower: 4,
+      health: 90,
+      attackPower: 15,
       defensePower: 0,
       speed: 3,
-      xpDrop: 15
+      xpDrop: 10
     });
   }
 }
@@ -33554,6 +34594,247 @@ async function initSlime() {
   if (slimeTexture)
     return;
   slimeTexture = await Assets.load("assets/slime.png");
+}
+
+// src/rpg/enemies/Spider.ts
+class Spider extends Actor {
+  constructor() {
+    super({
+      texture: spiderTexture,
+      textureScale: 0.25,
+      health: 100,
+      attackPower: 20,
+      defensePower: 1,
+      speed: 5,
+      xpDrop: 12
+    });
+  }
+}
+var spiderTexture;
+async function initSpider() {
+  if (spiderTexture)
+    return;
+  spiderTexture = await Assets.load("assets/spider.png");
+}
+
+// src/rpg/enemies/Mushroom.ts
+class Mushroom extends Actor {
+  constructor() {
+    super({
+      texture: mushroomTexture,
+      textureScale: 0.25,
+      health: 80,
+      attackPower: 15,
+      defensePower: 1,
+      speed: 2,
+      xpDrop: 10
+    });
+    this.sprite.tint = 9139029;
+  }
+}
+var mushroomTexture;
+async function initMushroom() {
+  if (mushroomTexture)
+    return;
+  mushroomTexture = await Assets.load("assets/slime.png");
+}
+
+// src/rpg/enemies/PoisonSlime.ts
+class PoisonSlime extends Actor {
+  constructor() {
+    super({
+      texture: poisonSlimeTexture,
+      textureScale: 0.3,
+      health: 26,
+      attackPower: 5,
+      defensePower: 1,
+      speed: 3,
+      xpDrop: 16
+    });
+    this.sprite.tint = 6741316;
+  }
+}
+var poisonSlimeTexture;
+async function initPoisonSlime() {
+  if (poisonSlimeTexture)
+    return;
+  poisonSlimeTexture = await Assets.load("assets/slime.png");
+}
+
+// src/rpg/enemies/GiantBat.ts
+class GiantBat extends Actor {
+  constructor() {
+    super({
+      texture: giantBatTexture,
+      textureScale: 0.35,
+      health: 24,
+      attackPower: 5,
+      defensePower: 1,
+      speed: 9,
+      xpDrop: 18
+    });
+    this.sprite.tint = 14500932;
+  }
+}
+var giantBatTexture;
+async function initGiantBat() {
+  if (giantBatTexture)
+    return;
+  giantBatTexture = await Assets.load("assets/bat.png");
+}
+
+// src/rpg/enemies/GiantSpider.ts
+class GiantSpider extends Actor {
+  constructor() {
+    super({
+      texture: giantSpiderTexture,
+      textureScale: 0.6,
+      health: 40,
+      attackPower: 7,
+      defensePower: 3,
+      speed: 6,
+      xpDrop: 30
+    });
+    this.sprite.tint = 8930474;
+  }
+}
+var giantSpiderTexture;
+async function initGiantSpider() {
+  if (giantSpiderTexture)
+    return;
+  giantSpiderTexture = await Assets.load("assets/spider.png");
+}
+
+// src/rpg/enemies/SkeletonWarrior.ts
+class SkeletonWarrior extends Actor {
+  constructor() {
+    super({
+      texture: skeletonWarriorTexture,
+      textureScale: 0.25,
+      health: 45,
+      attackPower: 8,
+      defensePower: 4,
+      speed: 5,
+      xpDrop: 35
+    });
+  }
+}
+var skeletonWarriorTexture;
+async function initSkeletonWarrior() {
+  if (skeletonWarriorTexture)
+    return;
+  skeletonWarriorTexture = await Assets.load("assets/skeletonWarrior.png");
+}
+
+// src/rpg/enemies/DireWolf.ts
+class DireWolf extends Actor {
+  constructor() {
+    super({
+      texture: direWolfTexture,
+      textureScale: 0.4,
+      health: 48,
+      attackPower: 10,
+      defensePower: 3,
+      speed: 8,
+      xpDrop: 40
+    });
+    this.sprite.tint = 4473958;
+  }
+}
+var direWolfTexture;
+async function initDireWolf() {
+  if (direWolfTexture)
+    return;
+  direWolfTexture = await Assets.load("assets/wolf.png");
+}
+
+// src/rpg/enemies/Ghost.ts
+class Ghost extends Actor {
+  constructor() {
+    super({
+      texture: ghostTexture,
+      textureScale: 0.25,
+      health: 32,
+      attackPower: 9,
+      defensePower: 2,
+      speed: 7,
+      xpDrop: 35
+    });
+    this.sprite.tint = 6719743;
+    this.sprite.alpha = 0.7;
+  }
+}
+var ghostTexture;
+async function initGhost() {
+  if (ghostTexture)
+    return;
+  ghostTexture = await Assets.load("assets/skeleton.png");
+}
+
+// src/rpg/enemies/DarkSkeleton.ts
+class DarkSkeleton extends Actor {
+  constructor() {
+    super({
+      texture: darkSkeletonTexture,
+      textureScale: 0.3,
+      health: 55,
+      attackPower: 9,
+      defensePower: 5,
+      speed: 4,
+      xpDrop: 45
+    });
+    this.sprite.tint = 4469589;
+  }
+}
+var darkSkeletonTexture;
+async function initDarkSkeleton() {
+  if (darkSkeletonTexture)
+    return;
+  darkSkeletonTexture = await Assets.load("assets/skeleton.png");
+}
+
+// src/rpg/enemies/FireSlime.ts
+class FireSlime extends Actor {
+  constructor() {
+    super({
+      texture: fireSlimeTexture,
+      textureScale: 0.35,
+      health: 60,
+      attackPower: 11,
+      defensePower: 3,
+      speed: 4,
+      xpDrop: 50
+    });
+    this.sprite.tint = 16737826;
+  }
+}
+var fireSlimeTexture;
+async function initFireSlime() {
+  if (fireSlimeTexture)
+    return;
+  fireSlimeTexture = await Assets.load("assets/slime.png");
+}
+
+// src/rpg/enemies/Dragon.ts
+class Dragon extends Actor {
+  constructor() {
+    super({
+      texture: dragonTexture,
+      textureScale: 0.7,
+      health: 120,
+      attackPower: 14,
+      defensePower: 6,
+      speed: 5,
+      xpDrop: 100
+    });
+    this.sprite.tint = 13378082;
+  }
+}
+var dragonTexture;
+async function initDragon() {
+  if (dragonTexture)
+    return;
+  dragonTexture = await Assets.load("assets/bat.png");
 }
 
 // src/rpg/enemies/enemyMaker.ts
@@ -33568,7 +34849,17 @@ var EnemyType = {
   Wolf: "wolf",
   Treant: "treant",
   Dummy: "dummy",
-  Spider: "spider"
+  Spider: "spider",
+  Mushroom: "mushroom",
+  PoisonSlime: "poison_slime",
+  GiantBat: "giant_bat",
+  GiantSpider: "giant_spider",
+  SkeletonWarrior: "skeleton_warrior",
+  DireWolf: "dire_wolf",
+  Ghost: "ghost",
+  DarkSkeleton: "dark_skeleton",
+  FireSlime: "fire_slime",
+  Dragon: "dragon"
 };
 async function makeEnemies(plan) {
   const enemies = [];
@@ -33615,6 +34906,50 @@ async function makeEnemies(plan) {
         await initDummy();
         enemy = new Dummy;
         break;
+      case EnemyType.Spider:
+        await initSpider();
+        enemy = new Spider;
+        break;
+      case EnemyType.Mushroom:
+        await initMushroom();
+        enemy = new Mushroom;
+        break;
+      case EnemyType.PoisonSlime:
+        await initPoisonSlime();
+        enemy = new PoisonSlime;
+        break;
+      case EnemyType.GiantBat:
+        await initGiantBat();
+        enemy = new GiantBat;
+        break;
+      case EnemyType.GiantSpider:
+        await initGiantSpider();
+        enemy = new GiantSpider;
+        break;
+      case EnemyType.SkeletonWarrior:
+        await initSkeletonWarrior();
+        enemy = new SkeletonWarrior;
+        break;
+      case EnemyType.DireWolf:
+        await initDireWolf();
+        enemy = new DireWolf;
+        break;
+      case EnemyType.Ghost:
+        await initGhost();
+        enemy = new Ghost;
+        break;
+      case EnemyType.DarkSkeleton:
+        await initDarkSkeleton();
+        enemy = new DarkSkeleton;
+        break;
+      case EnemyType.FireSlime:
+        await initFireSlime();
+        enemy = new FireSlime;
+        break;
+      case EnemyType.Dragon:
+        await initDragon();
+        enemy = new Dragon;
+        break;
       default:
         throw new Error("Unknown enemy type: " + type);
     }
@@ -33628,7 +34963,11 @@ var BackgroundType = {
   Village: "village",
   Forest: "forest",
   DarkForest: "darkForest",
-  Dungeon: "dungeon"
+  Dungeon: "dungeon",
+  Swamp: "swamp",
+  Mountains: "mountains",
+  Graveyard: "graveyard",
+  Volcano: "volcano"
 };
 async function makeBackground(type) {
   const asset = assetMap[type];
@@ -33642,7 +34981,11 @@ var assetMap = {
   [BackgroundType.Village]: "assets/village.png",
   [BackgroundType.Forest]: "assets/forest.png",
   [BackgroundType.DarkForest]: "assets/darkForest.png",
-  [BackgroundType.Dungeon]: "assets/dungeon.png"
+  [BackgroundType.Dungeon]: "assets/dungeon.png",
+  [BackgroundType.Swamp]: "assets/darkForest.png",
+  [BackgroundType.Mountains]: "assets/forest.png",
+  [BackgroundType.Graveyard]: "assets/darkForest.png",
+  [BackgroundType.Volcano]: "assets/dungeon.png"
 };
 
 // src/rpg/actors.ts
@@ -33654,6 +34997,8 @@ var app;
 var world;
 var currentActor = null;
 var dummyTarget = null;
+var wizardXp = 0;
+var currentBackground = null;
 function $2(id) {
   return document.getElementById(id);
 }
@@ -33664,6 +35009,14 @@ function log(msg) {
   el.prepend(line);
   while (el.children.length > 20)
     el.removeChild(el.lastChild);
+}
+async function switchBackground(type) {
+  if (currentBackground && currentBackground.parent) {
+    world.removeChild(currentBackground);
+  }
+  const bg = await makeBackground(type);
+  world.addChildAt(bg, 1);
+  currentBackground = bg;
 }
 function updateStats(actor) {
   if (!actor) {
@@ -33692,13 +35045,33 @@ function setButtons(enabled) {
     "btn-die",
     "btn-run-left",
     "btn-cast-magic",
+    "btn-area-attack",
+    "btn-magic-missile",
+    "btn-lightning-bolt",
+    "btn-fire-bolt",
+    "btn-frost-shard",
+    "btn-arcane-beam",
+    "btn-meteor-strike",
+    "btn-level-up",
     "btn-heal",
-    "btn-reset"
+    "btn-reset",
+    "btn-show-bubble",
+    "btn-show-bubble-forever",
+    "btn-hide-bubble"
   ];
   for (const id of ids) {
     $2(id).disabled = !enabled;
   }
-  $2("btn-cast-magic").disabled = !(enabled && currentActor instanceof Wizard);
+  const isWizard = enabled && currentActor instanceof Wizard;
+  $2("btn-cast-magic").disabled = !isWizard;
+  $2("btn-area-attack").disabled = !isWizard;
+  $2("btn-magic-missile").disabled = !isWizard;
+  $2("btn-lightning-bolt").disabled = !isWizard;
+  $2("btn-fire-bolt").disabled = !isWizard;
+  $2("btn-frost-shard").disabled = !isWizard;
+  $2("btn-arcane-beam").disabled = !isWizard;
+  $2("btn-meteor-strike").disabled = !isWizard;
+  $2("btn-level-up").disabled = !isWizard;
 }
 async function ensureDummyTarget() {
   if (dummyTarget && dummyTarget.parent)
@@ -33730,6 +35103,7 @@ async function createActor(type, xp) {
   if (type === "wizard") {
     await initWizard(xp);
     actor = new Wizard(xp);
+    wizardXp = xp;
   } else {
     const enemies = await makeEnemies([type]);
     actor = enemies[0];
@@ -33755,15 +35129,18 @@ async function init2() {
   const mask = new Graphics().rect(0, 0, standardWidth, standardHeight).fill(16777215);
   world.mask = mask;
   world.addChild(mask);
-  const bg = await makeBackground(BackgroundType.Village);
-  world.addChild(bg);
+  await switchBackground(BackgroundType.Village);
+  $2("background-type").addEventListener("change", async (e2) => {
+    const type = e2.target.value;
+    await switchBackground(type);
+    log(`Background changed to ${type}`);
+  });
   let sineToggle = true;
   app.ticker.add((time) => {
-    const t2 = time.lastTime;
     if (currentActor)
-      currentActor.update(t2, sineToggle);
+      currentActor.update(time, sineToggle);
     if (dummyTarget)
-      dummyTarget.update(t2, !sineToggle);
+      dummyTarget.update(time, !sineToggle);
   });
   $2("btn-create").addEventListener("click", () => {
     const type = $2("actor-type").value;
@@ -33793,7 +35170,7 @@ async function init2() {
     if (!currentActor)
       return;
     log("Shake animation");
-    await currentActor.shake(0.5, 10);
+    await currentActor.shake(2000, 10);
     log("Shake complete");
   });
   $2("btn-twitch").addEventListener("click", async () => {
@@ -33808,9 +35185,9 @@ async function init2() {
       return;
     const target = await ensureDummyTarget();
     log("Attack animation");
-    const dmg = await currentActor.attack(target);
-    await target.takeDamage(dmg);
-    log(`Attack dealt ${dmg} damage to Dummy`);
+    const attackResult = await currentActor.attack([target]);
+    await target.takeDamage(attackResult[0].damage);
+    log(`Attack dealt ${attackResult[0].damage} damage to Dummy`);
     updateStats(currentActor);
   });
   $2("btn-take-damage").addEventListener("click", async () => {
@@ -33845,6 +35222,77 @@ async function init2() {
     await currentActor.castMagic(false, target);
     log("Cast magic complete");
   });
+  $2("btn-area-attack").addEventListener("click", async () => {
+    if (!currentActor || !(currentActor instanceof Wizard))
+      return;
+    log("Area attack animation");
+    const dmg = await currentActor.areaAttack();
+    log(`Area attack complete (${dmg} damage)`);
+  });
+  $2("btn-magic-missile").addEventListener("click", async () => {
+    if (!currentActor || !(currentActor instanceof Wizard))
+      return;
+    const target = await ensureDummyTarget();
+    log("Magic missile animation");
+    const dmg = await currentActor.magicMissileAttack(target);
+    log(`Magic missile complete (${dmg} damage)`);
+    updateStats(currentActor);
+  });
+  $2("btn-lightning-bolt").addEventListener("click", async () => {
+    if (!currentActor || !(currentActor instanceof Wizard))
+      return;
+    const target = await ensureDummyTarget();
+    log("Lightning bolt animation");
+    const dmg = await currentActor.lightningBoltAttack(target);
+    log(`Lightning bolt complete (${dmg} damage)`);
+    updateStats(currentActor);
+  });
+  $2("btn-fire-bolt").addEventListener("click", async () => {
+    if (!currentActor || !(currentActor instanceof Wizard))
+      return;
+    const target = await ensureDummyTarget();
+    log("Fire bolt animation");
+    const dmg = await currentActor.fireBoltAttack(target);
+    log(`Fire bolt complete (${dmg} damage)`);
+    updateStats(currentActor);
+  });
+  $2("btn-frost-shard").addEventListener("click", async () => {
+    if (!currentActor || !(currentActor instanceof Wizard))
+      return;
+    const target = await ensureDummyTarget();
+    log("Frost shard animation");
+    const dmg = await currentActor.frostShardAttack(target);
+    log(`Frost shard complete (${dmg} damage)`);
+    updateStats(currentActor);
+  });
+  $2("btn-arcane-beam").addEventListener("click", async () => {
+    if (!currentActor || !(currentActor instanceof Wizard))
+      return;
+    const target = await ensureDummyTarget();
+    log("Arcane beam animation");
+    const dmg = await currentActor.arcaneBeamAttack(target);
+    log(`Arcane beam complete (${dmg} damage)`);
+    updateStats(currentActor);
+  });
+  $2("btn-meteor-strike").addEventListener("click", async () => {
+    if (!currentActor || !(currentActor instanceof Wizard))
+      return;
+    const target = await ensureDummyTarget();
+    log("Meteor strike animation");
+    const dmg = await currentActor.meteorStrikeAttack(target);
+    log(`Meteor strike complete (${dmg} damage)`);
+    updateStats(currentActor);
+  });
+  $2("btn-level-up").addEventListener("click", async () => {
+    if (!currentActor || !(currentActor instanceof Wizard))
+      return;
+    const currentLevel = getWizardLevel(wizardXp);
+    wizardXp = currentLevel * 100 + 1;
+    log(`Level up! XP: ${wizardXp}, Level: ${getWizardLevel(wizardXp)}`);
+    await currentActor.levelUp(wizardXp);
+    log("Level up complete");
+    updateStats(currentActor);
+  });
   $2("btn-heal").addEventListener("click", () => {
     if (!currentActor)
       return;
@@ -33859,6 +35307,29 @@ async function init2() {
     const xp = parseInt($2("wizard-xp").value) || 0;
     createActor(type, xp);
     log("Reset actor position & state");
+  });
+  $2("btn-show-bubble").addEventListener("click", async () => {
+    if (!currentActor)
+      return;
+    const text = $2("bubble-text").value || "Hello!";
+    const duration = parseFloat($2("bubble-duration").value) || 2000;
+    log(`Show speech bubble (${duration}s): "${text}"`);
+    await currentActor.showSpeechBubble(text, duration);
+    log("Speech bubble hidden");
+  });
+  $2("btn-show-bubble-forever").addEventListener("click", async () => {
+    if (!currentActor)
+      return;
+    const text = $2("bubble-text").value || "Hello!";
+    log(`Show speech bubble (forever): "${text}"`);
+    await currentActor.showSpeechBubble(text, -1);
+    log("Speech bubble shown (persistent)");
+  });
+  $2("btn-hide-bubble").addEventListener("click", () => {
+    if (!currentActor)
+      return;
+    currentActor.hideSpeechBubble();
+    log("Speech bubble hidden");
   });
   await createActor("wizard", 0);
 }
