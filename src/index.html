@@ -504,7 +504,7 @@
 				font-size: 2rem;
 				animation: eggFall linear infinite;
 				opacity: 0.9;
-				filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.15));
+				will-change: transform;
 			}
 
 			@keyframes eggFall {
@@ -615,19 +615,29 @@
 				todayUTC >= startWindow && todayUTC <= endWindow;
 
 			if (isEasterWindow) {
-				const eggs = ["🥚", "🪺", "🥚", "🪺"];
+				const eggs = ["🥚", "🪺"];
+				const chickens = ["🐣", "🐤"];
 				const overlay = document.getElementById("easter-overlay");
 				const eggCount = 22;
 
 				for (let i = 0; i < eggCount; i += 1) {
 					const egg = document.createElement("span");
 					egg.className = "easter-rain";
-					egg.textContent = eggs[i % eggs.length];
+					const isChicken = Math.random() < 0.35;
+					egg.textContent = isChicken
+						? chickens[Math.floor(Math.random() * chickens.length)]
+						: eggs[Math.floor(Math.random() * eggs.length)];
 					egg.style.left = `${Math.random() * 100}%`;
 					egg.style.animationDuration = `${7 + Math.random() * 7}s`;
 					egg.style.animationDelay = `${-Math.random() * 11}s`;
 					egg.style.fontSize = `${1.5 + Math.random() * 1.2}rem`;
 					egg.style.opacity = `${0.6 + Math.random() * 0.35}`;
+
+					const hue = Math.floor(Math.random() * 360);
+					egg.style.filter = isChicken
+						? "drop-shadow(0 6px 4px rgba(0, 0, 0, 0.15))"
+						: `hue-rotate(${hue}deg) saturate(1.25) drop-shadow(0 6px 4px rgba(0, 0, 0, 0.15))`;
+
 					overlay.appendChild(egg);
 				}
 			}
