@@ -489,10 +489,42 @@
 				color: #764ba2;
 				text-decoration: underline;
 			}
+
+			.easter-overlay {
+				position: fixed;
+				inset: 0;
+				pointer-events: none;
+				overflow: hidden;
+				z-index: 0;
+			}
+
+			.easter-rain {
+				position: absolute;
+				top: -90px;
+				font-size: 2rem;
+				animation: eggFall linear infinite;
+				opacity: 0.9;
+				filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.15));
+			}
+
+			@keyframes eggFall {
+				from {
+					transform: translate3d(0, -12vh, 0) rotate(0deg);
+				}
+
+				to {
+					transform: translate3d(0, 115vh, 0) rotate(320deg);
+				}
+			}
 		</style>
 	</head>
 
 	<body>
+		<div
+			id="easter-overlay"
+			class="easter-overlay"
+			aria-hidden="true"
+		></div>
 		<div class="container">
 			<div class="language-switcher">
 				<button class="lang-btn" data-lang="en">EN</button>
@@ -568,6 +600,38 @@
 			</button>
 		</div>
 
+		<script>
+			const EASTER_2026 = new Date(Date.UTC(2026, 3, 5));
+			const DAY_MS = 24 * 60 * 60 * 1000;
+
+			const startWindow = new Date(EASTER_2026.getTime() - 10 * DAY_MS);
+			const endWindow = new Date(EASTER_2026.getTime() + 5 * DAY_MS);
+			const now = new Date();
+			const todayUTC = new Date(
+				Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()),
+			);
+
+			const isEasterWindow =
+				todayUTC >= startWindow && todayUTC <= endWindow;
+
+			if (isEasterWindow) {
+				const eggs = ["🥚", "🪺", "🥚", "🪺"];
+				const overlay = document.getElementById("easter-overlay");
+				const eggCount = 22;
+
+				for (let i = 0; i < eggCount; i += 1) {
+					const egg = document.createElement("span");
+					egg.className = "easter-rain";
+					egg.textContent = eggs[i % eggs.length];
+					egg.style.left = `${Math.random() * 100}%`;
+					egg.style.animationDuration = `${7 + Math.random() * 7}s`;
+					egg.style.animationDelay = `${-Math.random() * 11}s`;
+					egg.style.fontSize = `${1.5 + Math.random() * 1.2}rem`;
+					egg.style.opacity = `${0.6 + Math.random() * 0.35}`;
+					overlay.appendChild(egg);
+				}
+			}
+		</script>
 		<script type="module" src="./index.js"></script>
 	</body>
 </html>
