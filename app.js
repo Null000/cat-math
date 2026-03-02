@@ -82,15 +82,36 @@ var categoryGroups = {
     "Comparison: 100" /* Comparison_Hundred */,
     "Comparison: 1000" /* Comparison_Thousand */
   ],
+  NumberText: [
+    "Number to Text: 10" /* NumberToText_Ten */,
+    "Text to Number: 10" /* TextToNumber_Ten */,
+    "Number to Text: 20" /* NumberToText_Twenty */,
+    "Text to Number: 20" /* TextToNumber_Twenty */,
+    "Number to Text: 100" /* NumberToText_Hundred */,
+    "Text to Number: 100" /* TextToNumber_Hundred */,
+    "Number to Text: 1000" /* NumberToText_Thousand */,
+    "Text to Number: 1000" /* TextToNumber_Thousand */
+  ],
+  NextPrevious: [
+    "Next/Previous: 10" /* NextPrevious_Ten */,
+    "Next/Previous: 20" /* NextPrevious_Twenty */
+  ],
   Test: ["test" /* Test */]
 };
 var yearGroupsSl = {
   "1. razred": [
+    "Next/Previous: 10" /* NextPrevious_Ten */,
+    "Next/Previous: 20" /* NextPrevious_Twenty */,
     "Addition: 10" /* Addition_Ten */,
     "Addition: 10 (missing facts)" /* Addition_Ten_Missing */,
     "Subtraction: 10" /* Subtraction_Ten */,
     "Subtraction: 10 (missing facts)" /* Subtraction_Ten_Missing */,
-    "Comparison: 10" /* Comparison_Ten */
+    "Comparison: 10" /* Comparison_Ten */,
+    "Comparison: 20" /* Comparison_Twenty */,
+    "Number to Text: 10" /* NumberToText_Ten */,
+    "Text to Number: 10" /* TextToNumber_Ten */,
+    "Number to Text: 20" /* NumberToText_Twenty */,
+    "Text to Number: 20" /* TextToNumber_Twenty */
   ],
   "2. razred": [
     "Addition: 20 (without carry)" /* Addition_TwentyWithoutCarry */,
@@ -101,7 +122,8 @@ var yearGroupsSl = {
     "Subtraction: 20" /* Subtraction_Twenty */,
     "Subtraction: 20 (missing facts)" /* Subtraction_Twenty_Missing */,
     "Subtraction: Tens" /* Subtraction_Tens */,
-    "Comparison: 20" /* Comparison_Twenty */
+    "Number to Text: 100" /* NumberToText_Hundred */,
+    "Text to Number: 100" /* TextToNumber_Hundred */
   ],
   "3. razred": [
     "Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */,
@@ -118,7 +140,9 @@ var yearGroupsSl = {
     "Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */,
     "Division: 10" /* Division_Ten */,
     "Division: 10 (missing facts)" /* Division_Ten_Missing */,
-    "Comparison: 100" /* Comparison_Hundred */
+    "Comparison: 100" /* Comparison_Hundred */,
+    "Number to Text: 1000" /* NumberToText_Thousand */,
+    "Text to Number: 1000" /* TextToNumber_Thousand */
   ],
   "4. razred": [
     "Addition: 1000 (without carry)" /* Addition_ThousandWithoutCarry */,
@@ -657,6 +681,417 @@ function generate6(category) {
   return allProblems;
 }
 
+// src/translations.ts
+var translations = {
+  en: {
+    title: "Cat Math",
+    select_categories: "Select Practice Categories",
+    start_practice: "Start Practice",
+    back_to_categories: "← Back to Categories",
+    check_button: "Check",
+    correct: "Correct! \uD83C\uDF89",
+    incorrect: "Incorrect. \uD83D\uDE22",
+    nan_error: "Please enter a number!",
+    select_warning: "Please select at least one category to practice!",
+    input_placeholder: "Your answer",
+    examples: "Examples",
+    solved: "solved",
+    selected_label: "Selected:",
+    next_round: "Next Round",
+    end_round: "End Round",
+    perfect_round: "Perfect round! Great job! \uD83C\uDF1F",
+    review_header: "Problems to review:",
+    your_answers: "your answers:",
+    correct_answer: "Correct answer:",
+    stat_correct: "Correct:",
+    stat_incorrect: "Incorrect:",
+    stat_accuracy: "Accuracy:",
+    stat_streak: "Streak:",
+    stat_best: "Best:",
+    stat_time: "Time:",
+    stat_avg: "Avg:",
+    stat_median: "Median:",
+    ["Addition: 10" /* Addition_Ten */]: "Addition: 10",
+    ["Addition: 10 (missing facts)" /* Addition_Ten_Missing */]: "Addition: 10 (missing facts)",
+    ["Addition: 20 (without carry)" /* Addition_TwentyWithoutCarry */]: "Addition: 20 (without carry)",
+    ["Addition: 20 (with carry)" /* Addition_TwentyWithCarry */]: "Addition: 20 (with carry)",
+    ["Addition: 20" /* Addition_Twenty */]: "Addition: 20",
+    ["Addition: 20 (missing facts)" /* Addition_Twenty_Missing */]: "Addition: 20 (missing facts)",
+    ["Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */]: "Addition: 100 (without carry)",
+    ["Addition: 100 (with carry)" /* Addition_HundredWithCarry */]: "Addition: 100 (with carry)",
+    ["Addition: 100" /* Addition_Hundred */]: "Addition: 100",
+    ["Addition: 100 (missing facts)" /* Addition_Hundred_Missing */]: "Addition: 100 (missing facts)",
+    ["Addition: Tens" /* Addition_Tens */]: "Addition: Tens",
+    ["Addition: 1000 (without carry)" /* Addition_ThousandWithoutCarry */]: "Addition: 1000 (without carry)",
+    ["Addition: 1000 (with carry)" /* Addition_ThousandWithCarry */]: "Addition: 1000 (with carry)",
+    ["Addition: 1000" /* Addition_Thousand */]: "Addition: 1000",
+    ["Addition: Hundreds" /* Addition_Hundreds */]: "Addition: Hundreds",
+    ["Subtraction: 10" /* Subtraction_Ten */]: "Subtraction: 10",
+    ["Subtraction: 10 (missing facts)" /* Subtraction_Ten_Missing */]: "Subtraction: 10 (missing facts)",
+    ["Subtraction: 20" /* Subtraction_Twenty */]: "Subtraction: 20",
+    ["Subtraction: 20 (missing facts)" /* Subtraction_Twenty_Missing */]: "Subtraction: 20 (missing facts)",
+    ["Subtraction: 100 (without borrow)" /* Subtraction_HundredWithoutBorrow */]: "Subtraction: 100 (without borrow)",
+    ["Subtraction: 100 (with borrow)" /* Subtraction_HundredWithBorrow */]: "Subtraction: 100 (with borrow)",
+    ["Subtraction: 100" /* Subtraction_Hundred */]: "Subtraction: 100",
+    ["Subtraction: 100 (missing facts)" /* Subtraction_Hundred_Missing */]: "Subtraction: 100 (missing facts)",
+    ["Subtraction: Tens" /* Subtraction_Tens */]: "Subtraction: Tens",
+    ["Subtraction: 1000 (without borrow)" /* Subtraction_ThousandWithoutBorrow */]: "Subtraction: 1000 (without borrow)",
+    ["Subtraction: 1000 (with borrow)" /* Subtraction_ThousandWithBorrow */]: "Subtraction: 1000 (with borrow)",
+    ["Subtraction: 1000" /* Subtraction_Thousand */]: "Subtraction: 1000",
+    ["Subtraction: Hundreds" /* Subtraction_Hundreds */]: "Subtraction: Hundreds",
+    ["Multiplication: 10" /* Multiplication_Ten */]: "Multiplication: 10",
+    ["Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */]: "Multiplication: 10 (missing facts)",
+    ["Multiplication: 20" /* Multiplication_Twenty */]: "Multiplication: 20",
+    ["Multiplication: 20 (missing facts)" /* Multiplication_Twenty_Missing */]: "Multiplication: 20 (missing facts)",
+    ["Division: 10" /* Division_Ten */]: "Division: 10",
+    ["Division: 10 (missing facts)" /* Division_Ten_Missing */]: "Division: 10 (missing facts)",
+    ["Division: 20" /* Division_Twenty */]: "Division: 20",
+    ["Division: 20 (missing facts)" /* Division_Twenty_Missing */]: "Division: 20 (missing facts)",
+    ["Division: 100" /* Division_Hundred */]: "Division: 100",
+    ["Division: 100 (missing facts)" /* Division_Hundred_Missing */]: "Division: 100 (missing facts)",
+    ["Multiplication: 100" /* Multiplication_Hundred */]: "Multiplication: 100",
+    ["Multiplication: 100 (missing facts)" /* Multiplication_Hundred_Missing */]: "Multiplication: 100 (missing facts)",
+    ["Comparison: 10" /* Comparison_Ten */]: "Comparison: 10",
+    ["Comparison: 20" /* Comparison_Twenty */]: "Comparison: 20",
+    ["Comparison: 100" /* Comparison_Hundred */]: "Comparison: 100",
+    ["Comparison: 1000" /* Comparison_Thousand */]: "Comparison: 1000",
+    ["Number to Text: 10" /* NumberToText_Ten */]: "Number to Text: 10",
+    ["Text to Number: 10" /* TextToNumber_Ten */]: "Text to Number: 10",
+    ["Number to Text: 20" /* NumberToText_Twenty */]: "Number to Text: 20",
+    ["Text to Number: 20" /* TextToNumber_Twenty */]: "Text to Number: 20",
+    ["Number to Text: 100" /* NumberToText_Hundred */]: "Number to Text: 100",
+    ["Text to Number: 100" /* TextToNumber_Hundred */]: "Text to Number: 100",
+    ["Number to Text: 1000" /* NumberToText_Thousand */]: "Number to Text: 1000",
+    ["Text to Number: 1000" /* TextToNumber_Thousand */]: "Text to Number: 1000",
+    number_0: "zero",
+    number_1: "one",
+    number_2: "two",
+    number_3: "three",
+    number_4: "four",
+    number_5: "five",
+    number_6: "six",
+    number_7: "seven",
+    number_8: "eight",
+    number_9: "nine",
+    number_10: "ten",
+    number_11: "eleven",
+    number_12: "twelve",
+    number_13: "thirteen",
+    number_14: "fourteen",
+    number_15: "fifteen",
+    number_16: "sixteen",
+    number_17: "seventeen",
+    number_18: "eighteen",
+    number_19: "nineteen",
+    number_20: "twenty",
+    ["Next/Previous: 10" /* NextPrevious_Ten */]: "Next/Previous: 10",
+    ["Next/Previous: 20" /* NextPrevious_Twenty */]: "Next/Previous: 20",
+    group_Addition: "Addition",
+    group_Subtraction: "Subtraction",
+    group_Multiplication: "Multiplication",
+    group_Division: "Division",
+    group_Comparison: "Comparison",
+    group_NumberText: "Number & Text",
+    group_NextPrevious: "Next/Previous",
+    grouping_by_type: "By Type",
+    grouping_by_year: "By Year",
+    rpg_title: "Choose Your Spells",
+    rpg_subtitle: "Select the math spells you wish to master",
+    rpg_select_categories: "Spell Book",
+    rpg_start_battle: "Enter Battle"
+  },
+  sl: {
+    title: "Mačja Matematika",
+    select_categories: "Izberi Kategorije",
+    start_practice: "Začni Vajo",
+    back_to_categories: "← Nazaj na Kategorije",
+    check_button: "Preveri",
+    correct: "Pravilno! \uD83C\uDF89",
+    incorrect: "Nepravilno. \uD83D\uDE22",
+    nan_error: "Prosim vnesi številko!",
+    select_warning: "Prosim izberi vsaj eno kategorijo!",
+    input_placeholder: "Tvoj odgovor",
+    examples: "Primeri",
+    solved: "rešeno",
+    selected_label: "Izbrano:",
+    next_round: "Naslednji krog",
+    end_round: "Končaj krog",
+    perfect_round: "Popoln krog! Odlično delo! \uD83C\uDF1F",
+    review_header: "Naloge za ponovitev:",
+    your_answers: "tvoji odgovori:",
+    correct_answer: "Pravilni odgovor:",
+    stat_correct: "Pravilno:",
+    stat_incorrect: "Nepravilno:",
+    stat_accuracy: "Natančnost:",
+    stat_streak: "Zaporedoma:",
+    stat_best: "Najboljše:",
+    stat_time: "Čas:",
+    stat_avg: "Povpr:",
+    stat_median: "Med:",
+    ["Addition: 10" /* Addition_Ten */]: "Seštevanje: 10",
+    ["Addition: 10 (missing facts)" /* Addition_Ten_Missing */]: "Seštevanje: 10 (neznani člen)",
+    ["Addition: 20 (without carry)" /* Addition_TwentyWithoutCarry */]: "Seštevanje: 20 (brez prehoda)",
+    ["Addition: 20 (with carry)" /* Addition_TwentyWithCarry */]: "Seštevanje: 20 (s prehodom)",
+    ["Addition: 20" /* Addition_Twenty */]: "Seštevanje: 20",
+    ["Addition: 20 (missing facts)" /* Addition_Twenty_Missing */]: "Seštevanje: 20 (neznani člen)",
+    ["Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */]: "Seštevanje: 100 (brez prehoda)",
+    ["Addition: 100 (with carry)" /* Addition_HundredWithCarry */]: "Seštevanje: 100 (s prehodom)",
+    ["Addition: 100" /* Addition_Hundred */]: "Seštevanje: 100",
+    ["Addition: 100 (missing facts)" /* Addition_Hundred_Missing */]: "Seštevanje: 100 (neznani člen)",
+    ["Addition: Tens" /* Addition_Tens */]: "Seštevanje: desetice",
+    ["Addition: 1000 (without carry)" /* Addition_ThousandWithoutCarry */]: "Seštevanje: 1000 (brez prehoda)",
+    ["Addition: 1000 (with carry)" /* Addition_ThousandWithCarry */]: "Seštevanje: 1000 (s prehodom)",
+    ["Addition: 1000" /* Addition_Thousand */]: "Seštevanje: 1000",
+    ["Addition: Hundreds" /* Addition_Hundreds */]: "Seštevanje: stotice",
+    ["Subtraction: 10" /* Subtraction_Ten */]: "Odštevanje: 10",
+    ["Subtraction: 10 (missing facts)" /* Subtraction_Ten_Missing */]: "Odštevanje: 10 (neznani člen)",
+    ["Subtraction: 20" /* Subtraction_Twenty */]: "Odštevanje: 20",
+    ["Subtraction: 20 (missing facts)" /* Subtraction_Twenty_Missing */]: "Odštevanje: 20 (neznani člen)",
+    ["Subtraction: 100 (without borrow)" /* Subtraction_HundredWithoutBorrow */]: "Odštevanje: 100 (brez prehoda)",
+    ["Subtraction: 100 (with borrow)" /* Subtraction_HundredWithBorrow */]: "Odštevanje: 100 (s prehodom)",
+    ["Subtraction: 100" /* Subtraction_Hundred */]: "Odštevanje: 100",
+    ["Subtraction: 100 (missing facts)" /* Subtraction_Hundred_Missing */]: "Odštevanje: 100 (neznani člen)",
+    ["Subtraction: Tens" /* Subtraction_Tens */]: "Odštevanje: desetice",
+    ["Subtraction: 1000 (without borrow)" /* Subtraction_ThousandWithoutBorrow */]: "Odštevanje: 1000 (brez prehoda)",
+    ["Subtraction: 1000 (with borrow)" /* Subtraction_ThousandWithBorrow */]: "Odštevanje: 1000 (s prehodom)",
+    ["Subtraction: 1000" /* Subtraction_Thousand */]: "Odštevanje: 1000",
+    ["Subtraction: Hundreds" /* Subtraction_Hundreds */]: "Odštevanje: stotice",
+    ["Multiplication: 10" /* Multiplication_Ten */]: "Množenje: 10",
+    ["Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */]: "Množenje: 10 (neznani člen)",
+    ["Multiplication: 20" /* Multiplication_Twenty */]: "Množenje: 20",
+    ["Multiplication: 20 (missing facts)" /* Multiplication_Twenty_Missing */]: "Množenje: 20 (neznani člen)",
+    ["Division: 10" /* Division_Ten */]: "Deljenje: 10",
+    ["Division: 10 (missing facts)" /* Division_Ten_Missing */]: "Deljenje: 10 (neznani člen)",
+    ["Division: 20" /* Division_Twenty */]: "Deljenje: 20",
+    ["Division: 20 (missing facts)" /* Division_Twenty_Missing */]: "Deljenje: 20 (neznani člen)",
+    ["Division: 100" /* Division_Hundred */]: "Deljenje: 100",
+    ["Division: 100 (missing facts)" /* Division_Hundred_Missing */]: "Deljenje: 100 (neznani člen)",
+    ["Multiplication: 100" /* Multiplication_Hundred */]: "Množenje: 100",
+    ["Multiplication: 100 (missing facts)" /* Multiplication_Hundred_Missing */]: "Množenje: 100 (neznani člen)",
+    ["Comparison: 10" /* Comparison_Ten */]: "Primerjanje: 10",
+    ["Comparison: 20" /* Comparison_Twenty */]: "Primerjanje: 20",
+    ["Comparison: 100" /* Comparison_Hundred */]: "Primerjanje: 100",
+    ["Comparison: 1000" /* Comparison_Thousand */]: "Primerjanje: 1000",
+    ["Number to Text: 10" /* NumberToText_Ten */]: "Število v besedo: 10",
+    ["Text to Number: 10" /* TextToNumber_Ten */]: "Beseda v število: 10",
+    ["Number to Text: 20" /* NumberToText_Twenty */]: "Število v besedo: 20",
+    ["Text to Number: 20" /* TextToNumber_Twenty */]: "Beseda v število: 20",
+    ["Number to Text: 100" /* NumberToText_Hundred */]: "Število v besedo: 100",
+    ["Text to Number: 100" /* TextToNumber_Hundred */]: "Beseda v število: 100",
+    ["Number to Text: 1000" /* NumberToText_Thousand */]: "Število v besedo: 1000",
+    ["Text to Number: 1000" /* TextToNumber_Thousand */]: "Beseda v število: 1000",
+    number_0: "nič",
+    number_1: "ena",
+    number_2: "dve",
+    number_3: "tri",
+    number_4: "štiri",
+    number_5: "pet",
+    number_6: "šest",
+    number_7: "sedem",
+    number_8: "osem",
+    number_9: "devet",
+    number_10: "deset",
+    number_11: "enajst",
+    number_12: "dvanajst",
+    number_13: "trinajst",
+    number_14: "štirinajst",
+    number_15: "petnajst",
+    number_16: "šestnajst",
+    number_17: "sedemnajst",
+    number_18: "osemnajst",
+    number_19: "devetnajst",
+    number_20: "dvajset",
+    ["Next/Previous: 10" /* NextPrevious_Ten */]: "Predhodnik/Naslednik: 10",
+    ["Next/Previous: 20" /* NextPrevious_Twenty */]: "Predhodnik/Naslednik: 20",
+    group_Addition: "Seštevanje",
+    group_Subtraction: "Odštevanje",
+    group_Multiplication: "Množenje",
+    group_Division: "Deljenje",
+    group_Comparison: "Primerjanje",
+    group_NumberText: "Številke in besede",
+    group_NextPrevious: "Predhodnik/Naslednik",
+    "group_1. razred": "1. razred",
+    "group_2. razred": "2. razred",
+    "group_3. razred": "3. razred",
+    "group_4. razred": "4. razred",
+    "group_5. razred": "5. razred",
+    grouping_by_type: "Po vrsti",
+    grouping_by_year: "Po razredu",
+    rpg_title: "Izberi Uroke",
+    rpg_subtitle: "Izberi matematične uroke za vadbo",
+    rpg_select_categories: "Knjiga Urokov",
+    rpg_start_battle: "Vstopi v Bitko"
+  }
+};
+
+// src/i18n.ts
+var LOCAL_STORAGE_KEY = "math_practice_language";
+var DEFAULT_LANGUAGE = "sl";
+function getCurrentLanguage() {
+  const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+  if (stored === "en" || stored === "sl") {
+    return stored;
+  }
+  return DEFAULT_LANGUAGE;
+}
+function setLanguage(lang) {
+  localStorage.setItem(LOCAL_STORAGE_KEY, lang);
+  location.reload();
+}
+function t(key) {
+  const lang = getCurrentLanguage();
+  const translated = translations[lang][key];
+  if (!translated) {
+    console.error(`Missing translation for language ${lang} and key: ${key}`);
+  }
+  return translated || key;
+}
+function getCategoryDisplayName(category) {
+  const lang = getCurrentLanguage();
+  const translated = translations[lang][category];
+  if (!translated) {
+    console.error(`Missing translation for language ${lang} and category: ${category}`);
+  }
+  return translated || category;
+}
+
+// src/numberText.ts
+var enTens = {
+  20: "twenty",
+  30: "thirty",
+  40: "forty",
+  50: "fifty",
+  60: "sixty",
+  70: "seventy",
+  80: "eighty",
+  90: "ninety"
+};
+var slTens = {
+  20: "dvajset",
+  30: "trideset",
+  40: "štirideset",
+  50: "petdeset",
+  60: "šestdeset",
+  70: "sedemdeset",
+  80: "osemdeset",
+  90: "devetdeset"
+};
+function getNumberWord(n) {
+  const lang = getCurrentLanguage();
+  if (n <= 20) {
+    const key = `number_${n}`;
+    return translations[lang][key];
+  }
+  if (n === 1000) {
+    return lang === "sl" ? "tisoč" : "one thousand";
+  }
+  if (n >= 100) {
+    const hundreds = Math.floor(n / 100);
+    const remainder = n % 100;
+    let prefix = "";
+    if (lang === "sl") {
+      if (hundreds === 1) {
+        prefix = "sto";
+      } else {
+        const slOnesWord = translations.sl[`number_${hundreds}`];
+        prefix = slOnesWord + "sto";
+      }
+    } else {
+      const enOnesWord = translations.en[`number_${hundreds}`];
+      prefix = enOnesWord + " hundred";
+    }
+    if (remainder === 0)
+      return prefix;
+    return prefix + " " + getNumberWord(remainder);
+  }
+  const tens = Math.floor(n / 10) * 10;
+  const ones = n % 10;
+  if (lang === "sl") {
+    if (ones === 0)
+      return slTens[tens];
+    const onesWord = translations.sl[`number_${ones}`];
+    return `${onesWord}in${slTens[tens]}`;
+  } else {
+    if (ones === 0)
+      return enTens[tens];
+    const onesWord = translations.en[`number_${ones}`];
+    return `${enTens[tens]}-${onesWord}`;
+  }
+}
+function generateNumberToText(maxNumber, category) {
+  const problems = [];
+  for (let n = 0;n <= maxNumber; n++) {
+    problems.push({
+      id: `${category}_${n}`,
+      text: `${n} = ?`,
+      answer: getNumberWord(n)
+    });
+  }
+  return problems;
+}
+function generateTextToNumber(maxNumber, category) {
+  const problems = [];
+  for (let n = 0;n <= maxNumber; n++) {
+    problems.push({
+      id: `${category}_${n}`,
+      text: `${getNumberWord(n)} = ?`,
+      answer: n
+    });
+  }
+  return problems;
+}
+function generate7(category) {
+  switch (category) {
+    case "Number to Text: 10" /* NumberToText_Ten */:
+      return generateNumberToText(10, category);
+    case "Number to Text: 20" /* NumberToText_Twenty */:
+      return generateNumberToText(20, category);
+    case "Number to Text: 100" /* NumberToText_Hundred */:
+      return generateNumberToText(100, category);
+    case "Number to Text: 1000" /* NumberToText_Thousand */:
+      return generateNumberToText(1000, category);
+    case "Text to Number: 10" /* TextToNumber_Ten */:
+      return generateTextToNumber(10, category);
+    case "Text to Number: 20" /* TextToNumber_Twenty */:
+      return generateTextToNumber(20, category);
+    case "Text to Number: 100" /* TextToNumber_Hundred */:
+      return generateTextToNumber(100, category);
+    case "Text to Number: 1000" /* TextToNumber_Thousand */:
+      return generateTextToNumber(1000, category);
+    default:
+      return [];
+  }
+}
+
+// src/nextPrevious.ts
+var generateProps6 = {
+  ["Next/Previous: 10" /* NextPrevious_Ten */]: { max: 10, min: 0 },
+  ["Next/Previous: 20" /* NextPrevious_Twenty */]: { max: 20, min: 0 }
+};
+function generate8(category) {
+  const props = generateProps6[category];
+  let { max, min } = props;
+  min = min ?? 0;
+  const allProblems = [];
+  for (let i = min;i <= max; i++) {
+    if (i > min) {
+      allProblems.push({
+        id: `${category}_${i}_prev`,
+        text: `?, ${i}`,
+        answer: i - 1
+      });
+    }
+    if (i < max) {
+      allProblems.push({
+        id: `${category}_${i}_next`,
+        text: `${i}, ?`,
+        answer: i + 1
+      });
+    }
+  }
+  return allProblems;
+}
+
 // src/problem.ts
 var generateFnPerGroup = {
   Addition: (category) => generate(category),
@@ -664,6 +1099,8 @@ var generateFnPerGroup = {
   Multiplication: (category) => generate4(category),
   Division: (category) => generate3(category),
   Comparison: (category) => generate6(category),
+  NumberText: (category) => generate7(category),
+  NextPrevious: (category) => generate8(category),
   Test: (category) => generate5(category)
 };
 var cache = {};
