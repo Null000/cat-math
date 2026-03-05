@@ -5,7 +5,7 @@ export class Dragon extends Actor {
 	constructor() {
 		super({
 			texture: dragonTexture,
-			textureScale: 0.7,
+			textureScale: 0.6,
 			health: 120,
 			attackPower: 14,
 			defensePower: 6,

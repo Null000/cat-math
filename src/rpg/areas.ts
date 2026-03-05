@@ -125,8 +125,8 @@ export const areas: Area[] = [
 			[E.FireSlime],
 			[E.FireSlime, E.FireSlime],
 			[E.DireWolf, E.DireWolf],
-			[E.Dragon],
 			[E.FireSlime, E.DarkSkeleton, E.DireWolf],
+			[E.Dragon],
 			...Array.from({ length: 500 }, () => [
 				E.Dragon,
 				E.FireSlime,
