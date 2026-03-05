@@ -12,11 +12,10 @@ export class Dragon extends Actor {
 			speed: 5,
 			xpDrop: 100,
 		});
-		this.sprite.tint = 0xcc2222;
 	}
 }
 let dragonTexture: Texture;
 export async function initDragon() {
 	if (dragonTexture) return;
-	dragonTexture = await Assets.load("assets/bat.png");
+	dragonTexture = await Assets.load("assets/dragon.png");
 }

@@ -12,11 +12,10 @@ export class DarkSkeleton extends Actor {
 			speed: 4,
 			xpDrop: 45,
 		});
-		this.sprite.tint = 0x443355;
 	}
 }
 let darkSkeletonTexture: Texture;
 export async function initDarkSkeleton() {
 	if (darkSkeletonTexture) return;
-	darkSkeletonTexture = await Assets.load("assets/skeleton.png");
+	darkSkeletonTexture = await Assets.load("assets/darkSkeleton.png");
 }

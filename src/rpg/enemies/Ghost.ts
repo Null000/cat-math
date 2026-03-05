@@ -12,12 +12,10 @@ export class Ghost extends Actor {
 			speed: 7,
 			xpDrop: 35,
 		});
-		this.sprite.tint = 0x6688ff;
-		this.sprite.alpha = 0.7;
 	}
 }
 let ghostTexture: Texture;
 export async function initGhost() {
 	if (ghostTexture) return;
-	ghostTexture = await Assets.load("assets/skeleton.png");
+	ghostTexture = await Assets.load("assets/ghost.png");
 }

@@ -12,11 +12,10 @@ export class Goblin extends Actor {
 			speed: 5,
 			xpDrop: 22,
 		});
-		this.sprite.tint = 0x66aa44;
 	}
 }
 let goblinTexture: Texture;
 export async function initGoblin() {
 	if (goblinTexture) return;
-	goblinTexture = await Assets.load("assets/rat.png");
+	goblinTexture = await Assets.load("assets/goblin.png");
 }

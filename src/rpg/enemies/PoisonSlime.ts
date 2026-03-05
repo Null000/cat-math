@@ -12,11 +12,10 @@ export class PoisonSlime extends Actor {
 			speed: 3,
 			xpDrop: 16,
 		});
-		this.sprite.tint = 0x66dd44;
 	}
 }
 let poisonSlimeTexture: Texture;
 export async function initPoisonSlime() {
 	if (poisonSlimeTexture) return;
-	poisonSlimeTexture = await Assets.load("assets/slime.png");
+	poisonSlimeTexture = await Assets.load("assets/poisonSlime.png");
 }

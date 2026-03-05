@@ -12,7 +12,6 @@ export class Mushroom extends Actor {
 			speed: 2,
 			xpDrop: 10,
 		});
-		this.sprite.tint = 0x8b7355;
 	}
 }
 
@@ -20,5 +19,5 @@ let mushroomTexture: Texture;
 
 export async function initMushroom() {
 	if (mushroomTexture) return;
-	mushroomTexture = await Assets.load("assets/slime.png");
+	mushroomTexture = await Assets.load("assets/mushroom.png");
 }

@@ -12,11 +12,10 @@ export class Zombie extends Actor {
 			speed: 2,
 			xpDrop: 32,
 		});
-		this.sprite.tint = 0x778866;
 	}
 }
 let zombieTexture: Texture;
 export async function initZombie() {
 	if (zombieTexture) return;
-	zombieTexture = await Assets.load("assets/skeleton.png");
+	zombieTexture = await Assets.load("assets/zombie.png");
 }

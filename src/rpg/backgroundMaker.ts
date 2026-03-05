@@ -8,7 +8,7 @@ export const BackgroundType = {
 	Dungeon: "dungeon",
 	Swamp: "swamp",
 	Mountains: "mountains",
-	Graveyard: "graveyard",
+	Ruins: "ruins",
 	Volcano: "volcano",
 } as const;
 
@@ -29,8 +29,8 @@ const assetMap: Record<BackgroundType, string> = {
 	[BackgroundType.Forest]: "assets/forest.png",
 	[BackgroundType.DarkForest]: "assets/darkForest.png",
 	[BackgroundType.Dungeon]: "assets/dungeon.png",
-	[BackgroundType.Swamp]: "assets/darkForest.png",
-	[BackgroundType.Mountains]: "assets/forest.png",
-	[BackgroundType.Graveyard]: "assets/darkForest.png",
-	[BackgroundType.Volcano]: "assets/dungeon.png",
+	[BackgroundType.Swamp]: "assets/swamp.jpeg",
+	[BackgroundType.Mountains]: "assets/mountains.jpeg",
+	[BackgroundType.Ruins]: "assets/ruins.jpeg",
+	[BackgroundType.Volcano]: "assets/volcano.jpeg",
 };

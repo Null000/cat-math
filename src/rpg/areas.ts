@@ -101,9 +101,9 @@ export const areas: Area[] = [
 		],
 	},
 
-	// Area 6 — Graveyard (introduces Ghost, DarkSkeleton, Treant)
+	// Area 6 — Ruins (introduces Ghost, DarkSkeleton, Treant)
 	{
-		background: BackgroundType.Graveyard,
+		background: BackgroundType.Ruins,
 		waves: [
 			[E.Ghost],
 			[E.Ghost, E.Ghost],

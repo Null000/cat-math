@@ -12,11 +12,10 @@ export class Treant extends Actor {
 			speed: 3,
 			xpDrop: 60,
 		});
-		this.sprite.tint = 0x447744;
 	}
 }
 let treantTexture: Texture;
 export async function initTreant() {
 	if (treantTexture) return;
-	treantTexture = await Assets.load("assets/slime.png");
+	treantTexture = await Assets.load("assets/treant.png");
 }

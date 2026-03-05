@@ -12,11 +12,10 @@ export class FireSlime extends Actor {
 			speed: 4,
 			xpDrop: 50,
 		});
-		this.sprite.tint = 0xff6622;
 	}
 }
 let fireSlimeTexture: Texture;
 export async function initFireSlime() {
 	if (fireSlimeTexture) return;
-	fireSlimeTexture = await Assets.load("assets/slime.png");
+	fireSlimeTexture = await Assets.load("assets/fireSlime.png");
 }
