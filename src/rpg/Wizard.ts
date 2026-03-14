@@ -129,28 +129,51 @@ export class Wizard extends Actor {
 		target: Actor;
 		damage: number;
 	}[]> {
-		let isCritical = false;
 		await this.twitch();
 
 		const level = getWizardLevel(this.xp);
-
 		const target = defenders[0]!;
-
 		let damage = this.attackPower;
+		const roll = Math.random();
 
-
-		if (level > 1) {
-			if (Math.random() < 0.25) {
+		// Higher-level spells unlock progressively, each stronger than the last.
+		// The roll cascades: if a high-level spell doesn't trigger, lower ones get a chance.
+		if (level >= 7 && roll < 0.10) {
+			// Meteor Strike — 4x damage
+			damage *= 4;
+			await this.castMeteorStrike(target);
+		} else if (level >= 6 && roll < 0.15) {
+			// Arcane Beam — 3.5x damage
+			damage = Math.floor(damage * 3.5);
+			await this.castArcaneBeam(target);
+		} else if (level >= 5 && roll < 0.25) {
+			// Frost Shard — 3x damage
+			damage *= 3;
+			await this.castFrostShard(target);
+		} else if (level >= 4 && roll < 0.35 && defenders.length > 1) {
+			// Area Magic — 2.5x damage to ALL enemies
+			damage = Math.floor(damage * 2.5);
+			await this.castAreaMagic();
+			return defenders.map((d) => ({target: d, damage}));
+		} else if (level >= 3 && roll < 0.45) {
+			// Lightning Bolt — 2x damage
+			damage *= 2;
+			await this.castLightningBolt(target);
+		} else if (level >= 2 && roll < 0.55) {
+			// Magic Missile — 1.5x damage
+			damage = Math.floor(damage * 1.5);
+			await this.castMagicMissile(target);
+		} else {
+			// Basic magic orb with critical hit chance at level 2+
+			let isCritical = false;
+			if (level > 1 && Math.random() < 0.25) {
 				isCritical = true;
 				damage *= 2;
 			}
+			await this.castMagic(isCritical, target);
 		}
 
-		await this.castMagic(isCritical, target);
-		return [{
-			target,
-			damage
-		}];
+		return [{target, damage}];
 	}
 
 	castMagic(isCritical: boolean, defender: Actor): Promise<void> {
