@@ -535,6 +535,32 @@ if (mode === "area") {
 	console.log(`Area ${targetArea}, power factor ${powerFactor}`);
 	console.log(`New enemies in area: ${newEnemies.join(", ")}`);
 
+	// Print enemy stats for all enemies in order of appearance
+	{
+		const seen = new Set<EnemyType>();
+		const ordered: EnemyType[] = [];
+		const enemyArea: number[] = [];
+		for (let a = 0; a <= targetArea; a++) {
+			for (const wave of areas[a]!.waves) {
+				for (const enemy of wave) {
+					if (!seen.has(enemy)) {
+						seen.add(enemy);
+						ordered.push(enemy);
+						enemyArea.push(a);
+					}
+				}
+			}
+		}
+		const enemies = await makeSimulatorEnemies(ordered);
+		console.log(`\nEnemy stats (areas 0-${targetArea}):`);
+		console.log(`${"Name".padEnd(20)} ${"Area".padStart(5)} ${"HP".padStart(5)} ${"Power".padStart(6)} ${"Speed".padStart(6)}`);
+		for (let i = 0; i < ordered.length; i++) {
+			const e = enemies[i]!;
+			console.log(`${ordered[i]!.padEnd(20)} ${String(enemyArea[i]).padStart(5)} ${String(e.health).padStart(5)} ${String(e.attackPower).padStart(6)} ${String(e.speed).padStart(6)}`);
+		}
+		console.log();
+	}
+
 	const factors: EnemyStatFactors = {
 		enemyTypes: newEnemies,
 		hpFactor: powerFactor,
@@ -543,23 +569,38 @@ if (mode === "area") {
 
 	let state: State = { xp: 0, area: 0, playerTurns: 0 };
 	const lives = 20;
+	let livesUsed = 0;
+	let lastPrintedArea = -1;
+	let lastAreaXp = 0;
+	let lastAreaLives = lives;
 
 	for (let life = 1; life <= lives; life++) {
+		livesUsed = life;
 		const result = await runSimulation(state, undefined, factors, {
 			stopAfterArea: targetArea,
-			quietBelowArea: targetArea,
+			quietBelowArea: Infinity,
 		});
+
+		// Print area summary for each area completed during this life
+		for (const event of result.events) {
+			if (event.event === "areaChange" && event.newArea > lastPrintedArea) {
+				const currentLives = lives - life + 1;
+				console.log(`Area ${event.newArea - 1} done | xp: ${event.xp} (+${event.xp - lastAreaXp}), lives: ${currentLives} (${currentLives - lastAreaLives})`);
+				lastAreaXp = event.xp;
+				lastAreaLives = currentLives;
+				lastPrintedArea = event.newArea;
+			}
+		}
+
 		state = result.state;
 
 		if (state.area > targetArea) {
-			console.log(`Cleared area ${targetArea} on life ${life}, turns: ${state.playerTurns}, xp: ${state.xp}`);
 			break;
 		}
-		console.log(`Life ${life} ended: area ${state.area}, wave ${result.events.at(-1)?.event === "death" ? (result.events.at(-1) as any).wave : "?"}, turns: ${state.playerTurns}, xp: ${state.xp}`);
 	}
 
 	if (state.area <= targetArea) {
-		console.log(`Failed to clear area ${targetArea} in ${lives} lives. Reached area ${state.area}, turns: ${state.playerTurns}, xp: ${state.xp}`);
+		console.log(`Failed to clear area ${targetArea} in ${lives} lives. Reached area ${state.area}, xp: ${state.xp}`);
 	}
 } else if (mode === "sweep") {
 	const targetArea = 3;
