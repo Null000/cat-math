@@ -6,10 +6,10 @@ export class Goblin extends Actor {
 		super({
 			texture: goblinTexture,
 			textureScale: 0.3,
-			health: 30,
-			attackPower: 6,
+			health: 144,
+			attackPower: 29,
 			defensePower: 2,
-			speed: 5,
+			speed: 25,
 			xpDrop: 22,
 		});
 	}

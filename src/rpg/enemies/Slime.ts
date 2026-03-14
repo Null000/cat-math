@@ -6,10 +6,10 @@ export class Slime extends Actor {
 		super({
 			texture: slimeTexture,
 			textureScale: 0.25,
-			health: 90,
-			attackPower: 15,
+			health: 45,
+			attackPower: 8,
 			defensePower: 0,
-			speed: 3,
+			speed: 15,
 			xpDrop: 10,
 		});
 	}

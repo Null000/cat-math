@@ -6,10 +6,10 @@ export class Mushroom extends Actor {
 		super({
 			texture: mushroomTexture,
 			textureScale: 0.25,
-			health: 80,
-			attackPower: 15,
+			health: 40,
+			attackPower: 8,
 			defensePower: 1,
-			speed: 2,
+			speed: 12,
 			xpDrop: 10,
 		});
 	}

@@ -6,10 +6,10 @@ export class Spider extends Actor {
 		super({
 			texture: spiderTexture,
 			textureScale: 0.25,
-			health: 100,
-			attackPower: 20,
+			health: 50,
+			attackPower: 10,
 			defensePower: 1,
-			speed: 5,
+			speed: 20,
 			xpDrop: 12,
 		});
 	}
