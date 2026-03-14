@@ -148,13 +148,15 @@ async function makeSimulatorEnemies(plan: EnemyType[]): Promise<Actor[]> {
 async function makeSimulatorWizard(xp: number): Promise<Wizard> {
 	const wizard = new Wizard(xp);
 	fakeAnimations(wizard);
-	wizard.castMagic = async () => {
-	};
-	wizard.castAreaMagic = async () => {
-	};
-	wizard.castMagicMissile = async () => {
-	};
-	wizard.levelUp = async (xp) => wizard.levelUpStats(xp)
+	wizard.castMagic = async () => {};
+	wizard.castAreaMagic = async () => {};
+	wizard.castMagicMissile = async () => {};
+	wizard.castLightningBolt = async () => {};
+	wizard.castFireBolt = async () => {};
+	wizard.castFrostShard = async () => {};
+	wizard.castArcaneBeam = async () => {};
+	wizard.castMeteorStrike = async () => {};
+	wizard.levelUp = async (xp) => wizard.levelUpStats(xp);
 
 	return wizard;
 }
