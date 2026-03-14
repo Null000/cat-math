@@ -208,8 +208,11 @@ async function runSimulation(
 	startState: State,
 	planOverride?: EnemyType[],
 	statFactors?: EnemyStatFactors,
+	options?: { stopAfterArea?: number; quietBelowArea?: number },
 ): Promise<SimulationResult> {
 	const events: SimEvent[] = [];
+	const stopAfterArea = options?.stopAfterArea;
+	const quietBelowArea = options?.quietBelowArea ?? 0;
 
 	const battleManager = new BattleManager(new Container(), startState.xp, startState.area);
 	battleManager._makeEnemies = async (x) => {
@@ -242,18 +245,20 @@ async function runSimulation(
 				wave: battleManager.wave,
 				xp: battleManager.xp,
 			});
-			console.log(
-				"hero died. area: " +
-				battleManager.area +
-				", wave: " +
-				battleManager.wave +
-				", turns: " +
-				battleManager.turnCounter +
-				", userInput: " +
-				(i + startPlayerTurns) +
-				", xp: " +
-				battleManager.xp,
-			);
+			if (battleManager.area >= quietBelowArea) {
+				console.log(
+					"hero died. area: " +
+					battleManager.area +
+					", wave: " +
+					battleManager.wave +
+					", turns: " +
+					battleManager.turnCounter +
+					", userInput: " +
+					(i + startPlayerTurns) +
+					", xp: " +
+					battleManager.xp,
+				);
+			}
 			return {
 				state: {
 					xp: battleManager.xp,
@@ -294,6 +299,16 @@ async function runSimulation(
 				newArea: battleManager.area,
 				xp: battleManager.xp,
 			});
+			if (stopAfterArea !== undefined && battleManager.area > stopAfterArea) {
+				return {
+					state: {
+						xp: battleManager.xp,
+						area: battleManager.area,
+						playerTurns: i + startPlayerTurns,
+					},
+					events,
+				};
+			}
 		}
 	}
 	console.error('Simulation did not end');
@@ -471,17 +486,83 @@ async function runSweep(enemyTypes: EnemyType[], lives: number): Promise<void> {
 // Entry Point
 // ============================================================================
 
-const mode = process.argv[2];
-
-if (mode === "sweep") {
-	const enemiesInArea = new Set<EnemyType>()
-	for (let wave of areas[3]!.waves) {
-		for (const enemy of wave) {
-			enemiesInArea.add(enemy as any);
+function getNewEnemiesInArea(targetArea: number): EnemyType[] {
+	const existingEnemies = new Set<EnemyType>();
+	for (let i = 0; i < targetArea; i++) {
+		for (let wave of areas[i]!.waves) {
+			for (const enemy of wave) {
+				existingEnemies.add(enemy as any);
+			}
 		}
 	}
 
-	await runSweep(Array.from(enemiesInArea), 5);
+	const enemiesInArea = new Set<EnemyType>();
+	for (let wave of areas[targetArea]!.waves) {
+		for (const enemy of wave) {
+			if (!existingEnemies.has(enemy)) {
+				enemiesInArea.add(enemy as any);
+			}
+		}
+	}
+	return Array.from(enemiesInArea);
+}
+
+const mode = process.argv[2];
+
+if (mode === "area") {
+	const targetArea = parseInt(process.argv[3] ?? "");
+	const powerFactor = parseFloat(process.argv[4] ?? "");
+
+	if (isNaN(targetArea) || isNaN(powerFactor)) {
+		console.error("Usage: bun run src/rpg/simulator.ts area <areaNumber> <powerFactor>");
+		process.exit(1);
+	}
+
+	if (targetArea < 0 || targetArea >= areas.length) {
+		console.error(`Area must be between 0 and ${areas.length - 1}`);
+		process.exit(1);
+	}
+
+	// Pad areas
+	const lastArea = areas[areas.length - 1]!;
+	for (let i = areas.length; i < 1000; i++) {
+		areas.push(lastArea);
+	}
+
+	const newEnemies = getNewEnemiesInArea(targetArea);
+	console.log(`Area ${targetArea}, power factor ${powerFactor}`);
+	console.log(`New enemies in area: ${newEnemies.join(", ")}`);
+
+	const factors: EnemyStatFactors = {
+		enemyTypes: newEnemies,
+		hpFactor: powerFactor,
+		attackFactor: powerFactor,
+	};
+
+	let state: State = { xp: 0, area: 0, playerTurns: 0 };
+	const lives = 20;
+
+	for (let life = 1; life <= lives; life++) {
+		const result = await runSimulation(state, undefined, factors, {
+			stopAfterArea: targetArea,
+			quietBelowArea: targetArea,
+		});
+		state = result.state;
+
+		if (state.area > targetArea) {
+			console.log(`Cleared area ${targetArea} on life ${life}, turns: ${state.playerTurns}, xp: ${state.xp}`);
+			break;
+		}
+		console.log(`Life ${life} ended: area ${state.area}, wave ${result.events.at(-1)?.event === "death" ? (result.events.at(-1) as any).wave : "?"}, turns: ${state.playerTurns}, xp: ${state.xp}`);
+	}
+
+	if (state.area <= targetArea) {
+		console.log(`Failed to clear area ${targetArea} in ${lives} lives. Reached area ${state.area}, turns: ${state.playerTurns}, xp: ${state.xp}`);
+	}
+} else if (mode === "sweep") {
+	const targetArea = 3;
+	const newEnemies = getNewEnemiesInArea(targetArea);
+	await runSweep(newEnemies, 5);
 } else {
 	await runSimulations();
 }
