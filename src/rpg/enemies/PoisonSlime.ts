@@ -5,7 +5,7 @@ export class PoisonSlime extends Actor {
 	constructor() {
 		super({
 			texture: poisonSlimeTexture,
-			textureScale: 0.3,
+			textureScale: 0.25,
 			health: 125,
 			attackPower: 24,
 			defensePower: 1,
