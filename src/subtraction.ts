@@ -10,12 +10,18 @@ const generateProps: Record<
 		step?: number;
 		borrowAllowed?: boolean;
 		borrowForced?: boolean;
+		threeNumbers?: boolean;
 		missingFact?:
 			| ("first" | "second" | "result")
 			| ("first" | "second" | "result")[];
 	}
 > = {
 	[Category.Subtraction_Ten]: { xMax: 10, yMax: 10 },
+	[Category.Subtraction_ThreeNumbers_Ten]: {
+		xMax: 10,
+		yMax: 10,
+		threeNumbers: true,
+	},
 	[Category.Subtraction_Ten_Missing]: {
 		xMax: 10,
 		yMax: 10,
@@ -27,12 +33,24 @@ const generateProps: Record<
 		borrowAllowed: true,
 		borrowForced: false,
 	},
+	[Category.Subtraction_ThreeNumbers_Twenty]: {
+		xMax: 20,
+		yMax: 20,
+		threeNumbers: true,
+	},
 	[Category.Subtraction_Twenty_Missing]: {
 		xMax: 20,
 		yMax: 20,
 		borrowAllowed: true,
 		borrowForced: false,
 		missingFact: ["first", "second"],
+	},
+	[Category.Subtraction_ThreeNumbers_Hundred]: {
+		xMax: 100,
+		yMax: 100,
+		xMin: 10,
+		yMin: 1,
+		threeNumbers: true,
 	},
 	[Category.Subtraction_HundredWithoutBorrow]: {
 		xMax: 100,
@@ -64,6 +82,14 @@ const generateProps: Record<
 		xMin: 10,
 		yMin: 10,
 		step: 10,
+	},
+	[Category.Subtraction_ThreeNumbers_Thousand]: {
+		xMax: 1000,
+		yMax: 990,
+		xMin: 100,
+		yMin: 100,
+		step: 10,
+		threeNumbers: true,
 	},
 	[Category.Subtraction_ThousandWithoutBorrow]: {
 		xMax: 1000,
@@ -127,6 +153,18 @@ export function generate(category: Category): Problem[] {
 	for (let i = xMin; i <= xMax; i += step) {
 		for (let j = yMin; j <= yMax; j += step) {
 			if (i < j) continue; // Can't subtract to get negative
+			if (props.threeNumbers) {
+				const currentDiff = i - j;
+				for (let k = yMin; k <= yMax; k += step) {
+					if (currentDiff < k) continue;
+					const result = currentDiff - k;
+					const text = `${i} - ${j} - ${k} = ?`;
+					const answer = result;
+					const id = `${category}_${i}_${j}_${k}_result`;
+					allProblems.push({ id, text, answer });
+				}
+				continue;
+			}
 			const digitI = Math.floor(i / step) % 10;
 			const digitJ = Math.floor(j / step) % 10;
 			const hasBorrow = borrowAllowed && digitI < digitJ;

@@ -39,6 +39,10 @@ export const translations = {
 		[Category.Addition_TwentyWithCarry]: "Addition: 20 (with carry)",
 		[Category.Addition_Twenty]: "Addition: 20",
 		[Category.Addition_Twenty_Missing]: "Addition: 20 (missing facts)",
+		[Category.Addition_ThreeNumbers_Ten]: "Addition: 10 (3 numbers)",
+		[Category.Addition_ThreeNumbers_Twenty]: "Addition: 20 (3 numbers)",
+		[Category.Addition_ThreeNumbers_Hundred]: "Addition: 100 (3 numbers)",
+		[Category.Addition_ThreeNumbers_Thousand]: "Addition: 1000 (3 numbers)",
 		[Category.Addition_HundredWithoutCarry]:
 			"Addition: 100 (without carry)",
 		[Category.Addition_HundredWithCarry]: "Addition: 100 (with carry)",
@@ -56,6 +60,13 @@ export const translations = {
 		[Category.Subtraction_Twenty]: "Subtraction: 20",
 		[Category.Subtraction_Twenty_Missing]:
 			"Subtraction: 20 (missing facts)",
+		[Category.Subtraction_ThreeNumbers_Ten]: "Subtraction: 10 (3 numbers)",
+		[Category.Subtraction_ThreeNumbers_Twenty]:
+			"Subtraction: 20 (3 numbers)",
+		[Category.Subtraction_ThreeNumbers_Hundred]:
+			"Subtraction: 100 (3 numbers)",
+		[Category.Subtraction_ThreeNumbers_Thousand]:
+			"Subtraction: 1000 (3 numbers)",
 		[Category.Subtraction_HundredWithoutBorrow]:
 			"Subtraction: 100 (without borrow)",
 		[Category.Subtraction_HundredWithBorrow]:
@@ -185,6 +196,11 @@ export const translations = {
 		[Category.Addition_TwentyWithCarry]: "Seštevanje: 20 (s prehodom)",
 		[Category.Addition_Twenty]: "Seštevanje: 20",
 		[Category.Addition_Twenty_Missing]: "Seštevanje: 20 (neznani člen)",
+		[Category.Addition_ThreeNumbers_Ten]: "Seštevanje: 10 (3 števila)",
+		[Category.Addition_ThreeNumbers_Twenty]: "Seštevanje: 20 (3 števila)",
+		[Category.Addition_ThreeNumbers_Hundred]: "Seštevanje: 100 (3 števila)",
+		[Category.Addition_ThreeNumbers_Thousand]:
+			"Seštevanje: 1000 (3 števila)",
 		[Category.Addition_HundredWithoutCarry]:
 			"Seštevanje: 100 (brez prehoda)",
 		[Category.Addition_HundredWithCarry]: "Seštevanje: 100 (s prehodom)",
@@ -201,6 +217,13 @@ export const translations = {
 		[Category.Subtraction_Ten_Missing]: "Odštevanje: 10 (neznani člen)",
 		[Category.Subtraction_Twenty]: "Odštevanje: 20",
 		[Category.Subtraction_Twenty_Missing]: "Odštevanje: 20 (neznani člen)",
+		[Category.Subtraction_ThreeNumbers_Ten]: "Odštevanje: 10 (3 števila)",
+		[Category.Subtraction_ThreeNumbers_Twenty]:
+			"Odštevanje: 20 (3 števila)",
+		[Category.Subtraction_ThreeNumbers_Hundred]:
+			"Odštevanje: 100 (3 števila)",
+		[Category.Subtraction_ThreeNumbers_Thousand]:
+			"Odštevanje: 1000 (3 števila)",
 		[Category.Subtraction_HundredWithoutBorrow]:
 			"Odštevanje: 100 (brez prehoda)",
 		[Category.Subtraction_HundredWithBorrow]:

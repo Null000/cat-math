@@ -11,12 +11,19 @@ const generateProps: Record<
 		maxResult?: number;
 		carryAllowed?: boolean;
 		carryForced?: boolean;
+		threeNumbers?: boolean;
 		missingFact?:
 			| ("first" | "second" | "result")
 			| ("first" | "second" | "result")[];
 	}
 > = {
 	[Category.Addition_Ten]: { xMax: 10, yMax: 10 },
+	[Category.Addition_ThreeNumbers_Ten]: {
+		xMax: 10,
+		yMax: 10,
+		maxResult: 10,
+		threeNumbers: true,
+	},
 	[Category.Addition_Ten_Missing]: {
 		xMax: 10,
 		yMax: 10,
@@ -35,6 +42,12 @@ const generateProps: Record<
 		carryAllowed: true,
 		carryForced: true,
 	},
+	[Category.Addition_ThreeNumbers_Twenty]: {
+		xMax: 20,
+		yMax: 20,
+		maxResult: 20,
+		threeNumbers: true,
+	},
 	[Category.Addition_Twenty]: {
 		xMax: 20,
 		yMax: 20,
@@ -49,6 +62,14 @@ const generateProps: Record<
 		carryAllowed: true,
 		carryForced: false,
 		missingFact: ["first", "second"],
+	},
+	[Category.Addition_ThreeNumbers_Hundred]: {
+		xMax: 100,
+		yMax: 100,
+		xMin: 10,
+		yMin: 10,
+		maxResult: 100,
+		threeNumbers: true,
 	},
 	[Category.Addition_HundredWithoutCarry]: {
 		xMax: 100,
@@ -93,6 +114,15 @@ const generateProps: Record<
 		yMin: 10,
 		step: 10,
 		maxResult: 100,
+	},
+	[Category.Addition_ThreeNumbers_Thousand]: {
+		xMax: 990,
+		yMax: 990,
+		xMin: 100,
+		yMin: 100,
+		step: 10,
+		maxResult: 1000,
+		threeNumbers: true,
 	},
 	[Category.Addition_ThousandWithoutCarry]: {
 		xMax: 990,
@@ -160,6 +190,20 @@ export function generate(category: Category): Problem[] {
 
 	for (let i = xMin; i <= xMax; i += step) {
 		for (let j = yMin; j <= yMax; j += step) {
+			if (props.threeNumbers) {
+				const currentSum = i + j;
+				if (maxResult && currentSum > maxResult) continue;
+				for (let k = yMin; !!maxResult ? k <= maxResult : k <= yMax; k += step) {
+					const result = currentSum + k;
+					if (maxResult && result > maxResult) continue;
+					const text = `${i} + ${j} + ${k} = ?`;
+					const answer = result;
+					const id = `${category}_${i}_${j}_${k}_result`;
+					allProblems.push({ id, text, answer });
+				}
+				continue;
+			}
+
 			const digitI = Math.floor(i / step) % 10;
 			const digitJ = Math.floor(j / step) % 10;
 			const hasCarry = carryAllowed && digitI + digitJ >= 10;
