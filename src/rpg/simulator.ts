@@ -6,29 +6,9 @@
 import {Actor} from "./Actor.ts";
 import {BattleManager} from "./BattleManager.ts";
 import {EnemyType} from "./enemies/enemyMaker.ts";
-import {Rat} from "./enemies/Rat.ts";
-import {DireRat} from "./enemies/DireRat.ts";
-import {Goblin} from "./enemies/Goblin.ts";
-import {Skeleton} from "./enemies/Skeleton.ts";
-import {Zombie} from "./enemies/Zombie.ts";
-import {Bat} from "./enemies/Bat.ts";
-import {Wolf} from "./enemies/Wolf.ts";
-import {Treant} from "./enemies/Treant.ts";
-import {Dummy} from "./enemies/Dummy.ts";
+import {createSimulatorEnemy} from "./enemies/enemyConfig.ts";
 import {Container, Sprite} from "pixi.js";
 import {getWizardLevel, Wizard} from "./Wizard.ts";
-import {Spider} from "./enemies/Spider.ts";
-import {Slime} from "./enemies/Slime.ts";
-import {Mushroom} from "./enemies/Mushroom.ts";
-import {PoisonSlime} from "./enemies/PoisonSlime.ts";
-import {GiantBat} from "./enemies/GiantBat.ts";
-import {GiantSpider} from "./enemies/GiantSpider.ts";
-import {SkeletonWarrior} from "./enemies/SkeletonWarrior.ts";
-import {DireWolf} from "./enemies/DireWolf.ts";
-import {Ghost} from "./enemies/Ghost.ts";
-import {DarkSkeleton} from "./enemies/DarkSkeleton.ts";
-import {FireSlime} from "./enemies/FireSlime.ts";
-import {Dragon} from "./enemies/Dragon.ts";
 import {areas} from "./areas.ts";
 
 // @ts-ignore
@@ -67,82 +47,12 @@ interface SweepResult {
 // Simulator Factories
 // ============================================================================
 
-async function makeSimulatorEnemies(plan: EnemyType[]): Promise<Actor[]> {
-	const enemies = [];
-
-	for (const type of plan) {
-		let enemy: Actor;
-		switch (type) {
-			case EnemyType.Dummy:
-				enemy = new Dummy();
-				break;
-			case EnemyType.Rat:
-				enemy = new Rat();
-				break;
-			case EnemyType.DireRat:
-				enemy = new DireRat();
-				break;
-			case EnemyType.Goblin:
-				enemy = new Goblin();
-				break;
-			case EnemyType.Skeleton:
-				enemy = new Skeleton();
-				break;
-			case EnemyType.Zombie:
-				enemy = new Zombie();
-				break;
-			case EnemyType.Bat:
-				enemy = new Bat();
-				break;
-			case EnemyType.Wolf:
-				enemy = new Wolf();
-				break;
-			case EnemyType.Treant:
-				enemy = new Treant();
-				break;
-			case EnemyType.Spider:
-				enemy = new Spider();
-				break;
-			case EnemyType.Slime:
-				enemy = new Slime();
-				break;
-			case EnemyType.Mushroom:
-				enemy = new Mushroom();
-				break;
-			case EnemyType.PoisonSlime:
-				enemy = new PoisonSlime();
-				break;
-			case EnemyType.GiantBat:
-				enemy = new GiantBat();
-				break;
-			case EnemyType.GiantSpider:
-				enemy = new GiantSpider();
-				break;
-			case EnemyType.SkeletonWarrior:
-				enemy = new SkeletonWarrior();
-				break;
-			case EnemyType.DireWolf:
-				enemy = new DireWolf();
-				break;
-			case EnemyType.Ghost:
-				enemy = new Ghost();
-				break;
-			case EnemyType.DarkSkeleton:
-				enemy = new DarkSkeleton();
-				break;
-			case EnemyType.FireSlime:
-				enemy = new FireSlime();
-				break;
-			case EnemyType.Dragon:
-				enemy = new Dragon();
-				break;
-			default:
-				throw new Error("Unknown enemy type: " + type);
-		}
+function makeSimulatorEnemies(plan: EnemyType[]): Actor[] {
+	return plan.map((type) => {
+		const enemy = createSimulatorEnemy(type);
 		fakeAnimations(enemy);
-		enemies.push(enemy);
-	}
-	return enemies;
+		return enemy;
+	});
 }
 
 async function makeSimulatorWizard(xp: number): Promise<Wizard> {
@@ -219,7 +129,7 @@ async function runSimulation(
 	const battleManager = new BattleManager(new Container(), startState.xp, startState.area);
 	battleManager._makeEnemies = async (x) => {
 		const plan = planOverride ?? x;
-		const enemies = await makeSimulatorEnemies(plan);
+		const enemies = makeSimulatorEnemies(plan);
 		if (statFactors) {
 			applyStatFactors(enemies, plan, statFactors);
 		}
@@ -551,7 +461,7 @@ if (mode === "area") {
 				}
 			}
 		}
-		const enemies = await makeSimulatorEnemies(ordered);
+		const enemies = makeSimulatorEnemies(ordered);
 		console.log(`\nEnemy stats (areas 0-${targetArea}):`);
 		console.log(`${"Name".padEnd(20)} ${"Area".padStart(5)} ${"HP".padStart(5)} ${"Power".padStart(6)} ${"Speed".padStart(6)}`);
 		for (let i = 0; i < ordered.length; i++) {

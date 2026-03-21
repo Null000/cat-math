@@ -1,43 +1,102 @@
 import {Assets, Graphics, Texture, Ticker} from "pixi.js";
 import {Actor} from "./Actor.ts";
 
+/** Encapsulates the common state management for a spell animation. */
+class SpellState {
+	isCasting: boolean = false;
+	progress: number = 0;
+	targetX: number = 0;
+	targetY: number = 0;
+	private resolve: (() => void) | null = null;
+
+	constructor(readonly duration: number) {}
+
+	/** Begins the spell, returning a Promise that resolves when complete. */
+	start(): Promise<void> {
+		this.isCasting = true;
+		this.progress = 0;
+		return new Promise((resolve) => {
+			if (this.resolve) this.resolve();
+			this.resolve = resolve;
+		});
+	}
+
+	/** Advances progress by deltaMS. Returns the normalized t value (0..1). */
+	advance(deltaMS: number): number {
+		this.progress += deltaMS;
+		return Math.min(this.progress / this.duration, 1);
+	}
+
+	/** Marks the spell as complete and resolves the promise. */
+	complete(): void {
+		this.isCasting = false;
+		if (this.resolve) {
+			this.resolve();
+			this.resolve = null;
+		}
+	}
+}
+
+/** Encapsulates the burst/impact animation that follows many spells. */
+class BurstState {
+	isBursting: boolean = false;
+	progress: number = 0;
+	graphic: Graphics | null = null;
+
+	constructor(readonly duration: number) {}
+
+	/** Creates a burst graphic at the given position with the given color/alpha. */
+	start(parent: Actor, x: number, y: number, color: number, alpha: number): void {
+		this.isBursting = true;
+		this.progress = 0;
+		const burst = new Graphics();
+		burst.circle(0, 0, 1);
+		burst.fill({color, alpha});
+		burst.x = x;
+		burst.y = y;
+		burst.zIndex = 1000;
+		parent.parent!.addChild(burst);
+		this.graphic = burst;
+	}
+
+	/** Advances burst progress. Returns the normalized t value (0..1). */
+	advance(deltaMS: number): number {
+		this.progress += deltaMS;
+		return Math.min(this.progress / this.duration, 1);
+	}
+
+	/** Cleans up the burst graphic and resets state. */
+	finish(parent: Actor): void {
+		if (this.graphic) {
+			parent.parent!.removeChild(this.graphic);
+			this.graphic.destroy();
+			this.graphic = null;
+		}
+		this.isBursting = false;
+	}
+}
+
 export class Wizard extends Actor {
-	private isCastingMagic: boolean = false;
-	private resolveMagic: (() => void) | null = null;
+	// Magic orb state
+	private magic = new SpellState(400);
 	private magicOrb: Graphics | null = null;
 	private magicTrails: { graphic: Graphics; life: number }[] = [];
-	private magicProgress: number = 0;
-	private magicDuration: number = 400;
 	private magicIsCritical: boolean = false;
 	private magicLastTime: number = 0;
-	private magicTargetX: number = 0;
-	private magicTargetY: number = 0;
-	private magicBurst: Graphics | null = null;
-	private burstProgress: number = 0;
-	private burstDuration: number = 200;
-	private isBursting: boolean = false;
+	private magicBurst = new BurstState(200);
 
-	private isAreaCasting: boolean = false;
-	private resolveAreaMagic: (() => void) | null = null;
+	// Area magic state
+	private area = new SpellState(600);
 	private areaRing: Graphics | null = null;
-	private areaProgress: number = 0;
-	private areaDuration: number = 600;
 
 	// Magic missile state
-	private isCastingMissiles: boolean = false;
-	private resolveMissiles: (() => void) | null = null;
-	private missiles: { graphic: Graphics; progress: number; startDelay: number; offsetY: number; hit: boolean }[] = [];
-	private missileDuration: number = 350;
-	private missileTargetX: number = 0;
-	private missileTargetY: number = 0;
+	private missiles = new SpellState(350);
+	private missileProjectiles: { graphic: Graphics; progress: number; startDelay: number; offsetY: number; hit: boolean }[] = [];
 	private missileBursts: { graphic: Graphics; progress: number }[] = [];
 	private missileBurstDuration: number = 150;
 
 	// Level-up animation state
-	private isLevelingUp: boolean = false;
-	private resolveLevelUp: (() => void) | null = null;
-	private levelUpProgress: number = 0;
-	private levelUpDuration: number = 1500;
+	private levelUp_ = new SpellState(1500);
 	private levelUpGlow: Graphics | null = null;
 	private levelUpFlash: Graphics | null = null;
 	private levelUpParticles: {
@@ -50,62 +109,29 @@ export class Wizard extends Actor {
 	private levelUpTextureSwapped: boolean = false;
 
 	// Lightning bolt state
-	private isCastingLightning: boolean = false;
-	private resolveLightning: (() => void) | null = null;
-	private lightningProgress: number = 0;
-	private lightningDuration: number = 300;
+	private lightning = new SpellState(300);
 	private lightningBolt: Graphics | null = null;
-	private lightningTargetX: number = 0;
-	private lightningTargetY: number = 0;
-	private lightningBurst: Graphics | null = null;
-	private lightningBurstProgress: number = 0;
-	private isLightningBursting: boolean = false;
-	private lightningBurstDuration: number = 150;
+	private lightningBurst = new BurstState(150);
 
 	// Fire bolt state
-	private isCastingFireBolt: boolean = false;
-	private resolveFireBolt: (() => void) | null = null;
-	private fireBoltProgress: number = 0;
-	private fireBoltDuration: number = 400;
+	private fireBolt = new SpellState(400);
 	private fireBoltOrb: Graphics | null = null;
-	private fireBoltTargetX: number = 0;
-	private fireBoltTargetY: number = 0;
-	private fireBoltBurst: Graphics | null = null;
-	private fireBoltBurstProgress: number = 0;
-	private isFireBoltBursting: boolean = false;
-	private fireBoltBurstDuration: number = 200;
+	private fireBoltBurst = new BurstState(200);
 
 	// Frost shard state
-	private isCastingFrost: boolean = false;
-	private resolveFrost: (() => void) | null = null;
+	private frost = new SpellState(300);
 	private frostShards: { graphic: Graphics; progress: number; offsetY: number; hit: boolean }[] = [];
-	private frostDuration: number = 300;
-	private frostTargetX: number = 0;
-	private frostTargetY: number = 0;
 	private frostBursts: { graphic: Graphics; progress: number }[] = [];
 	private frostBurstDuration: number = 150;
 
 	// Arcane beam state
-	private isCastingBeam: boolean = false;
-	private resolveBeam: (() => void) | null = null;
-	private beamProgress: number = 0;
-	private beamDuration: number = 500;
+	private beam = new SpellState(500);
 	private beamGraphic: Graphics | null = null;
-	private beamTargetX: number = 0;
-	private beamTargetY: number = 0;
 
 	// Meteor strike state
-	private isCastingMeteor: boolean = false;
-	private resolveMeteor: (() => void) | null = null;
-	private meteorProgress: number = 0;
-	private meteorDuration: number = 500;
+	private meteor = new SpellState(500);
 	private meteorGraphic: Graphics | null = null;
-	private meteorTargetX: number = 0;
-	private meteorTargetY: number = 0;
-	private meteorBurst: Graphics | null = null;
-	private meteorBurstProgress: number = 0;
-	private isMeteorBursting: boolean = false;
-	private meteorBurstDuration: number = 250;
+	private meteorBurst = new BurstState(250);
 
 	constructor(xp: number) {
 		const xpFactor = 1 + xp / 100;
@@ -177,14 +203,12 @@ export class Wizard extends Actor {
 	}
 
 	castMagic(isCritical: boolean, defender: Actor): Promise<void> {
-		this.isCastingMagic = true;
-		this.magicProgress = 0;
 		this.magicIsCritical = isCritical;
 		this.magicLastTime = 0;
-		this.isBursting = false;
+		this.magicBurst.isBursting = false;
 		this.magicTrails = [];
-		this.magicTargetX = defender.x - this.x;
-		this.magicTargetY = defender.y - this.y - 80;
+		this.magic.targetX = defender.x - this.x;
+		this.magic.targetY = defender.y - this.y - 80;
 
 		const orb = new Graphics();
 		this.drawOrb(orb, isCritical);
@@ -192,12 +216,7 @@ export class Wizard extends Actor {
 		orb.zIndex = 1000;
 		this.parent!.addChild(orb);
 
-		return new Promise((resolve) => {
-			if (this.resolveMagic) {
-				this.resolveMagic();
-			}
-			this.resolveMagic = resolve;
-		});
+		return this.magic.start();
 	}
 
 	async areaAttack(): Promise<number> {
@@ -213,11 +232,10 @@ export class Wizard extends Actor {
 	}
 
 	castMagicMissile(defender: Actor): Promise<void> {
-		this.isCastingMissiles = true;
-		this.missileTargetX = defender.x - this.x;
-		this.missileTargetY = defender.y - this.y - 80;
+		this.missiles.targetX = defender.x - this.x;
+		this.missiles.targetY = defender.y - this.y - 80;
 		this.magicLastTime = 0;
-		this.missiles = [];
+		this.missileProjectiles = [];
 		this.missileBursts = [];
 
 		const offsets = [-35, 0, 35];
@@ -227,7 +245,7 @@ export class Wizard extends Actor {
 			missile.zIndex = 1000;
 			missile.visible = false;
 			this.parent!.addChild(missile);
-			this.missiles.push({
+			this.missileProjectiles.push({
 				graphic: missile,
 				progress: 0,
 				startDelay: i * 70,
@@ -236,12 +254,7 @@ export class Wizard extends Actor {
 			});
 		}
 
-		return new Promise((resolve) => {
-			if (this.resolveMissiles) {
-				this.resolveMissiles();
-			}
-			this.resolveMissiles = resolve;
-		});
+		return this.missiles.start();
 	}
 
 	private drawMissile(g: Graphics) {
@@ -272,8 +285,6 @@ export class Wizard extends Actor {
 	}
 
 	castAreaMagic(): Promise<void> {
-		this.isAreaCasting = true;
-		this.areaProgress = 0;
 		this.magicLastTime = 0;
 
 		const ring = new Graphics();
@@ -297,12 +308,7 @@ export class Wizard extends Actor {
 		this.parent!.addChild(ring);
 		this.areaRing = ring;
 
-		return new Promise((resolve) => {
-			if (this.resolveAreaMagic) {
-				this.resolveAreaMagic();
-			}
-			this.resolveAreaMagic = resolve;
-		});
+		return this.area.start();
 	}
 
 	// --- Lightning Bolt ---
@@ -314,22 +320,17 @@ export class Wizard extends Actor {
 	}
 
 	castLightningBolt(defender: Actor): Promise<void> {
-		this.isCastingLightning = true;
-		this.lightningProgress = 0;
 		this.magicLastTime = 0;
-		this.isLightningBursting = false;
-		this.lightningTargetX = defender.x;
-		this.lightningTargetY = defender.y - 80;
+		this.lightningBurst.isBursting = false;
+		this.lightning.targetX = defender.x;
+		this.lightning.targetY = defender.y - 80;
 
 		const bolt = new Graphics();
 		bolt.zIndex = 1000;
 		this.parent!.addChild(bolt);
 		this.lightningBolt = bolt;
 
-		return new Promise((resolve) => {
-			if (this.resolveLightning) this.resolveLightning();
-			this.resolveLightning = resolve;
-		});
+		return this.lightning.start();
 	}
 
 	private drawLightningBolt(g: Graphics, startX: number, startY: number, endX: number, endY: number) {
@@ -385,12 +386,10 @@ export class Wizard extends Actor {
 	}
 
 	castFireBolt(defender: Actor): Promise<void> {
-		this.isCastingFireBolt = true;
-		this.fireBoltProgress = 0;
 		this.magicLastTime = 0;
-		this.isFireBoltBursting = false;
-		this.fireBoltTargetX = defender.x - this.x;
-		this.fireBoltTargetY = defender.y - this.y - 80;
+		this.fireBoltBurst.isBursting = false;
+		this.fireBolt.targetX = defender.x - this.x;
+		this.fireBolt.targetY = defender.y - this.y - 80;
 
 		const orb = new Graphics();
 		this.drawFireBoltOrb(orb);
@@ -398,10 +397,7 @@ export class Wizard extends Actor {
 		orb.zIndex = 1000;
 		this.parent!.addChild(orb);
 
-		return new Promise((resolve) => {
-			if (this.resolveFireBolt) this.resolveFireBolt();
-			this.resolveFireBolt = resolve;
-		});
+		return this.fireBolt.start();
 	}
 
 	private drawFireBoltOrb(g: Graphics) {
@@ -437,12 +433,11 @@ export class Wizard extends Actor {
 	}
 
 	castFrostShard(defender: Actor): Promise<void> {
-		this.isCastingFrost = true;
 		this.magicLastTime = 0;
 		this.frostShards = [];
 		this.frostBursts = [];
-		this.frostTargetX = defender.x - this.x;
-		this.frostTargetY = defender.y - this.y - 80;
+		this.frost.targetX = defender.x - this.x;
+		this.frost.targetY = defender.y - this.y - 80;
 
 		const offsets = [-30, -15, 0, 15, 30];
 		for (let i = 0; i < 5; i++) {
@@ -459,10 +454,7 @@ export class Wizard extends Actor {
 			});
 		}
 
-		return new Promise((resolve) => {
-			if (this.resolveFrost) this.resolveFrost();
-			this.resolveFrost = resolve;
-		});
+		return this.frost.start();
 	}
 
 	private drawFrostShard(g: Graphics) {
@@ -499,21 +491,16 @@ export class Wizard extends Actor {
 	}
 
 	castArcaneBeam(defender: Actor): Promise<void> {
-		this.isCastingBeam = true;
-		this.beamProgress = 0;
 		this.magicLastTime = 0;
-		this.beamTargetX = defender.x;
-		this.beamTargetY = defender.y - 80;
+		this.beam.targetX = defender.x;
+		this.beam.targetY = defender.y - 80;
 
-		const beam = new Graphics();
-		beam.zIndex = 1000;
-		this.parent!.addChild(beam);
-		this.beamGraphic = beam;
+		const beamG = new Graphics();
+		beamG.zIndex = 1000;
+		this.parent!.addChild(beamG);
+		this.beamGraphic = beamG;
 
-		return new Promise((resolve) => {
-			if (this.resolveBeam) this.resolveBeam();
-			this.resolveBeam = resolve;
-		});
+		return this.beam.start();
 	}
 
 	// --- Meteor Strike ---
@@ -525,23 +512,18 @@ export class Wizard extends Actor {
 	}
 
 	castMeteorStrike(defender: Actor): Promise<void> {
-		this.isCastingMeteor = true;
-		this.meteorProgress = 0;
 		this.magicLastTime = 0;
-		this.isMeteorBursting = false;
-		this.meteorTargetX = defender.x;
-		this.meteorTargetY = defender.y - 80;
+		this.meteorBurst.isBursting = false;
+		this.meteor.targetX = defender.x;
+		this.meteor.targetY = defender.y - 80;
 
-		const meteor = new Graphics();
-		this.drawMeteor(meteor);
-		meteor.zIndex = 1000;
-		this.parent!.addChild(meteor);
-		this.meteorGraphic = meteor;
+		const meteorG = new Graphics();
+		this.drawMeteor(meteorG);
+		meteorG.zIndex = 1000;
+		this.parent!.addChild(meteorG);
+		this.meteorGraphic = meteorG;
 
-		return new Promise((resolve) => {
-			if (this.resolveMeteor) this.resolveMeteor();
-			this.resolveMeteor = resolve;
-		});
+		return this.meteor.start();
 	}
 
 	private drawMeteor(g: Graphics) {
@@ -587,8 +569,6 @@ export class Wizard extends Actor {
 		this.levelUpStats(newXp);
 		this.updateHealthBar();
 
-		this.isLevelingUp = true;
-		this.levelUpProgress = 0;
 		this.levelUpTextureSwapped = false;
 		this.magicLastTime = 0;
 		this.levelUpParticles = [];
@@ -609,12 +589,7 @@ export class Wizard extends Actor {
 		this.parent!.addChild(flash);
 		this.levelUpFlash = flash;
 
-		return new Promise((resolve) => {
-			if (this.resolveLevelUp) {
-				this.resolveLevelUp();
-			}
-			this.resolveLevelUp = resolve;
-		});
+		return this.levelUp_.start();
 	}
 
 	private spawnLevelUpParticle(
@@ -736,20 +711,50 @@ export class Wizard extends Actor {
 		this.magicTrails.push({graphic: trail, life: 300});
 	}
 
+	/** Removes a graphic from the parent, destroys it, and returns null for reassignment. */
+	private removeGraphic(g: Graphics): null {
+		this.parent!.removeChild(g);
+		g.destroy();
+		return null;
+	}
+
+	/** Updates a burst array (missiles/frost). Returns remaining count. */
+	private updateBurstArray(
+		bursts: { graphic: Graphics; progress: number }[],
+		duration: number,
+		maxScale: number,
+		maxAlpha: number,
+		deltaMS: number,
+	): number {
+		for (let i = bursts.length - 1; i >= 0; i--) {
+			const burst = bursts[i]!;
+			burst.progress += deltaMS;
+			const t = Math.min(burst.progress / duration, 1);
+			burst.graphic.scale.set(maxScale * t);
+			burst.graphic.alpha = (1 - t) * maxAlpha;
+
+			if (t >= 1) {
+				this.removeGraphic(burst.graphic);
+				bursts.splice(i, 1);
+			}
+		}
+		return bursts.length;
+	}
+
 	override update(time: Ticker, isSine: boolean) {
 		super.update(time, isSine);
 
 		const hasWork =
-			this.isCastingMagic ||
-			this.isBursting ||
-			this.isAreaCasting ||
-			this.isCastingMissiles || this.missileBursts.length > 0 ||
-			this.isCastingLightning || this.isLightningBursting ||
-			this.isCastingFireBolt || this.isFireBoltBursting ||
-			this.isCastingFrost || this.frostBursts.length > 0 ||
-			this.isCastingBeam ||
-			this.isCastingMeteor || this.isMeteorBursting ||
-			this.magicTrails.length > 0 || this.isLevelingUp || this.levelUpParticles.length > 0;
+			this.magic.isCasting ||
+			this.magicBurst.isBursting ||
+			this.area.isCasting ||
+			this.missiles.isCasting || this.missileBursts.length > 0 ||
+			this.lightning.isCasting || this.lightningBurst.isBursting ||
+			this.fireBolt.isCasting || this.fireBoltBurst.isBursting ||
+			this.frost.isCasting || this.frostBursts.length > 0 ||
+			this.beam.isCasting ||
+			this.meteor.isCasting || this.meteorBurst.isBursting ||
+			this.magicTrails.length > 0 || this.levelUp_.isCasting || this.levelUpParticles.length > 0;
 		if (!hasWork) return;
 
 		if (this.magicLastTime === 0) {
@@ -765,24 +770,22 @@ export class Wizard extends Actor {
 			trail.graphic.alpha = Math.max(0, trail.life / 300) * 0.5;
 			trail.graphic.scale.set(Math.max(0.01, trail.life / 300));
 			if (trail.life <= 0) {
-				this.parent!.removeChild(trail.graphic);
-				trail.graphic.destroy();
+				this.removeGraphic(trail.graphic);
 				this.magicTrails.splice(i, 1);
 			}
 		}
 
 		// Orb flight animation
-		if (this.isCastingMagic && this.magicOrb) {
-			this.magicProgress += time.deltaMS;
-			const t = Math.min(this.magicProgress / this.magicDuration, 1);
+		if (this.magic.isCasting && this.magicOrb) {
+			const t = this.magic.advance(time.deltaMS);
 
 			// Ease-in for accelerating projectile
 			const eased = t * t;
 
 			const startX = 100;
 			const startY = -180;
-			const endX = this.magicTargetX;
-			const endY = this.magicTargetY;
+			const endX = this.magic.targetX;
+			const endY = this.magic.targetY;
 
 			const orbX = startX + (endX - startX) * eased;
 			const orbY =
@@ -805,30 +808,19 @@ export class Wizard extends Actor {
 			if (t >= 1) {
 				const burstX = this.magicOrb.x;
 				const burstY = this.magicOrb.y;
-				this.parent!.removeChild(this.magicOrb);
-				this.magicOrb.destroy();
-				this.magicOrb = null;
-				this.isCastingMagic = false;
+				this.magicOrb = this.removeGraphic(this.magicOrb);
+				this.magic.isCasting = false;
 
 				// Start impact burst
-				this.isBursting = true;
-				this.burstProgress = 0;
-				const burst = new Graphics();
 				const color = this.magicIsCritical ? 0xffdd44 : 0x44aaff;
-				burst.circle(0, 0, 1);
-				burst.fill({color, alpha: 0.6});
-				burst.x = burstX;
-				burst.y = burstY;
-				this.magicBurst = burst;
-				burst.zIndex = 1000;
-				this.parent!.addChild(burst);
+				this.magicBurst.start(this, burstX, burstY, color, 0.6);
 			}
 		}
 
 		// Magic missile animation
-		if (this.isCastingMissiles) {
+		if (this.missiles.isCasting) {
 			let allHit = true;
-			for (const missile of this.missiles) {
+			for (const missile of this.missileProjectiles) {
 				if (missile.hit) continue;
 
 				if (missile.startDelay > 0) {
@@ -839,14 +831,14 @@ export class Wizard extends Actor {
 
 				missile.graphic.visible = true;
 				missile.progress += time.deltaMS;
-				const t = Math.min(missile.progress / this.missileDuration, 1);
+				const t = Math.min(missile.progress / this.missiles.duration, 1);
 
 				const eased = t * t;
 
 				const startX = 80;
 				const startY = -160;
-				const endX = this.missileTargetX;
-				const endY = this.missileTargetY;
+				const endX = this.missiles.targetX;
+				const endY = this.missiles.targetY;
 
 				const x = startX + (endX - startX) * eased;
 				const y = startY + (endY - startY) * eased + Math.sin(t * Math.PI) * missile.offsetY;
@@ -860,8 +852,7 @@ export class Wizard extends Actor {
 
 				if (t >= 1) {
 					missile.hit = true;
-					this.parent!.removeChild(missile.graphic);
-					missile.graphic.destroy();
+					this.removeGraphic(missile.graphic);
 
 					// Small impact burst
 					const burst = new Graphics();
@@ -878,44 +869,23 @@ export class Wizard extends Actor {
 			}
 
 			if (allHit && this.missileBursts.length === 0) {
-				this.isCastingMissiles = false;
 				this.magicLastTime = 0;
-				if (this.resolveMissiles) {
-					this.resolveMissiles();
-					this.resolveMissiles = null;
-				}
+				this.missiles.complete();
 			}
 		}
 
 		// Magic missile bursts
-		for (let i = this.missileBursts.length - 1; i >= 0; i--) {
-			const burst = this.missileBursts[i]!;
-			burst.progress += time.deltaMS;
-			const t = Math.min(burst.progress / this.missileBurstDuration, 1);
-			burst.graphic.scale.set(15 * t);
-			burst.graphic.alpha = (1 - t) * 0.6;
-
-			if (t >= 1) {
-				this.parent!.removeChild(burst.graphic);
-				burst.graphic.destroy();
-				this.missileBursts.splice(i, 1);
-			}
-		}
+		this.updateBurstArray(this.missileBursts, this.missileBurstDuration, 15, 0.6, time.deltaMS);
 
 		// Resolve missiles when all bursts done
-		if (this.isCastingMissiles && this.missiles.every(m => m.hit) && this.missileBursts.length === 0) {
-			this.isCastingMissiles = false;
+		if (this.missiles.isCasting && this.missileProjectiles.every(m => m.hit) && this.missileBursts.length === 0) {
 			this.magicLastTime = 0;
-			if (this.resolveMissiles) {
-				this.resolveMissiles();
-				this.resolveMissiles = null;
-			}
+			this.missiles.complete();
 		}
 
 		// Area attack ring animation
-		if (this.isAreaCasting && this.areaRing) {
-			this.areaProgress += time.deltaMS;
-			const t = Math.min(this.areaProgress / this.areaDuration, 1);
+		if (this.area.isCasting && this.areaRing) {
+			const t = this.area.advance(time.deltaMS);
 
 			const maxScale = 60;
 			const currentScale = maxScale * (0.1 + t * 0.9);
@@ -932,80 +902,54 @@ export class Wizard extends Actor {
 			}
 
 			if (t >= 1) {
-				this.parent!.removeChild(this.areaRing);
-				this.areaRing.destroy();
-				this.areaRing = null;
-				this.isAreaCasting = false;
+				this.areaRing = this.removeGraphic(this.areaRing);
 				this.magicLastTime = 0;
-				if (this.resolveAreaMagic) {
-					this.resolveAreaMagic();
-					this.resolveAreaMagic = null;
-				}
+				this.area.complete();
 			}
 		}
 
 		// Lightning bolt animation
-		if (this.isCastingLightning && this.lightningBolt) {
-			this.lightningProgress += time.deltaMS;
-			const t = Math.min(this.lightningProgress / this.lightningDuration, 1);
+		if (this.lightning.isCasting && this.lightningBolt) {
+			const t = this.lightning.advance(time.deltaMS);
 
 			const startX = this.x + 100;
 			const startY = this.y - 180;
 
 			// Redraw jagged bolt each frame for flicker effect
-			this.drawLightningBolt(this.lightningBolt, startX, startY, this.lightningTargetX, this.lightningTargetY);
+			this.drawLightningBolt(this.lightningBolt, startX, startY, this.lightning.targetX, this.lightning.targetY);
 			this.lightningBolt.alpha = t < 0.7 ? 1 : 1 - (t - 0.7) / 0.3;
 
 			if (t >= 1) {
-				const burstX = this.lightningTargetX;
-				const burstY = this.lightningTargetY;
-				this.parent!.removeChild(this.lightningBolt);
-				this.lightningBolt.destroy();
-				this.lightningBolt = null;
-				this.isCastingLightning = false;
+				const burstX = this.lightning.targetX;
+				const burstY = this.lightning.targetY;
+				this.lightningBolt = this.removeGraphic(this.lightningBolt);
+				this.lightning.isCasting = false;
 
-				this.isLightningBursting = true;
-				this.lightningBurstProgress = 0;
-				const burst = new Graphics();
-				burst.circle(0, 0, 1);
-				burst.fill({color: 0x88ccff, alpha: 0.7});
-				burst.x = burstX;
-				burst.y = burstY;
-				burst.zIndex = 1000;
-				this.parent!.addChild(burst);
-				this.lightningBurst = burst;
+				this.lightningBurst.start(this, burstX, burstY, 0x88ccff, 0.7);
 			}
 		}
 
-		if (this.isLightningBursting && this.lightningBurst) {
-			this.lightningBurstProgress += time.deltaMS;
-			const t = Math.min(this.lightningBurstProgress / this.lightningBurstDuration, 1);
-			this.lightningBurst.scale.set(30 * t);
-			this.lightningBurst.alpha = (1 - t) * 0.7;
+		if (this.lightningBurst.isBursting && this.lightningBurst.graphic) {
+			const t = this.lightningBurst.advance(time.deltaMS);
+			this.lightningBurst.graphic.scale.set(30 * t);
+			this.lightningBurst.graphic.alpha = (1 - t) * 0.7;
 
 			if (t >= 1) {
-				this.parent!.removeChild(this.lightningBurst);
-				this.lightningBurst.destroy();
-				this.lightningBurst = null;
-				this.isLightningBursting = false;
+				this.lightningBurst.finish(this);
 				this.magicLastTime = 0;
-				if (this.resolveLightning) {
-					this.resolveLightning();
-					this.resolveLightning = null;
-				}
+				this.lightning.complete();
 			}
 		}
 
 		// Fire bolt animation
-		if (this.isCastingFireBolt && this.fireBoltOrb) {
-			this.fireBoltProgress += time.deltaMS;
-			const t = Math.min(this.fireBoltProgress / this.fireBoltDuration, 1);
+		if (this.fireBolt.isCasting && this.fireBoltOrb) {
+			const t = this.fireBolt.advance(time.deltaMS);
 			const eased = t * t;
 
 			const startX = 100;
 			const startY = -180;
-			const endX = this.fireBoltTargetX;
-			const endY = this.fireBoltTargetY;
+			const endX = this.fireBolt.targetX;
+			const endY = this.fireBolt.targetY;
 
 			const orbX = startX + (endX - startX) * eased;
 			const orbY = startY + (endY - startY) * eased - Math.sin(t * Math.PI) * 60;
@@ -1023,45 +967,27 @@ export class Wizard extends Actor {
 			if (t >= 1) {
 				const burstX = this.fireBoltOrb.x;
 				const burstY = this.fireBoltOrb.y;
-				this.parent!.removeChild(this.fireBoltOrb);
-				this.fireBoltOrb.destroy();
-				this.fireBoltOrb = null;
-				this.isCastingFireBolt = false;
+				this.fireBoltOrb = this.removeGraphic(this.fireBoltOrb);
+				this.fireBolt.isCasting = false;
 
-				this.isFireBoltBursting = true;
-				this.fireBoltBurstProgress = 0;
-				const burst = new Graphics();
-				burst.circle(0, 0, 1);
-				burst.fill({color: 0xff6600, alpha: 0.7});
-				burst.x = burstX;
-				burst.y = burstY;
-				burst.zIndex = 1000;
-				this.parent!.addChild(burst);
-				this.fireBoltBurst = burst;
+				this.fireBoltBurst.start(this, burstX, burstY, 0xff6600, 0.7);
 			}
 		}
 
-		if (this.isFireBoltBursting && this.fireBoltBurst) {
-			this.fireBoltBurstProgress += time.deltaMS;
-			const t = Math.min(this.fireBoltBurstProgress / this.fireBoltBurstDuration, 1);
-			this.fireBoltBurst.scale.set(35 * t);
-			this.fireBoltBurst.alpha = (1 - t) * 0.7;
+		if (this.fireBoltBurst.isBursting && this.fireBoltBurst.graphic) {
+			const t = this.fireBoltBurst.advance(time.deltaMS);
+			this.fireBoltBurst.graphic.scale.set(35 * t);
+			this.fireBoltBurst.graphic.alpha = (1 - t) * 0.7;
 
 			if (t >= 1) {
-				this.parent!.removeChild(this.fireBoltBurst);
-				this.fireBoltBurst.destroy();
-				this.fireBoltBurst = null;
-				this.isFireBoltBursting = false;
+				this.fireBoltBurst.finish(this);
 				this.magicLastTime = 0;
-				if (this.resolveFireBolt) {
-					this.resolveFireBolt();
-					this.resolveFireBolt = null;
-				}
+				this.fireBolt.complete();
 			}
 		}
 
 		// Frost shard animation
-		if (this.isCastingFrost) {
+		if (this.frost.isCasting) {
 			let allHit = true;
 			for (const shard of this.frostShards) {
 				if (shard.hit) continue;
@@ -1073,13 +999,13 @@ export class Wizard extends Actor {
 				}
 
 				shard.graphic.visible = true;
-				const t = Math.min(shard.progress / this.frostDuration, 1);
+				const t = Math.min(shard.progress / this.frost.duration, 1);
 				const eased = t * t;
 
 				const startX = 80;
 				const startY = -160;
-				const endX = this.frostTargetX;
-				const endY = this.frostTargetY;
+				const endX = this.frost.targetX;
+				const endY = this.frost.targetY;
 
 				const x = startX + (endX - startX) * eased;
 				const y = startY + (endY - startY) * eased + Math.sin(t * Math.PI) * shard.offsetY;
@@ -1096,8 +1022,7 @@ export class Wizard extends Actor {
 
 				if (t >= 1) {
 					shard.hit = true;
-					this.parent!.removeChild(shard.graphic);
-					shard.graphic.destroy();
+					this.removeGraphic(shard.graphic);
 
 					const burst = new Graphics();
 					burst.circle(0, 0, 1);
@@ -1113,49 +1038,28 @@ export class Wizard extends Actor {
 			}
 
 			if (allHit && this.frostBursts.length === 0) {
-				this.isCastingFrost = false;
 				this.magicLastTime = 0;
-				if (this.resolveFrost) {
-					this.resolveFrost();
-					this.resolveFrost = null;
-				}
+				this.frost.complete();
 			}
 		}
 
 		// Frost shard bursts
-		for (let i = this.frostBursts.length - 1; i >= 0; i--) {
-			const burst = this.frostBursts[i]!;
-			burst.progress += time.deltaMS;
-			const t = Math.min(burst.progress / this.frostBurstDuration, 1);
-			burst.graphic.scale.set(15 * t);
-			burst.graphic.alpha = (1 - t) * 0.6;
-
-			if (t >= 1) {
-				this.parent!.removeChild(burst.graphic);
-				burst.graphic.destroy();
-				this.frostBursts.splice(i, 1);
-			}
-		}
+		this.updateBurstArray(this.frostBursts, this.frostBurstDuration, 15, 0.6, time.deltaMS);
 
 		// Resolve frost when all bursts done
-		if (this.isCastingFrost && this.frostShards.every(s => s.hit) && this.frostBursts.length === 0) {
-			this.isCastingFrost = false;
+		if (this.frost.isCasting && this.frostShards.every(s => s.hit) && this.frostBursts.length === 0) {
 			this.magicLastTime = 0;
-			if (this.resolveFrost) {
-				this.resolveFrost();
-				this.resolveFrost = null;
-			}
+			this.frost.complete();
 		}
 
 		// Arcane beam animation
-		if (this.isCastingBeam && this.beamGraphic) {
-			this.beamProgress += time.deltaMS;
-			const t = Math.min(this.beamProgress / this.beamDuration, 1);
+		if (this.beam.isCasting && this.beamGraphic) {
+			const t = this.beam.advance(time.deltaMS);
 
 			const startX = this.x + 100;
 			const startY = this.y - 180;
-			const endX = this.beamTargetX;
-			const endY = this.beamTargetY;
+			const endX = this.beam.targetX;
+			const endY = this.beam.targetY;
 
 			this.beamGraphic.clear();
 
@@ -1217,28 +1121,21 @@ export class Wizard extends Actor {
 			}
 
 			if (t >= 1) {
-				this.parent!.removeChild(this.beamGraphic);
-				this.beamGraphic.destroy();
-				this.beamGraphic = null;
-				this.isCastingBeam = false;
+				this.beamGraphic = this.removeGraphic(this.beamGraphic);
 				this.magicLastTime = 0;
-				if (this.resolveBeam) {
-					this.resolveBeam();
-					this.resolveBeam = null;
-				}
+				this.beam.complete();
 			}
 		}
 
 		// Meteor strike animation
-		if (this.isCastingMeteor && this.meteorGraphic) {
-			this.meteorProgress += time.deltaMS;
-			const t = Math.min(this.meteorProgress / this.meteorDuration, 1);
+		if (this.meteor.isCasting && this.meteorGraphic) {
+			const t = this.meteor.advance(time.deltaMS);
 
 			// Falls diagonally from upper-right
-			const startX = this.meteorTargetX + 150;
+			const startX = this.meteor.targetX + 150;
 			const startY = -100;
-			const endX = this.meteorTargetX;
-			const endY = this.meteorTargetY;
+			const endX = this.meteor.targetX;
+			const endY = this.meteor.targetY;
 
 			const eased = t * t;
 
@@ -1255,47 +1152,28 @@ export class Wizard extends Actor {
 			if (t >= 1) {
 				const burstX = this.meteorGraphic.x;
 				const burstY = this.meteorGraphic.y;
-				this.parent!.removeChild(this.meteorGraphic);
-				this.meteorGraphic.destroy();
-				this.meteorGraphic = null;
-				this.isCastingMeteor = false;
+				this.meteorGraphic = this.removeGraphic(this.meteorGraphic);
+				this.meteor.isCasting = false;
 
-				this.isMeteorBursting = true;
-				this.meteorBurstProgress = 0;
-				const burst = new Graphics();
-				burst.circle(0, 0, 1);
-				burst.fill({color: 0xff6600, alpha: 0.8});
-				burst.x = burstX;
-				burst.y = burstY;
-				burst.zIndex = 1000;
-				this.parent!.addChild(burst);
-				this.meteorBurst = burst;
+				this.meteorBurst.start(this, burstX, burstY, 0xff6600, 0.8);
 			}
 		}
 
-		if (this.isMeteorBursting && this.meteorBurst) {
-			this.meteorBurstProgress += time.deltaMS;
-			const t = Math.min(this.meteorBurstProgress / this.meteorBurstDuration, 1);
-			this.meteorBurst.scale.set(50 * t);
-			this.meteorBurst.alpha = (1 - t) * 0.8;
+		if (this.meteorBurst.isBursting && this.meteorBurst.graphic) {
+			const t = this.meteorBurst.advance(time.deltaMS);
+			this.meteorBurst.graphic.scale.set(50 * t);
+			this.meteorBurst.graphic.alpha = (1 - t) * 0.8;
 
 			if (t >= 1) {
-				this.parent!.removeChild(this.meteorBurst);
-				this.meteorBurst.destroy();
-				this.meteorBurst = null;
-				this.isMeteorBursting = false;
+				this.meteorBurst.finish(this);
 				this.magicLastTime = 0;
-				if (this.resolveMeteor) {
-					this.resolveMeteor();
-					this.resolveMeteor = null;
-				}
+				this.meteor.complete();
 			}
 		}
 
 		// Level-up animation
-		if (this.isLevelingUp) {
-			this.levelUpProgress += time.deltaMS;
-			const t = Math.min(this.levelUpProgress / this.levelUpDuration, 1);
+		if (this.levelUp_.isCasting) {
+			const t = this.levelUp_.advance(time.deltaMS);
 			const centerX = this.x;
 			const centerY = this.y - 80;
 
@@ -1348,27 +1226,19 @@ export class Wizard extends Actor {
 
 			// Complete
 			if (t >= 1) {
-				this.isLevelingUp = false;
 				this.sprite.scale.set(0.1);
 
 				if (this.levelUpGlow) {
-					this.parent!.removeChild(this.levelUpGlow);
-					this.levelUpGlow.destroy();
-					this.levelUpGlow = null;
+					this.levelUpGlow = this.removeGraphic(this.levelUpGlow);
 				}
 				if (this.levelUpFlash) {
-					this.parent!.removeChild(this.levelUpFlash);
-					this.levelUpFlash.destroy();
-					this.levelUpFlash = null;
+					this.levelUpFlash = this.removeGraphic(this.levelUpFlash);
 				}
 
 				this.levelUpNewTexture = null;
 				this.magicLastTime = 0;
 
-				if (this.resolveLevelUp) {
-					this.resolveLevelUp();
-					this.resolveLevelUp = null;
-				}
+				this.levelUp_.complete();
 			}
 		}
 
@@ -1382,30 +1252,22 @@ export class Wizard extends Actor {
 			p.graphic.alpha = lifeRatio * 0.8;
 			p.graphic.scale.set(Math.max(0.01, lifeRatio));
 			if (p.life <= 0) {
-				this.parent!.removeChild(p.graphic);
-				p.graphic.destroy();
+				this.removeGraphic(p.graphic);
 				this.levelUpParticles.splice(i, 1);
 			}
 		}
 
 		// Impact burst animation
-		if (this.isBursting && this.magicBurst) {
-			this.burstProgress += time.deltaMS;
-			const t = Math.min(this.burstProgress / this.burstDuration, 1);
+		if (this.magicBurst.isBursting && this.magicBurst.graphic) {
+			const t = this.magicBurst.advance(time.deltaMS);
 			const maxScale = this.magicIsCritical ? 40 : 25;
-			this.magicBurst.scale.set(maxScale * t);
-			this.magicBurst.alpha = (1 - t) * 0.6;
+			this.magicBurst.graphic.scale.set(maxScale * t);
+			this.magicBurst.graphic.alpha = (1 - t) * 0.6;
 
 			if (t >= 1) {
-				this.parent!.removeChild(this.magicBurst);
-				this.magicBurst.destroy();
-				this.magicBurst = null;
-				this.isBursting = false;
+				this.magicBurst.finish(this);
 				this.magicLastTime = 0;
-				if (this.resolveMagic) {
-					this.resolveMagic();
-					this.resolveMagic = null;
-				}
+				this.magic.complete();
 			}
 		}
 	}
