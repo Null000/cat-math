@@ -1,4 +1,3 @@
-
 import { readdirSync, writeFileSync, readFileSync } from 'fs';
 import { join } from 'path';
 
