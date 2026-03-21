@@ -35,11 +35,15 @@ var categoryGroups = {
     "Addition: 20 (with carry)" /* Addition_TwentyWithCarry */,
     "Addition: 20" /* Addition_Twenty */,
     "Addition: 20 (missing facts)" /* Addition_Twenty_Missing */,
+    "Addition: 10 (3 numbers)" /* Addition_ThreeNumbers_Ten */,
+    "Addition: 20 (3 numbers)" /* Addition_ThreeNumbers_Twenty */,
+    "Addition: 100 (3 numbers)" /* Addition_ThreeNumbers_Hundred */,
     "Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */,
     "Addition: 100 (with carry)" /* Addition_HundredWithCarry */,
     "Addition: 100" /* Addition_Hundred */,
     "Addition: 100 (missing facts)" /* Addition_Hundred_Missing */,
     "Addition: Tens" /* Addition_Tens */,
+    "Addition: 1000 (3 numbers)" /* Addition_ThreeNumbers_Thousand */,
     "Addition: 1000 (without carry)" /* Addition_ThousandWithoutCarry */,
     "Addition: 1000 (with carry)" /* Addition_ThousandWithCarry */,
     "Addition: 1000" /* Addition_Thousand */,
@@ -50,11 +54,15 @@ var categoryGroups = {
     "Subtraction: 10 (missing facts)" /* Subtraction_Ten_Missing */,
     "Subtraction: 20" /* Subtraction_Twenty */,
     "Subtraction: 20 (missing facts)" /* Subtraction_Twenty_Missing */,
+    "Subtraction: 10 (3 numbers)" /* Subtraction_ThreeNumbers_Ten */,
+    "Subtraction: 20 (3 numbers)" /* Subtraction_ThreeNumbers_Twenty */,
+    "Subtraction: 100 (3 numbers)" /* Subtraction_ThreeNumbers_Hundred */,
     "Subtraction: 100 (without borrow)" /* Subtraction_HundredWithoutBorrow */,
     "Subtraction: 100 (with borrow)" /* Subtraction_HundredWithBorrow */,
     "Subtraction: 100" /* Subtraction_Hundred */,
     "Subtraction: 100 (missing facts)" /* Subtraction_Hundred_Missing */,
     "Subtraction: Tens" /* Subtraction_Tens */,
+    "Subtraction: 1000 (3 numbers)" /* Subtraction_ThreeNumbers_Thousand */,
     "Subtraction: 1000 (without borrow)" /* Subtraction_ThousandWithoutBorrow */,
     "Subtraction: 1000 (with borrow)" /* Subtraction_ThousandWithBorrow */,
     "Subtraction: 1000" /* Subtraction_Thousand */,
@@ -104,8 +112,10 @@ var yearGroupsSl = {
     "Next/Previous: 20" /* NextPrevious_Twenty */,
     "Addition: 10" /* Addition_Ten */,
     "Addition: 10 (missing facts)" /* Addition_Ten_Missing */,
+    "Addition: 10 (3 numbers)" /* Addition_ThreeNumbers_Ten */,
     "Subtraction: 10" /* Subtraction_Ten */,
     "Subtraction: 10 (missing facts)" /* Subtraction_Ten_Missing */,
+    "Subtraction: 10 (3 numbers)" /* Subtraction_ThreeNumbers_Ten */,
     "Comparison: 10" /* Comparison_Ten */,
     "Comparison: 20" /* Comparison_Twenty */,
     "Number to Text: 10" /* NumberToText_Ten */,
@@ -118,9 +128,11 @@ var yearGroupsSl = {
     "Addition: 20 (with carry)" /* Addition_TwentyWithCarry */,
     "Addition: 20" /* Addition_Twenty */,
     "Addition: 20 (missing facts)" /* Addition_Twenty_Missing */,
+    "Addition: 20 (3 numbers)" /* Addition_ThreeNumbers_Twenty */,
     "Addition: Tens" /* Addition_Tens */,
     "Subtraction: 20" /* Subtraction_Twenty */,
     "Subtraction: 20 (missing facts)" /* Subtraction_Twenty_Missing */,
+    "Subtraction: 20 (3 numbers)" /* Subtraction_ThreeNumbers_Twenty */,
     "Subtraction: Tens" /* Subtraction_Tens */,
     "Number to Text: 100" /* NumberToText_Hundred */,
     "Text to Number: 100" /* TextToNumber_Hundred */
@@ -130,11 +142,13 @@ var yearGroupsSl = {
     "Addition: 100 (with carry)" /* Addition_HundredWithCarry */,
     "Addition: 100" /* Addition_Hundred */,
     "Addition: 100 (missing facts)" /* Addition_Hundred_Missing */,
+    "Addition: 100 (3 numbers)" /* Addition_ThreeNumbers_Hundred */,
     "Addition: Hundreds" /* Addition_Hundreds */,
     "Subtraction: 100 (without borrow)" /* Subtraction_HundredWithoutBorrow */,
     "Subtraction: 100 (with borrow)" /* Subtraction_HundredWithBorrow */,
     "Subtraction: 100" /* Subtraction_Hundred */,
     "Subtraction: 100 (missing facts)" /* Subtraction_Hundred_Missing */,
+    "Subtraction: 100 (3 numbers)" /* Subtraction_ThreeNumbers_Hundred */,
     "Subtraction: Hundreds" /* Subtraction_Hundreds */,
     "Multiplication: 10" /* Multiplication_Ten */,
     "Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */,
@@ -148,9 +162,11 @@ var yearGroupsSl = {
     "Addition: 1000 (without carry)" /* Addition_ThousandWithoutCarry */,
     "Addition: 1000 (with carry)" /* Addition_ThousandWithCarry */,
     "Addition: 1000" /* Addition_Thousand */,
+    "Addition: 1000 (3 numbers)" /* Addition_ThreeNumbers_Thousand */,
     "Subtraction: 1000 (without borrow)" /* Subtraction_ThousandWithoutBorrow */,
     "Subtraction: 1000 (with borrow)" /* Subtraction_ThousandWithBorrow */,
     "Subtraction: 1000" /* Subtraction_Thousand */,
+    "Subtraction: 1000 (3 numbers)" /* Subtraction_ThreeNumbers_Thousand */,
     "Multiplication: 20" /* Multiplication_Twenty */,
     "Multiplication: 20 (missing facts)" /* Multiplication_Twenty_Missing */,
     "Division: 20" /* Division_Twenty */,
@@ -177,6 +193,12 @@ var categoryToGroup = (() => {
 // src/addition.ts
 var generateProps = {
   ["Addition: 10" /* Addition_Ten */]: { xMax: 10, yMax: 10 },
+  ["Addition: 10 (3 numbers)" /* Addition_ThreeNumbers_Ten */]: {
+    xMax: 10,
+    yMax: 10,
+    maxResult: 10,
+    threeNumbers: true
+  },
   ["Addition: 10 (missing facts)" /* Addition_Ten_Missing */]: {
     xMax: 10,
     yMax: 10,
@@ -195,6 +217,12 @@ var generateProps = {
     carryAllowed: true,
     carryForced: true
   },
+  ["Addition: 20 (3 numbers)" /* Addition_ThreeNumbers_Twenty */]: {
+    xMax: 20,
+    yMax: 20,
+    maxResult: 20,
+    threeNumbers: true
+  },
   ["Addition: 20" /* Addition_Twenty */]: {
     xMax: 20,
     yMax: 20,
@@ -209,6 +237,14 @@ var generateProps = {
     carryAllowed: true,
     carryForced: false,
     missingFact: ["first", "second"]
+  },
+  ["Addition: 100 (3 numbers)" /* Addition_ThreeNumbers_Hundred */]: {
+    xMax: 100,
+    yMax: 100,
+    xMin: 10,
+    yMin: 10,
+    maxResult: 100,
+    threeNumbers: true
   },
   ["Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */]: {
     xMax: 100,
@@ -253,6 +289,15 @@ var generateProps = {
     yMin: 10,
     step: 10,
     maxResult: 100
+  },
+  ["Addition: 1000 (3 numbers)" /* Addition_ThreeNumbers_Thousand */]: {
+    xMax: 990,
+    yMax: 990,
+    xMin: 100,
+    yMin: 100,
+    step: 10,
+    maxResult: 1000,
+    threeNumbers: true
   },
   ["Addition: 1000 (without carry)" /* Addition_ThousandWithoutCarry */]: {
     xMax: 990,
@@ -315,6 +360,21 @@ function generate(category) {
   const missingFacts = Array.isArray(missingFact) ? missingFact : [missingFact];
   for (let i = xMin;i <= xMax; i += step) {
     for (let j = yMin;j <= yMax; j += step) {
+      if (props.threeNumbers) {
+        const currentSum = i + j;
+        if (maxResult && currentSum > maxResult)
+          continue;
+        for (let k = yMin;maxResult ? k <= maxResult : k <= yMax; k += step) {
+          const result2 = currentSum + k;
+          if (maxResult && result2 > maxResult)
+            continue;
+          const text = `${i} + ${j} + ${k} = ?`;
+          const answer = result2;
+          const id = `${category}_${i}_${j}_${k}_result`;
+          allProblems.push({ id, text, answer });
+        }
+        continue;
+      }
       const digitI = Math.floor(i / step) % 10;
       const digitJ = Math.floor(j / step) % 10;
       const hasCarry = carryAllowed && digitI + digitJ >= 10;
@@ -364,6 +424,11 @@ function generate(category) {
 // src/subtraction.ts
 var generateProps2 = {
   ["Subtraction: 10" /* Subtraction_Ten */]: { xMax: 10, yMax: 10 },
+  ["Subtraction: 10 (3 numbers)" /* Subtraction_ThreeNumbers_Ten */]: {
+    xMax: 10,
+    yMax: 10,
+    threeNumbers: true
+  },
   ["Subtraction: 10 (missing facts)" /* Subtraction_Ten_Missing */]: {
     xMax: 10,
     yMax: 10,
@@ -375,12 +440,24 @@ var generateProps2 = {
     borrowAllowed: true,
     borrowForced: false
   },
+  ["Subtraction: 20 (3 numbers)" /* Subtraction_ThreeNumbers_Twenty */]: {
+    xMax: 20,
+    yMax: 20,
+    threeNumbers: true
+  },
   ["Subtraction: 20 (missing facts)" /* Subtraction_Twenty_Missing */]: {
     xMax: 20,
     yMax: 20,
     borrowAllowed: true,
     borrowForced: false,
     missingFact: ["first", "second"]
+  },
+  ["Subtraction: 100 (3 numbers)" /* Subtraction_ThreeNumbers_Hundred */]: {
+    xMax: 100,
+    yMax: 100,
+    xMin: 10,
+    yMin: 1,
+    threeNumbers: true
   },
   ["Subtraction: 100 (without borrow)" /* Subtraction_HundredWithoutBorrow */]: {
     xMax: 100,
@@ -412,6 +489,14 @@ var generateProps2 = {
     xMin: 10,
     yMin: 10,
     step: 10
+  },
+  ["Subtraction: 1000 (3 numbers)" /* Subtraction_ThreeNumbers_Thousand */]: {
+    xMax: 1000,
+    yMax: 990,
+    xMin: 100,
+    yMin: 100,
+    step: 10,
+    threeNumbers: true
   },
   ["Subtraction: 1000 (without borrow)" /* Subtraction_ThousandWithoutBorrow */]: {
     xMax: 1000,
@@ -471,6 +556,19 @@ function generate2(category) {
     for (let j = yMin;j <= yMax; j += step) {
       if (i < j)
         continue;
+      if (props.threeNumbers) {
+        const currentDiff = i - j;
+        for (let k = yMin;k <= yMax; k += step) {
+          if (currentDiff < k)
+            continue;
+          const result = currentDiff - k;
+          const text = `${i} - ${j} - ${k} = ?`;
+          const answer = result;
+          const id = `${category}_${i}_${j}_${k}_result`;
+          allProblems.push({ id, text, answer });
+        }
+        continue;
+      }
       const digitI = Math.floor(i / step) % 10;
       const digitJ = Math.floor(j / step) % 10;
       const hasBorrow = borrowAllowed && digitI < digitJ;
@@ -717,6 +815,10 @@ var translations = {
     ["Addition: 20 (with carry)" /* Addition_TwentyWithCarry */]: "Addition: 20 (with carry)",
     ["Addition: 20" /* Addition_Twenty */]: "Addition: 20",
     ["Addition: 20 (missing facts)" /* Addition_Twenty_Missing */]: "Addition: 20 (missing facts)",
+    ["Addition: 10 (3 numbers)" /* Addition_ThreeNumbers_Ten */]: "Addition: 10 (3 numbers)",
+    ["Addition: 20 (3 numbers)" /* Addition_ThreeNumbers_Twenty */]: "Addition: 20 (3 numbers)",
+    ["Addition: 100 (3 numbers)" /* Addition_ThreeNumbers_Hundred */]: "Addition: 100 (3 numbers)",
+    ["Addition: 1000 (3 numbers)" /* Addition_ThreeNumbers_Thousand */]: "Addition: 1000 (3 numbers)",
     ["Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */]: "Addition: 100 (without carry)",
     ["Addition: 100 (with carry)" /* Addition_HundredWithCarry */]: "Addition: 100 (with carry)",
     ["Addition: 100" /* Addition_Hundred */]: "Addition: 100",
@@ -730,6 +832,10 @@ var translations = {
     ["Subtraction: 10 (missing facts)" /* Subtraction_Ten_Missing */]: "Subtraction: 10 (missing facts)",
     ["Subtraction: 20" /* Subtraction_Twenty */]: "Subtraction: 20",
     ["Subtraction: 20 (missing facts)" /* Subtraction_Twenty_Missing */]: "Subtraction: 20 (missing facts)",
+    ["Subtraction: 10 (3 numbers)" /* Subtraction_ThreeNumbers_Ten */]: "Subtraction: 10 (3 numbers)",
+    ["Subtraction: 20 (3 numbers)" /* Subtraction_ThreeNumbers_Twenty */]: "Subtraction: 20 (3 numbers)",
+    ["Subtraction: 100 (3 numbers)" /* Subtraction_ThreeNumbers_Hundred */]: "Subtraction: 100 (3 numbers)",
+    ["Subtraction: 1000 (3 numbers)" /* Subtraction_ThreeNumbers_Thousand */]: "Subtraction: 1000 (3 numbers)",
     ["Subtraction: 100 (without borrow)" /* Subtraction_HundredWithoutBorrow */]: "Subtraction: 100 (without borrow)",
     ["Subtraction: 100 (with borrow)" /* Subtraction_HundredWithBorrow */]: "Subtraction: 100 (with borrow)",
     ["Subtraction: 100" /* Subtraction_Hundred */]: "Subtraction: 100",
@@ -834,6 +940,10 @@ var translations = {
     ["Addition: 20 (with carry)" /* Addition_TwentyWithCarry */]: "Seštevanje: 20 (s prehodom)",
     ["Addition: 20" /* Addition_Twenty */]: "Seštevanje: 20",
     ["Addition: 20 (missing facts)" /* Addition_Twenty_Missing */]: "Seštevanje: 20 (neznani člen)",
+    ["Addition: 10 (3 numbers)" /* Addition_ThreeNumbers_Ten */]: "Seštevanje: 10 (3 števila)",
+    ["Addition: 20 (3 numbers)" /* Addition_ThreeNumbers_Twenty */]: "Seštevanje: 20 (3 števila)",
+    ["Addition: 100 (3 numbers)" /* Addition_ThreeNumbers_Hundred */]: "Seštevanje: 100 (3 števila)",
+    ["Addition: 1000 (3 numbers)" /* Addition_ThreeNumbers_Thousand */]: "Seštevanje: 1000 (3 števila)",
     ["Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */]: "Seštevanje: 100 (brez prehoda)",
     ["Addition: 100 (with carry)" /* Addition_HundredWithCarry */]: "Seštevanje: 100 (s prehodom)",
     ["Addition: 100" /* Addition_Hundred */]: "Seštevanje: 100",
@@ -847,6 +957,10 @@ var translations = {
     ["Subtraction: 10 (missing facts)" /* Subtraction_Ten_Missing */]: "Odštevanje: 10 (neznani člen)",
     ["Subtraction: 20" /* Subtraction_Twenty */]: "Odštevanje: 20",
     ["Subtraction: 20 (missing facts)" /* Subtraction_Twenty_Missing */]: "Odštevanje: 20 (neznani člen)",
+    ["Subtraction: 10 (3 numbers)" /* Subtraction_ThreeNumbers_Ten */]: "Odštevanje: 10 (3 števila)",
+    ["Subtraction: 20 (3 numbers)" /* Subtraction_ThreeNumbers_Twenty */]: "Odštevanje: 20 (3 števila)",
+    ["Subtraction: 100 (3 numbers)" /* Subtraction_ThreeNumbers_Hundred */]: "Odštevanje: 100 (3 števila)",
+    ["Subtraction: 1000 (3 numbers)" /* Subtraction_ThreeNumbers_Thousand */]: "Odštevanje: 1000 (3 števila)",
     ["Subtraction: 100 (without borrow)" /* Subtraction_HundredWithoutBorrow */]: "Odštevanje: 100 (brez prehoda)",
     ["Subtraction: 100 (with borrow)" /* Subtraction_HundredWithBorrow */]: "Odštevanje: 100 (s prehodom)",
     ["Subtraction: 100" /* Subtraction_Hundred */]: "Odštevanje: 100",
