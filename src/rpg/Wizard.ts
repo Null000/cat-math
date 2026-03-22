@@ -142,7 +142,6 @@ export class Wizard extends Actor {
 			attackPower: Math.floor(5 * xpFactor),
 			defensePower: Math.floor(xpFactor),
 			speed: Math.floor(6 * xpFactor),
-			xpDrop: 0,
 		});
 	}
 

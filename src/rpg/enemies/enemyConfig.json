@@ -5,8 +5,7 @@
 		"health": 12,
 		"attackPower": 4,
 		"defensePower": 0,
-		"speed": 4,
-		"xpDrop": 8
+		"speed": 4
 	},
 	"dire_rat": {
 		"texturePath": "assets/ratLeader.png",
@@ -14,8 +13,7 @@
 		"health": 24,
 		"attackPower": 5,
 		"defensePower": 2,
-		"speed": 5,
-		"xpDrop": 20
+		"speed": 5
 	},
 	"slime": {
 		"texturePath": "assets/slime.png",
@@ -23,8 +21,7 @@
 		"health": 45,
 		"attackPower": 8,
 		"defensePower": 0,
-		"speed": 15,
-		"xpDrop": 10
+		"speed": 15
 	},
 	"goblin": {
 		"texturePath": "assets/goblin.png",
@@ -32,8 +29,7 @@
 		"health": 144,
 		"attackPower": 29,
 		"defensePower": 2,
-		"speed": 25,
-		"xpDrop": 22
+		"speed": 25
 	},
 	"skeleton": {
 		"texturePath": "assets/skeleton.png",
@@ -41,8 +37,7 @@
 		"health": 38,
 		"attackPower": 7,
 		"defensePower": 3,
-		"speed": 4,
-		"xpDrop": 25
+		"speed": 4
 	},
 	"zombie": {
 		"texturePath": "assets/zombie.png",
@@ -50,8 +45,7 @@
 		"health": 50,
 		"attackPower": 8,
 		"defensePower": 4,
-		"speed": 2,
-		"xpDrop": 32
+		"speed": 2
 	},
 	"bat": {
 		"texturePath": "assets/bat.png",
@@ -59,8 +53,7 @@
 		"health": 45,
 		"attackPower": 8,
 		"defensePower": 0,
-		"speed": 8,
-		"xpDrop": 10
+		"speed": 8
 	},
 	"wolf": {
 		"texturePath": "assets/wolf.png",
@@ -68,8 +61,7 @@
 		"health": 35,
 		"attackPower": 8,
 		"defensePower": 2,
-		"speed": 7,
-		"xpDrop": 28
+		"speed": 7
 	},
 	"treant": {
 		"texturePath": "assets/treant.png",
@@ -77,8 +69,7 @@
 		"health": 70,
 		"attackPower": 10,
 		"defensePower": 5,
-		"speed": 3,
-		"xpDrop": 60
+		"speed": 3
 	},
 	"dummy": {
 		"texturePath": "assets/dummy.png",
@@ -86,8 +77,7 @@
 		"health": 1,
 		"attackPower": 0,
 		"defensePower": 0,
-		"speed": 0.000000001,
-		"xpDrop": 1
+		"speed": 1e-09
 	},
 	"spider": {
 		"texturePath": "assets/spider.png",
@@ -95,8 +85,7 @@
 		"health": 50,
 		"attackPower": 10,
 		"defensePower": 1,
-		"speed": 20,
-		"xpDrop": 12
+		"speed": 20
 	},
 	"mushroom": {
 		"texturePath": "assets/mushroom.png",
@@ -104,8 +93,7 @@
 		"health": 40,
 		"attackPower": 8,
 		"defensePower": 1,
-		"speed": 12,
-		"xpDrop": 10
+		"speed": 12
 	},
 	"poison_slime": {
 		"texturePath": "assets/poisonSlime.png",
@@ -113,8 +101,7 @@
 		"health": 125,
 		"attackPower": 24,
 		"defensePower": 1,
-		"speed": 30,
-		"xpDrop": 16
+		"speed": 30
 	},
 	"giant_bat": {
 		"texturePath": "assets/bat.png",
@@ -123,7 +110,6 @@
 		"attackPower": 5,
 		"defensePower": 1,
 		"speed": 9,
-		"xpDrop": 18,
 		"tint": "0xdd4444"
 	},
 	"giant_spider": {
@@ -133,7 +119,6 @@
 		"attackPower": 7,
 		"defensePower": 3,
 		"speed": 6,
-		"xpDrop": 30,
 		"tint": "0x8844aa"
 	},
 	"skeleton_warrior": {
@@ -142,8 +127,7 @@
 		"health": 45,
 		"attackPower": 8,
 		"defensePower": 4,
-		"speed": 5,
-		"xpDrop": 35
+		"speed": 5
 	},
 	"dire_wolf": {
 		"texturePath": "assets/wolf.png",
@@ -152,7 +136,6 @@
 		"attackPower": 10,
 		"defensePower": 3,
 		"speed": 8,
-		"xpDrop": 40,
 		"tint": "0x444466"
 	},
 	"ghost": {
@@ -161,8 +144,7 @@
 		"health": 32,
 		"attackPower": 9,
 		"defensePower": 2,
-		"speed": 7,
-		"xpDrop": 35
+		"speed": 7
 	},
 	"dark_skeleton": {
 		"texturePath": "assets/darkSkeleton.png",
@@ -170,8 +152,7 @@
 		"health": 55,
 		"attackPower": 9,
 		"defensePower": 5,
-		"speed": 4,
-		"xpDrop": 45
+		"speed": 4
 	},
 	"fire_slime": {
 		"texturePath": "assets/fireSlime.png",
@@ -179,8 +160,7 @@
 		"health": 60,
 		"attackPower": 11,
 		"defensePower": 3,
-		"speed": 4,
-		"xpDrop": 50
+		"speed": 4
 	},
 	"dragon": {
 		"texturePath": "assets/dragon.png",
@@ -188,7 +168,6 @@
 		"health": 120,
 		"attackPower": 14,
 		"defensePower": 6,
-		"speed": 5,
-		"xpDrop": 100
+		"speed": 5
 	}
 }

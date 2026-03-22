@@ -9,7 +9,6 @@ interface EnemyJsonStats {
 	attackPower: number;
 	defensePower: number;
 	speed: number;
-	xpDrop: number;
 	tint?: string;
 }
 
@@ -20,7 +19,6 @@ interface EnemyStats {
 	attackPower: number;
 	defensePower: number;
 	speed: number;
-	xpDrop: number;
 	tint?: number;
 }
 
@@ -72,7 +70,6 @@ export class Enemy extends Actor {
 			attackPower: config.attackPower,
 			defensePower: config.defensePower,
 			speed: config.speed,
-			xpDrop: config.xpDrop,
 		});
 		if (config.tint !== undefined) {
 			this.sprite.tint = config.tint;

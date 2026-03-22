@@ -54,7 +54,6 @@ function updateStats(actor: Actor | null) {
 	$("stat-atk").textContent = String(actor.attackPower);
 	$("stat-def").textContent = String(actor.defensePower);
 	$("stat-spd").textContent = String(actor.speed);
-	$("stat-xp").textContent = String(actor.xpDrop);
 }
 
 function setButtons(enabled: boolean) {
