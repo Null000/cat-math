@@ -30,6 +30,14 @@ export function t(key: string): string {
 	return translated || key;
 }
 
+export function localizeProblemText(text: string): string {
+	const lang = getCurrentLanguage();
+	if (lang === "sl") {
+		return text.replace(/ × /g, " · ").replace(/ \/ /g, " : ");
+	}
+	return text.replace(/ \/ /g, " ÷ ");
+}
+
 export function getCategoryDisplayName(category: Category): string {
 	const lang = getCurrentLanguage();
 	const translated = (translations[lang] as any)[category];

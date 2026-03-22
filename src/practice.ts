@@ -1,5 +1,5 @@
 import { getProblem, solvedProblem } from "./app.ts";
-import { getCurrentLanguage, t, Language } from "./i18n.ts";
+import { getCurrentLanguage, t, localizeProblemText, Language } from "./i18n.ts";
 import { Category, Problem } from "./common.ts";
 import { numberOfRewardImages } from "./constants.ts";
 
@@ -263,7 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		currentProblem = result.problem;
 		currentCategory = result.category;
 
-		if (problemElement) problemElement.textContent = currentProblem.text;
+		if (problemElement) problemElement.textContent = localizeProblemText(currentProblem.text);
 
 		// Toggle between text input and option buttons
 		if (hasOptions(currentProblem)) {
@@ -424,7 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
 							(details, problemText) => {
 								html += `
                                 <div class="review-item">
-                                    <span class="review-problem">${problemText}</span>
+                                    <span class="review-problem">${localizeProblemText(problemText)}</span>
                                     <div class="review-details">
                                         ${t("correct_answer")} <span class="review-correct">${details.correctAnswer}</span>,
                                         ${t("your_answers")} <span class="review-incorrect">${details.givenAnswers.join(", ")}</span>
@@ -552,7 +552,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				stats.roundIncorrectProblems.forEach((details, problemText) => {
 					html += `
                         <div class="review-item">
-                            <span class="review-problem">${problemText}</span>
+                            <span class="review-problem">${localizeProblemText(problemText)}</span>
                             <div class="review-details">
                                 ${t("correct_answer")} <span class="review-correct">${details.correctAnswer}</span>,
                                 ${t("your_answers")} <span class="review-incorrect">${details.givenAnswers.join(", ")}</span>

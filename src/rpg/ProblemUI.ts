@@ -1,5 +1,6 @@
 import { Text, Container, TextStyle } from "pixi.js";
 import { standardWidth, standardHeight } from "./constants.ts";
+import { localizeProblemText } from "../i18n.ts";
 
 export class ProblemUI {
 	private problemText: Text;
@@ -289,7 +290,7 @@ export class ProblemUI {
 	}
 
 	setProblem(text: string, options?: { label: string; value: number }[], answerType: "string" | "number" = "number") {
-		this.problemText.text = text;
+		this.problemText.text = localizeProblemText(text);
 		this.problemText.style.fill = "#ffffff"; // Reset color if changed
 
 		if (answerType === "string") {
