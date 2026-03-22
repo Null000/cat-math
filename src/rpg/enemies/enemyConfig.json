@@ -1,0 +1,194 @@
+{
+	"rat": {
+		"texturePath": "assets/rat.png",
+		"textureScale": 0.5,
+		"health": 12,
+		"attackPower": 4,
+		"defensePower": 0,
+		"speed": 4,
+		"xpDrop": 8
+	},
+	"dire_rat": {
+		"texturePath": "assets/ratLeader.png",
+		"textureScale": 0.5,
+		"health": 24,
+		"attackPower": 5,
+		"defensePower": 2,
+		"speed": 5,
+		"xpDrop": 20
+	},
+	"slime": {
+		"texturePath": "assets/slime.png",
+		"textureScale": 0.25,
+		"health": 45,
+		"attackPower": 8,
+		"defensePower": 0,
+		"speed": 15,
+		"xpDrop": 10
+	},
+	"goblin": {
+		"texturePath": "assets/goblin.png",
+		"textureScale": 0.3,
+		"health": 144,
+		"attackPower": 29,
+		"defensePower": 2,
+		"speed": 25,
+		"xpDrop": 22
+	},
+	"skeleton": {
+		"texturePath": "assets/skeleton.png",
+		"textureScale": 0.25,
+		"health": 38,
+		"attackPower": 7,
+		"defensePower": 3,
+		"speed": 4,
+		"xpDrop": 25
+	},
+	"zombie": {
+		"texturePath": "assets/zombie.png",
+		"textureScale": 0.3,
+		"health": 50,
+		"attackPower": 8,
+		"defensePower": 4,
+		"speed": 2,
+		"xpDrop": 32
+	},
+	"bat": {
+		"texturePath": "assets/bat.png",
+		"textureScale": 0.25,
+		"health": 45,
+		"attackPower": 8,
+		"defensePower": 0,
+		"speed": 8,
+		"xpDrop": 10
+	},
+	"wolf": {
+		"texturePath": "assets/wolf.png",
+		"textureScale": 0.3,
+		"health": 35,
+		"attackPower": 8,
+		"defensePower": 2,
+		"speed": 7,
+		"xpDrop": 28
+	},
+	"treant": {
+		"texturePath": "assets/treant.png",
+		"textureScale": 0.45,
+		"health": 70,
+		"attackPower": 10,
+		"defensePower": 5,
+		"speed": 3,
+		"xpDrop": 60
+	},
+	"dummy": {
+		"texturePath": "assets/dummy.png",
+		"textureScale": 0.15,
+		"health": 1,
+		"attackPower": 0,
+		"defensePower": 0,
+		"speed": 0.000000001,
+		"xpDrop": 1
+	},
+	"spider": {
+		"texturePath": "assets/spider.png",
+		"textureScale": 0.25,
+		"health": 50,
+		"attackPower": 10,
+		"defensePower": 1,
+		"speed": 20,
+		"xpDrop": 12
+	},
+	"mushroom": {
+		"texturePath": "assets/mushroom.png",
+		"textureScale": 0.25,
+		"health": 40,
+		"attackPower": 8,
+		"defensePower": 1,
+		"speed": 12,
+		"xpDrop": 10
+	},
+	"poison_slime": {
+		"texturePath": "assets/poisonSlime.png",
+		"textureScale": 0.25,
+		"health": 125,
+		"attackPower": 24,
+		"defensePower": 1,
+		"speed": 30,
+		"xpDrop": 16
+	},
+	"giant_bat": {
+		"texturePath": "assets/bat.png",
+		"textureScale": 0.35,
+		"health": 24,
+		"attackPower": 5,
+		"defensePower": 1,
+		"speed": 9,
+		"xpDrop": 18,
+		"tint": "0xdd4444"
+	},
+	"giant_spider": {
+		"texturePath": "assets/spider.png",
+		"textureScale": 0.6,
+		"health": 40,
+		"attackPower": 7,
+		"defensePower": 3,
+		"speed": 6,
+		"xpDrop": 30,
+		"tint": "0x8844aa"
+	},
+	"skeleton_warrior": {
+		"texturePath": "assets/skeletonWarrior.png",
+		"textureScale": 0.25,
+		"health": 45,
+		"attackPower": 8,
+		"defensePower": 4,
+		"speed": 5,
+		"xpDrop": 35
+	},
+	"dire_wolf": {
+		"texturePath": "assets/wolf.png",
+		"textureScale": 0.4,
+		"health": 48,
+		"attackPower": 10,
+		"defensePower": 3,
+		"speed": 8,
+		"xpDrop": 40,
+		"tint": "0x444466"
+	},
+	"ghost": {
+		"texturePath": "assets/ghost.png",
+		"textureScale": 0.25,
+		"health": 32,
+		"attackPower": 9,
+		"defensePower": 2,
+		"speed": 7,
+		"xpDrop": 35
+	},
+	"dark_skeleton": {
+		"texturePath": "assets/darkSkeleton.png",
+		"textureScale": 0.3,
+		"health": 55,
+		"attackPower": 9,
+		"defensePower": 5,
+		"speed": 4,
+		"xpDrop": 45
+	},
+	"fire_slime": {
+		"texturePath": "assets/fireSlime.png",
+		"textureScale": 0.35,
+		"health": 60,
+		"attackPower": 11,
+		"defensePower": 3,
+		"speed": 4,
+		"xpDrop": 50
+	},
+	"dragon": {
+		"texturePath": "assets/dragon.png",
+		"textureScale": 0.6,
+		"health": 120,
+		"attackPower": 14,
+		"defensePower": 6,
+		"speed": 5,
+		"xpDrop": 100
+	}
+}
