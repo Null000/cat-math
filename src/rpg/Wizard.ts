@@ -164,9 +164,15 @@ export class Wizard extends Actor {
 		// Higher-level spells unlock progressively, each stronger than the last.
 		// The roll cascades: if a high-level spell doesn't trigger, lower ones get a chance.
 		if (level >= 7 && roll < 0.10) {
-			// Meteor Strike — 4x damage
+			// Meteor Strike — 4x damage to target, 20% to all others
 			damage *= 4;
 			await this.castMeteorStrike(target);
+			const splashDamage = Math.floor(damage * 0.2);
+			const results = [{target, damage}];
+			for (const d of defenders) {
+				if (d !== target) results.push({target: d, damage: splashDamage});
+			}
+			return results;
 		} else if (level >= 6 && roll < 0.15) {
 			// Arcane Beam — 3.5x damage
 			damage = Math.floor(damage * 3.5);
