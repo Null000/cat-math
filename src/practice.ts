@@ -5,6 +5,19 @@ import { numberOfRewardImages } from "./constants.ts";
 
 declare function gtag(...args: any[]): void;
 
+function showSmileyEasterEgg() {
+	const el = document.createElement("div");
+	el.textContent = "😊";
+	el.style.cssText =
+		"position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:100px;z-index:9999;pointer-events:none;transition:transform 0.2s ease-out,opacity 0.3s;opacity:1;";
+	document.body.appendChild(el);
+	requestAnimationFrame(() => (el.style.transform = "translate(-50%,-50%) scale(1)"));
+	setTimeout(() => {
+		el.style.opacity = "0";
+		el.addEventListener("transitionend", () => el.remove());
+	}, 700);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
 	// Initialize Language
 	const currentLang = getCurrentLanguage();
@@ -351,6 +364,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (isCorrect) {
 			feedbackElement.textContent = t("correct");
 			feedbackElement.className = "correct";
+			if (currentProblem.answer === 67) showSmileyEasterEgg();
 			// Reveal a random part of the reward image
 			revealRandomPart();
 			// Remove the correctly solved problem from cache

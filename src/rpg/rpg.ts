@@ -7,6 +7,19 @@ import { ProblemUI } from "./ProblemUI.ts";
 
 declare function gtag(...args: any[]): void;
 
+function showSmileyEasterEgg() {
+	const el = document.createElement("div");
+	el.textContent = "😊";
+	el.style.cssText =
+		"position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:100px;z-index:9999;pointer-events:none;transition:transform 0.2s ease-out,opacity 0.3s;opacity:1;";
+	document.body.appendChild(el);
+	requestAnimationFrame(() => (el.style.transform = "translate(-50%,-50%) scale(1)"));
+	setTimeout(() => {
+		el.style.opacity = "0";
+		el.addEventListener("transitionend", () => el.remove());
+	}, 700);
+}
+
 async function init() {
 	const app = new Application();
 
@@ -169,6 +182,7 @@ async function init() {
 		});
 
 		if (isCorrect) {
+			if (currentProblem.problem.answer === 67) showSmileyEasterEgg();
 			await mathUI.showSuccess();
 			nextProblem();
 		} else {
