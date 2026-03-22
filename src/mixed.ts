@@ -11,7 +11,7 @@ const generateProps: Record<
 	[Category.Mixed_ThreeNumbers_Ten]: { max: 10 },
 	[Category.Mixed_ThreeNumbers_Twenty]: { max: 20 },
 	[Category.Mixed_ThreeNumbers_Hundred]: { max: 100, min: 10 },
-	[Category.Mixed_ThreeNumbers_Thousand]: { max: 1000, min: 100, step: 10 },
+	[Category.Mixed_ThreeNumbers_Thousand]: { max: 1000, min: 100 },
 };
 
 export function generate(category: Category): Problem[] {
