@@ -46,7 +46,6 @@ function updateStats(actor: Actor | null) {
 		$("stat-atk").textContent = "-";
 		$("stat-def").textContent = "-";
 		$("stat-spd").textContent = "-";
-		$("stat-xp").textContent = "-";
 		return;
 	}
 	$("stat-name").textContent = actor.constructor.name;
@@ -66,6 +65,7 @@ function setButtons(enabled: boolean) {
 		"btn-die",
 		"btn-run-left",
 		"btn-cast-magic",
+		"btn-critical-attack",
 		"btn-area-attack",
 		"btn-magic-missile",
 		"btn-lightning-bolt",
@@ -86,6 +86,7 @@ function setButtons(enabled: boolean) {
 	// Cast magic and level up only for wizard
 	const isWizard = enabled && currentActor instanceof Wizard;
 	($("btn-cast-magic") as HTMLButtonElement).disabled = !isWizard;
+	($("btn-critical-attack") as HTMLButtonElement).disabled = !isWizard;
 	($("btn-area-attack") as HTMLButtonElement).disabled = !isWizard;
 	($("btn-magic-missile") as HTMLButtonElement).disabled = !isWizard;
 	($("btn-lightning-bolt") as HTMLButtonElement).disabled = !isWizard;
@@ -270,6 +271,14 @@ async function init() {
 		log("Cast magic animation");
 		await currentActor.castMagic(false, target);
 		log("Cast magic complete");
+	});
+
+	$("btn-critical-attack").addEventListener("click", async () => {
+		if (!currentActor || !(currentActor instanceof Wizard)) return;
+		const target = await ensureDummyTarget();
+		log("Critical attack animation");
+		await currentActor.castMagic(true, target);
+		log("Critical attack complete");
 	});
 
 	$("btn-area-attack").addEventListener("click", async () => {
