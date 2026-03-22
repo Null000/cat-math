@@ -191,7 +191,7 @@ export class Wizard extends Actor {
 		} else {
 			// Basic magic orb with critical hit chance at level 2+
 			let isCritical = false;
-			if (level > 1 && Math.random() < 0.25) {
+			if (Math.random() < 0.25) {
 				isCritical = true;
 				damage *= 2;
 			}
