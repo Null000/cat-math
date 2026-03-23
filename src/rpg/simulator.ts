@@ -102,10 +102,18 @@ function applyStatFactors(
 // Main Simulation
 // ============================================================================
 
+interface AreaAttackRatio {
+	area: number;
+	heroAttacks: number;
+	enemyNormalizedAttacks: number;
+	ratio: number;
+}
+
 interface State {
 	xp: number,
 	area: number,
 	playerTurns: number,
+	attackRatios: AreaAttackRatio[],
 }
 
 const stats: {
@@ -123,6 +131,7 @@ async function runSimulation(
 	options?: { stopAfterArea?: number; quietBelowArea?: number },
 ): Promise<SimulationResult> {
 	const events: SimEvent[] = [];
+	const attackRatios: AreaAttackRatio[] = [...startState.attackRatios];
 	const stopAfterArea = options?.stopAfterArea;
 	const quietBelowArea = options?.quietBelowArea ?? 0;
 
@@ -146,10 +155,24 @@ async function runSimulation(
 	await battleManager.init();
 
 	const startPlayerTurns = startState.playerTurns;
+	let areaHeroAttacks = 0;
+	let areaEnemyNormAttacks = 0;
 
 	for (let i = 0; i < 1000; i++) {
 		const dead = await battleManager.doTurns();
 		if (dead) {
+			// Record partial area ratio on death
+			const heroA = battleManager.heroAttacks - areaHeroAttacks;
+			const enemyA = battleManager.enemyNormalizedAttacks - areaEnemyNormAttacks;
+			if (heroA > 0 || enemyA > 0) {
+				attackRatios.push({
+					area: battleManager.area,
+					heroAttacks: heroA,
+					enemyNormalizedAttacks: enemyA,
+					ratio: enemyA > 0 ? heroA / enemyA : Infinity,
+				});
+			}
+
 			events.push({
 				turn: i + startPlayerTurns,
 				event: "death",
@@ -175,7 +198,8 @@ async function runSimulation(
 				state: {
 					xp: battleManager.xp,
 					area: battleManager.area,
-					playerTurns: i + startPlayerTurns
+					playerTurns: i + startPlayerTurns,
+					attackRatios,
 				},
 				events,
 			};
@@ -205,6 +229,18 @@ async function runSimulation(
 		}
 
 		if (battleManager.area > areaBefore) {
+			// Record attack ratio for the completed area
+			const heroA = battleManager.heroAttacks - areaHeroAttacks;
+			const enemyA = battleManager.enemyNormalizedAttacks - areaEnemyNormAttacks;
+			attackRatios.push({
+				area: areaBefore,
+				heroAttacks: heroA,
+				enemyNormalizedAttacks: enemyA,
+				ratio: enemyA > 0 ? heroA / enemyA : Infinity,
+			});
+			areaHeroAttacks = battleManager.heroAttacks;
+			areaEnemyNormAttacks = battleManager.enemyNormalizedAttacks;
+
 			events.push({
 				turn: i + startPlayerTurns,
 				event: "areaChange",
@@ -217,6 +253,7 @@ async function runSimulation(
 						xp: battleManager.xp,
 						area: battleManager.area,
 						playerTurns: i + startPlayerTurns,
+						attackRatios,
 					},
 					events,
 				};
@@ -225,8 +262,37 @@ async function runSimulation(
 	}
 	console.error('Simulation did not end');
 	return {
-		state: startState,
+		state: { ...startState, attackRatios },
 		events: events,
+	}
+}
+
+// ============================================================================
+// Attack Ratio Output
+// ============================================================================
+
+function printAttackRatios(ratios: AreaAttackRatio[]) {
+	if (ratios.length === 0) return;
+
+	// Merge ratios for the same area (e.g. partial from death + continuation)
+	const merged = new Map<number, { hero: number; enemy: number }>();
+	for (const r of ratios) {
+		const existing = merged.get(r.area);
+		if (existing) {
+			existing.hero += r.heroAttacks;
+			existing.enemy += r.enemyNormalizedAttacks;
+		} else {
+			merged.set(r.area, { hero: r.heroAttacks, enemy: r.enemyNormalizedAttacks });
+		}
+	}
+
+	console.log(`\nAttack ratios per area (hero : enemy normalized):`);
+	console.log(`${"Area".padStart(5)} ${"Hero".padStart(6)} ${"Enemy".padStart(8)} ${"Ratio".padStart(7)}`);
+	for (const [area, data] of [...merged.entries()].sort((a, b) => a[0] - b[0])) {
+		const ratio = data.enemy > 0 ? data.hero / data.enemy : Infinity;
+		console.log(
+			`${String(area).padStart(5)} ${String(data.hero).padStart(6)} ${data.enemy.toFixed(1).padStart(8)} ${ratio.toFixed(1).padStart(7)}`
+		);
 	}
 }
 
@@ -256,8 +322,8 @@ async function runSimulations() {
 
 	try {
 		console.log('real simulation');
-		let state: State = {xp: 0, area: 0, playerTurns: 0};
-		for (let i = 1; i <= 5; i++) {
+		let state: State = {xp: 0, area: 0, playerTurns: 0, attackRatios: []};
+		for (let i = 1; i <= 20; i++) {
 			console.log('life: ' + i)
 			const result = await runSimulation(state, undefined, {
 				enemyTypes: Array.from(enemiesInArea),
@@ -267,6 +333,7 @@ async function runSimulations() {
 			state = result.state;
 		}
 		console.log('end ex: ' + state.xp + ', area: ' + state.area + ', turns: ' + state.playerTurns);
+		printAttackRatios(state.attackRatios);
 	} catch (e) {
 		console.log('ex: ' + e);
 	}
@@ -323,7 +390,7 @@ async function runSweep(enemyTypes: EnemyType[], lives: number): Promise<void> {
 				attackFactor,
 			};
 
-			let state: State = {xp: 0, area: 0, playerTurns: 0};
+			let state: State = {xp: 0, area: 0, playerTurns: 0, attackRatios: []};
 			const allEvents: SimEvent[] = [];
 
 			for (let life = 1; life <= lives; life++) {
@@ -477,7 +544,7 @@ if (mode === "area") {
 		attackFactor: powerFactor,
 	};
 
-	let state: State = { xp: 0, area: 0, playerTurns: 0 };
+	let state: State = { xp: 0, area: 0, playerTurns: 0, attackRatios: [] };
 	const lives = 20;
 	let livesUsed = 0;
 	let lastPrintedArea = -1;
@@ -508,6 +575,8 @@ if (mode === "area") {
 			break;
 		}
 	}
+
+	printAttackRatios(state.attackRatios);
 
 	if (state.area <= targetArea) {
 		console.log(`Failed to clear area ${targetArea} in ${lives} lives. Reached area ${state.area}, xp: ${state.xp}`);

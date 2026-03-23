@@ -15,6 +15,8 @@ export class BattleManager {
 	wave: number = 0;
 	area: number = 0;
 	turnCounter: number = 0;
+	heroAttacks: number = 0;
+	enemyNormalizedAttacks: number = 0;
 
 	stage: Container;
 	background!: Container;
@@ -192,6 +194,7 @@ export class BattleManager {
 		while (!this.turns[0]?.isHero) {
 			const turn = this.turns[0]!;
 			this.turnCounter++;
+			this.enemyNormalizedAttacks += 1 / this.enemyParty.length;
 			if (await this.enemyAttack(turn.actor)) {
 				await turn.actor.runLeft();
 				return true;
@@ -214,6 +217,7 @@ export class BattleManager {
 
 	async correctAnswer() {
 		this.turnCounter++;
+		this.heroAttacks++;
 
 		const prevLevel = getWizardLevel(this.xp);
 		this.xp++;
