@@ -35729,7 +35729,7 @@ function getXpProgress(xp) {
   if (xp < 51) {
     return xp / 51;
   }
-  return (xp - 50) % 100 / 100;
+  return (xp - 51) % 100 / 100;
 }
 // src/rpg/enemies/enemyConfig.json
 var enemyConfig_default = {
