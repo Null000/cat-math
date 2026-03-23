@@ -1,7 +1,7 @@
 import { getProblem } from "./app.ts";
 import { getCurrentLanguage, t, localizeProblemText, Language } from "./i18n.ts";
 import { Category, Problem } from "./common.ts";
-import { numberOfRewardImages } from "./constants.ts";
+import { numberOfRewardImages, incrementSolvedCount } from "./constants.ts";
 
 declare function gtag(...args: any[]): void;
 
@@ -356,6 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			feedbackElement.textContent = t("correct");
 			feedbackElement.className = "correct";
 			if (currentProblem.answer === 67) show67EasterEgg();
+			incrementSolvedCount(currentCategory);
 			// Reveal a random part of the reward image
 			revealRandomPart();
 

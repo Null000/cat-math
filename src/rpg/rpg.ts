@@ -4,6 +4,7 @@ import { BattleManager } from "./BattleManager.ts";
 import { getProblem } from "../app.ts";
 import { Category } from "../common.ts";
 import { ProblemUI } from "./ProblemUI.ts";
+import { incrementSolvedCount } from "../constants.ts";
 
 declare function gtag(...args: any[]): void;
 
@@ -192,6 +193,7 @@ async function init() {
 
 		if (isCorrect) {
 			if (currentProblem.problem.answer === 67) show67EasterEgg();
+			incrementSolvedCount(currentProblem.category);
 			await mathUI.showSuccess();
 			nextProblem();
 		} else {

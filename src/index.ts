@@ -8,6 +8,7 @@ import {
 	Language,
 } from "./i18n.ts";
 import { Category } from "./common.ts";
+import { getSolvedCount } from "./constants.ts";
 
 document.addEventListener("DOMContentLoaded", () => {
 	// Initialize Language
@@ -166,11 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				const label = document.createElement("label");
 				label.htmlFor = category;
 
-				// Calculate solved count
-				const solved = JSON.parse(
-					localStorage.getItem(category) || "[]",
-				);
-				const count = (solved as string[]).length;
+				const count = getSolvedCount(category);
 
 				const labelText = document.createTextNode(
 					getCategoryDisplayName(category as Category),
