@@ -17,7 +17,7 @@
 
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Cat Math</title>
+		<title>Cat Math 🐈‍⬛</title>
 		<link
 			rel="icon"
 			type="image/png"
@@ -321,6 +321,52 @@
 				}
 			}
 
+			.adventure-link {
+				display: inline-block;
+				margin-bottom: 20px;
+				padding: 12px 24px;
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				color: white;
+				text-decoration: none;
+				border-radius: 12px;
+				font-size: 1.1em;
+				font-weight: 600;
+				box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+				transition: all 0.3s ease;
+			}
+
+			.adventure-link {
+				position: relative;
+			}
+
+			.new-sticker {
+				position: absolute;
+				top: -10px;
+				right: -10px;
+				background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+				color: white;
+				font-size: 0.55em;
+				font-weight: 800;
+				padding: 3px 8px;
+				border-radius: 6px;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+				box-shadow: 0 2px 8px rgba(229, 62, 62, 0.4);
+				transform: rotate(12deg);
+				pointer-events: none;
+				animation: stickerPulse 2s ease-in-out infinite;
+			}
+
+			@keyframes stickerPulse {
+				0%, 100% { transform: rotate(12deg) scale(1); }
+				50% { transform: rotate(12deg) scale(1.1); }
+			}
+
+			.adventure-link:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+			}
+
 			.checkbox-item:focus-within {
 				outline: 2px solid #667eea;
 				outline-offset: 2px;
@@ -343,6 +389,16 @@
 			<h1 data-i18n="title">
 				Math Practice <span class="brain-emoji">🐈‍⬛</span>
 			</h1>
+			<a
+				href="./rpg/index.html"
+				class="adventure-link"
+				data-i18n="rpg_adventure_link"
+				>Cat Math Adventure 🐈‍⬛<span
+					class="new-sticker"
+					data-i18n="new_sticker"
+					>NEW</span
+				></a
+			>
 			<div class="category-selection" id="category-selection">
 				<h2 data-i18n="select_categories">
 					Select Practice Categories

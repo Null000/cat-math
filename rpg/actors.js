@@ -32972,7 +32972,6 @@ class Actor extends Container {
   attackPower;
   defensePower;
   speed;
-  xpDrop;
   xp = 0;
   constructor({
     texture,
@@ -32980,8 +32979,7 @@ class Actor extends Container {
     health,
     attackPower,
     defensePower,
-    speed,
-    xpDrop
+    speed
   }) {
     super();
     this.health = health;
@@ -32989,7 +32987,6 @@ class Actor extends Container {
     this.attackPower = attackPower;
     this.defensePower = defensePower;
     this.speed = speed;
-    this.xpDrop = xpDrop;
     this.sprite = new Sprite(texture);
     this.sprite.anchor.set(0.5, 1);
     this.sprite.scale.set(textureScale);
@@ -33364,6 +33361,10 @@ class Wizard extends Actor {
   meteor = new SpellState(500);
   meteorGraphic = null;
   meteorBurst = new BurstState(250);
+  sparkles = [];
+  sparkleTimer = 0;
+  sparkleInterval = 0;
+  sparkleMaxCount = 0;
   constructor(xp) {
     const xpFactor = 1 + xp / 100;
     super({
@@ -33372,9 +33373,28 @@ class Wizard extends Actor {
       health: Math.floor(100 * xpFactor),
       attackPower: Math.floor(5 * xpFactor),
       defensePower: Math.floor(xpFactor),
-      speed: Math.floor(6 * xpFactor),
-      xpDrop: 0
+      speed: Math.floor(6 * xpFactor)
     });
+    this.updateSparkleConfig(xp);
+  }
+  updateSparkleConfig(xp) {
+    const progress = getXpProgress(xp);
+    if (progress < 0.2) {
+      this.sparkleInterval = 0;
+      this.sparkleMaxCount = 0;
+    } else if (progress < 0.4) {
+      this.sparkleInterval = 600;
+      this.sparkleMaxCount = 3;
+    } else if (progress < 0.6) {
+      this.sparkleInterval = 400;
+      this.sparkleMaxCount = 5;
+    } else if (progress < 0.8) {
+      this.sparkleInterval = 250;
+      this.sparkleMaxCount = 8;
+    } else {
+      this.sparkleInterval = 150;
+      this.sparkleMaxCount = 12;
+    }
   }
   updateHealthBar() {
     const ratio = Math.max(this.health / this.maxHealth, 0.02);
@@ -33389,6 +33409,13 @@ class Wizard extends Actor {
     if (level >= 7 && roll < 0.1) {
       damage *= 4;
       await this.castMeteorStrike(target);
+      const splashDamage = Math.floor(damage * 0.2);
+      const results = [{ target, damage }];
+      for (const d2 of defenders) {
+        if (d2 !== target)
+          results.push({ target: d2, damage: splashDamage });
+      }
+      return results;
     } else if (level >= 6 && roll < 0.15) {
       damage = Math.floor(damage * 3.5);
       await this.castArcaneBeam(target);
@@ -33407,7 +33434,7 @@ class Wizard extends Actor {
       await this.castMagicMissile(target);
     } else {
       let isCritical = false;
-      if (level > 1 && Math.random() < 0.25) {
+      if (Math.random() < 0.25) {
         isCritical = true;
         damage *= 2;
       }
@@ -33701,6 +33728,7 @@ class Wizard extends Actor {
   }
   levelUpStats(newXp) {
     this.xp += newXp;
+    this.updateSparkleConfig(this.xp);
     const xpFactor = 1 + this.xp / 100;
     this.maxHealth = Math.floor(100 * xpFactor);
     this.health = this.maxHealth;
@@ -33819,6 +33847,45 @@ class Wizard extends Actor {
     this.parent.addChild(trail);
     this.magicTrails.push({ graphic: trail, life: 300 });
   }
+  updateSparkles(time) {
+    if (this.sparkleInterval === 0)
+      return;
+    this.sparkleTimer += time.deltaMS;
+    if (this.sparkleTimer >= this.sparkleInterval && this.sparkles.length < this.sparkleMaxCount) {
+      this.sparkleTimer = 0;
+      const maxLife = 800 + Math.random() * 600;
+      const angle = Math.random() * Math.PI * 2;
+      const sparkle = new Graphics;
+      sparkle.star(0, 0, 4, 4, 1.5);
+      sparkle.fill({ color: 16772744 });
+      sparkle.zIndex = 999;
+      const spawnRadius = 30 + Math.random() * 40;
+      sparkle.x = this.x + Math.cos(angle) * spawnRadius;
+      sparkle.y = this.y - 80 - Math.random() * 120;
+      this.parent.addChild(sparkle);
+      this.sparkles.push({
+        graphic: sparkle,
+        life: maxLife,
+        maxLife,
+        vx: (Math.random() - 0.5) * 0.02,
+        vy: -0.02 - Math.random() * 0.03
+      });
+    }
+    for (let i2 = this.sparkles.length - 1;i2 >= 0; i2--) {
+      const s2 = this.sparkles[i2];
+      s2.life -= time.deltaMS;
+      const t2 = s2.life / s2.maxLife;
+      s2.graphic.alpha = t2 * 0.8;
+      s2.graphic.scale.set(0.5 + t2 * 0.5);
+      s2.graphic.x += s2.vx * time.deltaMS;
+      s2.graphic.y += s2.vy * time.deltaMS;
+      if (s2.life <= 0) {
+        this.parent.removeChild(s2.graphic);
+        s2.graphic.destroy();
+        this.sparkles.splice(i2, 1);
+      }
+    }
+  }
   removeGraphic(g2) {
     this.parent.removeChild(g2);
     g2.destroy();
@@ -33840,6 +33907,7 @@ class Wizard extends Actor {
   }
   update(time, isSine) {
     super.update(time, isSine);
+    this.updateSparkles(time);
     const hasWork = this.magic.isCasting || this.magicBurst.isBursting || this.area.isCasting || this.missiles.isCasting || this.missileBursts.length > 0 || this.lightning.isCasting || this.lightningBurst.isBursting || this.fireBolt.isCasting || this.fireBoltBurst.isBursting || this.frost.isCasting || this.frostBursts.length > 0 || this.beam.isCasting || this.meteor.isCasting || this.meteorBurst.isBursting || this.magicTrails.length > 0 || this.levelUp_.isCasting || this.levelUpParticles.length > 0;
     if (!hasWork)
       return;
@@ -34236,6 +34304,186 @@ function getWizardLevel(xp) {
   }
   return Math.ceil((xp - 50) / 100) + 1;
 }
+function getXpProgress(xp) {
+  if (xp < 51) {
+    return xp / 51;
+  }
+  return (xp - 50) % 100 / 100;
+}
+// src/rpg/enemies/enemyConfig.json
+var enemyConfig_default = {
+  rat: {
+    texturePath: "assets/rat.png",
+    textureScale: 0.5,
+    health: 12,
+    attackPower: 4,
+    defensePower: 0,
+    speed: 4
+  },
+  dire_rat: {
+    texturePath: "assets/ratLeader.png",
+    textureScale: 0.5,
+    health: 24,
+    attackPower: 5,
+    defensePower: 2,
+    speed: 5
+  },
+  slime: {
+    texturePath: "assets/slime.png",
+    textureScale: 0.25,
+    health: 45,
+    attackPower: 8,
+    defensePower: 0,
+    speed: 15
+  },
+  goblin: {
+    texturePath: "assets/goblin.png",
+    textureScale: 0.3,
+    health: 144,
+    attackPower: 29,
+    defensePower: 2,
+    speed: 25
+  },
+  skeleton: {
+    texturePath: "assets/skeleton.png",
+    textureScale: 0.25,
+    health: 38,
+    attackPower: 7,
+    defensePower: 3,
+    speed: 4
+  },
+  zombie: {
+    texturePath: "assets/zombie.png",
+    textureScale: 0.3,
+    health: 50,
+    attackPower: 8,
+    defensePower: 4,
+    speed: 2
+  },
+  bat: {
+    texturePath: "assets/bat.png",
+    textureScale: 0.25,
+    health: 45,
+    attackPower: 8,
+    defensePower: 0,
+    speed: 8
+  },
+  wolf: {
+    texturePath: "assets/wolf.png",
+    textureScale: 0.3,
+    health: 35,
+    attackPower: 8,
+    defensePower: 2,
+    speed: 7
+  },
+  treant: {
+    texturePath: "assets/treant.png",
+    textureScale: 0.45,
+    health: 70,
+    attackPower: 10,
+    defensePower: 5,
+    speed: 3
+  },
+  dummy: {
+    texturePath: "assets/dummy.png",
+    textureScale: 0.15,
+    health: 1,
+    attackPower: 0,
+    defensePower: 0,
+    speed: 0.000000001
+  },
+  spider: {
+    texturePath: "assets/spider.png",
+    textureScale: 0.25,
+    health: 50,
+    attackPower: 10,
+    defensePower: 1,
+    speed: 20
+  },
+  mushroom: {
+    texturePath: "assets/mushroom.png",
+    textureScale: 0.25,
+    health: 40,
+    attackPower: 8,
+    defensePower: 1,
+    speed: 12
+  },
+  poison_slime: {
+    texturePath: "assets/poisonSlime.png",
+    textureScale: 0.25,
+    health: 125,
+    attackPower: 24,
+    defensePower: 1,
+    speed: 30
+  },
+  giant_bat: {
+    texturePath: "assets/bat.png",
+    textureScale: 0.35,
+    health: 24,
+    attackPower: 5,
+    defensePower: 1,
+    speed: 9,
+    tint: "0xdd4444"
+  },
+  giant_spider: {
+    texturePath: "assets/spider.png",
+    textureScale: 0.6,
+    health: 40,
+    attackPower: 7,
+    defensePower: 3,
+    speed: 6,
+    tint: "0x8844aa"
+  },
+  skeleton_warrior: {
+    texturePath: "assets/skeletonWarrior.png",
+    textureScale: 0.25,
+    health: 45,
+    attackPower: 8,
+    defensePower: 4,
+    speed: 5
+  },
+  dire_wolf: {
+    texturePath: "assets/wolf.png",
+    textureScale: 0.4,
+    health: 48,
+    attackPower: 10,
+    defensePower: 3,
+    speed: 8,
+    tint: "0x444466"
+  },
+  ghost: {
+    texturePath: "assets/ghost.png",
+    textureScale: 0.25,
+    health: 32,
+    attackPower: 9,
+    defensePower: 2,
+    speed: 7
+  },
+  dark_skeleton: {
+    texturePath: "assets/darkSkeleton.png",
+    textureScale: 0.3,
+    health: 55,
+    attackPower: 9,
+    defensePower: 5,
+    speed: 4
+  },
+  fire_slime: {
+    texturePath: "assets/fireSlime.png",
+    textureScale: 0.35,
+    health: 60,
+    attackPower: 11,
+    defensePower: 3,
+    speed: 4
+  },
+  dragon: {
+    texturePath: "assets/dragon.png",
+    textureScale: 0.6,
+    health: 120,
+    attackPower: 14,
+    defensePower: 6,
+    speed: 5
+  }
+};
 
 // src/rpg/enemies/enemyConfig.ts
 var EnemyType = {
@@ -34261,200 +34509,17 @@ var EnemyType = {
   FireSlime: "fire_slime",
   Dragon: "dragon"
 };
-var enemyConfig = {
-  [EnemyType.Rat]: {
-    texturePath: "assets/rat.png",
-    textureScale: 0.5,
-    health: 12,
-    attackPower: 4,
-    defensePower: 0,
-    speed: 4,
-    xpDrop: 8
-  },
-  [EnemyType.DireRat]: {
-    texturePath: "assets/ratLeader.png",
-    textureScale: 0.5,
-    health: 24,
-    attackPower: 5,
-    defensePower: 2,
-    speed: 5,
-    xpDrop: 20
-  },
-  [EnemyType.Slime]: {
-    texturePath: "assets/slime.png",
-    textureScale: 0.25,
-    health: 45,
-    attackPower: 8,
-    defensePower: 0,
-    speed: 15,
-    xpDrop: 10
-  },
-  [EnemyType.Goblin]: {
-    texturePath: "assets/goblin.png",
-    textureScale: 0.3,
-    health: 144,
-    attackPower: 29,
-    defensePower: 2,
-    speed: 25,
-    xpDrop: 22
-  },
-  [EnemyType.Skeleton]: {
-    texturePath: "assets/skeleton.png",
-    textureScale: 0.25,
-    health: 38,
-    attackPower: 7,
-    defensePower: 3,
-    speed: 4,
-    xpDrop: 25
-  },
-  [EnemyType.Zombie]: {
-    texturePath: "assets/zombie.png",
-    textureScale: 0.3,
-    health: 50,
-    attackPower: 8,
-    defensePower: 4,
-    speed: 2,
-    xpDrop: 32
-  },
-  [EnemyType.Bat]: {
-    texturePath: "assets/bat.png",
-    textureScale: 0.25,
-    health: 45,
-    attackPower: 8,
-    defensePower: 0,
-    speed: 8,
-    xpDrop: 10
-  },
-  [EnemyType.Wolf]: {
-    texturePath: "assets/wolf.png",
-    textureScale: 0.3,
-    health: 35,
-    attackPower: 8,
-    defensePower: 2,
-    speed: 7,
-    xpDrop: 28
-  },
-  [EnemyType.Treant]: {
-    texturePath: "assets/treant.png",
-    textureScale: 0.45,
-    health: 70,
-    attackPower: 10,
-    defensePower: 5,
-    speed: 3,
-    xpDrop: 60
-  },
-  [EnemyType.Dummy]: {
-    texturePath: "assets/dummy.png",
-    textureScale: 0.15,
-    health: 1,
-    attackPower: 0,
-    defensePower: 0,
-    speed: 0.000000001,
-    xpDrop: 1
-  },
-  [EnemyType.Spider]: {
-    texturePath: "assets/spider.png",
-    textureScale: 0.25,
-    health: 50,
-    attackPower: 10,
-    defensePower: 1,
-    speed: 20,
-    xpDrop: 12
-  },
-  [EnemyType.Mushroom]: {
-    texturePath: "assets/mushroom.png",
-    textureScale: 0.25,
-    health: 40,
-    attackPower: 8,
-    defensePower: 1,
-    speed: 12,
-    xpDrop: 10
-  },
-  [EnemyType.PoisonSlime]: {
-    texturePath: "assets/poisonSlime.png",
-    textureScale: 0.25,
-    health: 125,
-    attackPower: 24,
-    defensePower: 1,
-    speed: 30,
-    xpDrop: 16
-  },
-  [EnemyType.GiantBat]: {
-    texturePath: "assets/bat.png",
-    textureScale: 0.35,
-    health: 24,
-    attackPower: 5,
-    defensePower: 1,
-    speed: 9,
-    xpDrop: 18,
-    tint: 14500932
-  },
-  [EnemyType.GiantSpider]: {
-    texturePath: "assets/spider.png",
-    textureScale: 0.6,
-    health: 40,
-    attackPower: 7,
-    defensePower: 3,
-    speed: 6,
-    xpDrop: 30,
-    tint: 8930474
-  },
-  [EnemyType.SkeletonWarrior]: {
-    texturePath: "assets/skeletonWarrior.png",
-    textureScale: 0.25,
-    health: 45,
-    attackPower: 8,
-    defensePower: 4,
-    speed: 5,
-    xpDrop: 35
-  },
-  [EnemyType.DireWolf]: {
-    texturePath: "assets/wolf.png",
-    textureScale: 0.4,
-    health: 48,
-    attackPower: 10,
-    defensePower: 3,
-    speed: 8,
-    xpDrop: 40,
-    tint: 4473958
-  },
-  [EnemyType.Ghost]: {
-    texturePath: "assets/ghost.png",
-    textureScale: 0.25,
-    health: 32,
-    attackPower: 9,
-    defensePower: 2,
-    speed: 7,
-    xpDrop: 35
-  },
-  [EnemyType.DarkSkeleton]: {
-    texturePath: "assets/darkSkeleton.png",
-    textureScale: 0.3,
-    health: 55,
-    attackPower: 9,
-    defensePower: 5,
-    speed: 4,
-    xpDrop: 45
-  },
-  [EnemyType.FireSlime]: {
-    texturePath: "assets/fireSlime.png",
-    textureScale: 0.35,
-    health: 60,
-    attackPower: 11,
-    defensePower: 3,
-    speed: 4,
-    xpDrop: 50
-  },
-  [EnemyType.Dragon]: {
-    texturePath: "assets/dragon.png",
-    textureScale: 0.6,
-    health: 120,
-    attackPower: 14,
-    defensePower: 6,
-    speed: 5,
-    xpDrop: 100
+function parseConfig(json) {
+  const result = {};
+  for (const [key, value] of Object.entries(json)) {
+    result[key] = {
+      ...value,
+      tint: value.tint !== undefined ? Number(value.tint) : undefined
+    };
   }
-};
+  return result;
+}
+var enemyConfig = parseConfig(enemyConfig_default);
 
 class Enemy extends Actor {
   constructor(texture, config) {
@@ -34464,8 +34529,7 @@ class Enemy extends Actor {
       health: config.health,
       attackPower: config.attackPower,
       defensePower: config.defensePower,
-      speed: config.speed,
-      xpDrop: config.xpDrop
+      speed: config.speed
     });
     if (config.tint !== undefined) {
       this.sprite.tint = config.tint;
@@ -34564,7 +34628,6 @@ function updateStats(actor) {
     $2("stat-atk").textContent = "-";
     $2("stat-def").textContent = "-";
     $2("stat-spd").textContent = "-";
-    $2("stat-xp").textContent = "-";
     return;
   }
   $2("stat-name").textContent = actor.constructor.name;
@@ -34572,7 +34635,6 @@ function updateStats(actor) {
   $2("stat-atk").textContent = String(actor.attackPower);
   $2("stat-def").textContent = String(actor.defensePower);
   $2("stat-spd").textContent = String(actor.speed);
-  $2("stat-xp").textContent = String(actor.xpDrop);
 }
 function setButtons(enabled) {
   const ids = [
@@ -34584,6 +34646,7 @@ function setButtons(enabled) {
     "btn-die",
     "btn-run-left",
     "btn-cast-magic",
+    "btn-critical-attack",
     "btn-area-attack",
     "btn-magic-missile",
     "btn-lightning-bolt",
@@ -34603,6 +34666,7 @@ function setButtons(enabled) {
   }
   const isWizard = enabled && currentActor instanceof Wizard;
   $2("btn-cast-magic").disabled = !isWizard;
+  $2("btn-critical-attack").disabled = !isWizard;
   $2("btn-area-attack").disabled = !isWizard;
   $2("btn-magic-missile").disabled = !isWizard;
   $2("btn-lightning-bolt").disabled = !isWizard;
@@ -34760,6 +34824,14 @@ async function init2() {
     log("Cast magic animation");
     await currentActor.castMagic(false, target);
     log("Cast magic complete");
+  });
+  $2("btn-critical-attack").addEventListener("click", async () => {
+    if (!currentActor || !(currentActor instanceof Wizard))
+      return;
+    const target = await ensureDummyTarget();
+    log("Critical attack animation");
+    await currentActor.castMagic(true, target);
+    log("Critical attack complete");
   });
   $2("btn-area-attack").addEventListener("click", async () => {
     if (!currentActor || !(currentActor instanceof Wizard))

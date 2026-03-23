@@ -68,6 +68,12 @@ var categoryGroups = {
     "Subtraction: 1000" /* Subtraction_Thousand */,
     "Subtraction: Hundreds" /* Subtraction_Hundreds */
   ],
+  Mixed: [
+    "Mixed +/-: 10 (3 numbers)" /* Mixed_ThreeNumbers_Ten */,
+    "Mixed +/-: 20 (3 numbers)" /* Mixed_ThreeNumbers_Twenty */,
+    "Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */,
+    "Mixed +/-: 1000 (3 numbers)" /* Mixed_ThreeNumbers_Thousand */
+  ],
   Multiplication: [
     "Multiplication: 10" /* Multiplication_Ten */,
     "Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */,
@@ -116,6 +122,7 @@ var yearGroupsSl = {
     "Subtraction: 10" /* Subtraction_Ten */,
     "Subtraction: 10 (missing facts)" /* Subtraction_Ten_Missing */,
     "Subtraction: 10 (3 numbers)" /* Subtraction_ThreeNumbers_Ten */,
+    "Mixed +/-: 10 (3 numbers)" /* Mixed_ThreeNumbers_Ten */,
     "Comparison: 10" /* Comparison_Ten */,
     "Comparison: 20" /* Comparison_Twenty */,
     "Number to Text: 10" /* NumberToText_Ten */,
@@ -133,6 +140,7 @@ var yearGroupsSl = {
     "Subtraction: 20" /* Subtraction_Twenty */,
     "Subtraction: 20 (missing facts)" /* Subtraction_Twenty_Missing */,
     "Subtraction: 20 (3 numbers)" /* Subtraction_ThreeNumbers_Twenty */,
+    "Mixed +/-: 20 (3 numbers)" /* Mixed_ThreeNumbers_Twenty */,
     "Subtraction: Tens" /* Subtraction_Tens */,
     "Number to Text: 100" /* NumberToText_Hundred */,
     "Text to Number: 100" /* TextToNumber_Hundred */
@@ -149,6 +157,7 @@ var yearGroupsSl = {
     "Subtraction: 100" /* Subtraction_Hundred */,
     "Subtraction: 100 (missing facts)" /* Subtraction_Hundred_Missing */,
     "Subtraction: 100 (3 numbers)" /* Subtraction_ThreeNumbers_Hundred */,
+    "Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */,
     "Subtraction: Hundreds" /* Subtraction_Hundreds */,
     "Multiplication: 10" /* Multiplication_Ten */,
     "Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */,
@@ -167,6 +176,7 @@ var yearGroupsSl = {
     "Subtraction: 1000 (with borrow)" /* Subtraction_ThousandWithBorrow */,
     "Subtraction: 1000" /* Subtraction_Thousand */,
     "Subtraction: 1000 (3 numbers)" /* Subtraction_ThreeNumbers_Thousand */,
+    "Mixed +/-: 1000 (3 numbers)" /* Mixed_ThreeNumbers_Thousand */,
     "Multiplication: 20" /* Multiplication_Twenty */,
     "Multiplication: 20 (missing facts)" /* Multiplication_Twenty_Missing */,
     "Division: 20" /* Division_Twenty */,
@@ -189,8 +199,29 @@ var categoryToGroup = (() => {
   }
   return dict;
 })();
+function makeGenerator(enumerate) {
+  const countCache = new Map;
+  return {
+    count(category) {
+      let c = countCache.get(category);
+      if (c === undefined) {
+        c = enumerate(category, -1).count;
+        countCache.set(category, c);
+      }
+      return c;
+    },
+    getProblem(category, n) {
+      return enumerate(category, n).problem;
+    }
+  };
+}
 
 // src/addition.ts
+var exports_addition = {};
+__export(exports_addition, {
+  getProblem: () => getProblem,
+  count: () => count
+});
 var generateProps = {
   ["Addition: 10" /* Addition_Ten */]: { xMax: 10, yMax: 10 },
   ["Addition: 10 (3 numbers)" /* Addition_ThreeNumbers_Ten */]: {
@@ -337,7 +368,37 @@ var generateProps = {
     maxResult: 1000
   }
 };
-function generate(category) {
+function makeProblem(category, i, j, fact) {
+  const result = i + j;
+  switch (fact) {
+    case "first":
+      return {
+        id: `${category}_${i}_${j}_first`,
+        text: `? + ${j} = ${result}`,
+        answer: i
+      };
+    case "second":
+      return {
+        id: `${category}_${i}_${j}_second`,
+        text: `${i} + ? = ${result}`,
+        answer: j
+      };
+    case "result":
+      return {
+        id: `${category}_${i}_${j}_result`,
+        text: `${i} + ${j} = ?`,
+        answer: result
+      };
+  }
+}
+function makeThreeNumberProblem(category, i, j, k) {
+  return {
+    id: `${category}_${i}_${j}_${k}_result`,
+    text: `${i} + ${j} + ${k} = ?`,
+    answer: i + j + k
+  };
+}
+function enumerate(category, targetIndex) {
   const props = generateProps[category];
   let {
     xMax,
@@ -356,8 +417,8 @@ function generate(category) {
   carryAllowed = carryAllowed ?? true;
   carryForced = carryForced ?? false;
   missingFact = missingFact ?? "result";
-  const allProblems = [];
   const missingFacts = Array.isArray(missingFact) ? missingFact : [missingFact];
+  let idx = 0;
   for (let i = xMin;i <= xMax; i += step) {
     for (let j = yMin;j <= yMax; j += step) {
       if (props.threeNumbers) {
@@ -368,60 +429,41 @@ function generate(category) {
           const result2 = currentSum + k;
           if (maxResult && result2 > maxResult)
             continue;
-          const text = `${i} + ${j} + ${k} = ?`;
-          const answer = result2;
-          const id = `${category}_${i}_${j}_${k}_result`;
-          allProblems.push({ id, text, answer });
+          if (idx === targetIndex) {
+            return { problem: makeThreeNumberProblem(category, i, j, k), count: idx };
+          }
+          idx++;
         }
         continue;
       }
       const digitI = Math.floor(i / step) % 10;
       const digitJ = Math.floor(j / step) % 10;
       const hasCarry = carryAllowed && digitI + digitJ >= 10;
-      if (hasCarry && !carryForced) {
+      if (hasCarry && !carryForced)
         continue;
-      }
-      if (!hasCarry && carryForced) {
+      if (!hasCarry && carryForced)
         continue;
-      }
       const result = i + j;
-      if (maxResult && result > maxResult) {
+      if (maxResult && result > maxResult)
         continue;
-      }
       for (const fact of missingFacts) {
-        let text;
-        let answer;
-        let id;
-        switch (fact) {
-          case "first":
-            text = `? + ${j} = ${result}`;
-            answer = i;
-            id = `${category}_${i}_${j}_first`;
-            break;
-          case "second":
-            text = `${i} + ? = ${result}`;
-            answer = j;
-            id = `${category}_${i}_${j}_second`;
-            break;
-          case "result":
-          default:
-            text = `${i} + ${j} = ?`;
-            answer = result;
-            id = `${category}_${i}_${j}_result`;
-            break;
+        if (idx === targetIndex) {
+          return { problem: makeProblem(category, i, j, fact), count: idx };
         }
-        allProblems.push({
-          id,
-          text,
-          answer
-        });
+        idx++;
       }
     }
   }
-  return allProblems;
+  return { count: idx };
 }
+var { count, getProblem } = makeGenerator(enumerate);
 
 // src/subtraction.ts
+var exports_subtraction = {};
+__export(exports_subtraction, {
+  getProblem: () => getProblem2,
+  count: () => count2
+});
 var generateProps2 = {
   ["Subtraction: 10" /* Subtraction_Ten */]: { xMax: 10, yMax: 10 },
   ["Subtraction: 10 (3 numbers)" /* Subtraction_ThreeNumbers_Ten */]: {
@@ -532,7 +574,36 @@ var generateProps2 = {
     step: 100
   }
 };
-function generate2(category) {
+function makeProblem2(category, i, j, fact) {
+  switch (fact) {
+    case "first":
+      return {
+        id: `${category}_${i}_${j}_first`,
+        text: `? - ${j} = ${i - j}`,
+        answer: i
+      };
+    case "second":
+      return {
+        id: `${category}_${i}_${j}_second`,
+        text: `${i} - ? = ${i - j}`,
+        answer: j
+      };
+    case "result":
+      return {
+        id: `${category}_${i}_${j}_result`,
+        text: `${i} - ${j} = ?`,
+        answer: i - j
+      };
+  }
+}
+function makeThreeNumberProblem2(category, i, j, k) {
+  return {
+    id: `${category}_${i}_${j}_${k}_result`,
+    text: `${i} - ${j} - ${k} = ?`,
+    answer: i - j - k
+  };
+}
+function enumerate2(category, targetIndex) {
   const props = generateProps2[category];
   let {
     xMax,
@@ -550,8 +621,8 @@ function generate2(category) {
   borrowAllowed = borrowAllowed ?? true;
   borrowForced = borrowForced ?? false;
   missingFact = missingFact ?? "result";
-  const allProblems = [];
   const missingFacts = Array.isArray(missingFact) ? missingFact : [missingFact];
+  let idx = 0;
   for (let i = xMin;i <= xMax; i += step) {
     for (let j = yMin;j <= yMax; j += step) {
       if (i < j)
@@ -561,57 +632,38 @@ function generate2(category) {
         for (let k = yMin;k <= yMax; k += step) {
           if (currentDiff < k)
             continue;
-          const result = currentDiff - k;
-          const text = `${i} - ${j} - ${k} = ?`;
-          const answer = result;
-          const id = `${category}_${i}_${j}_${k}_result`;
-          allProblems.push({ id, text, answer });
+          if (idx === targetIndex) {
+            return { problem: makeThreeNumberProblem2(category, i, j, k), count: idx };
+          }
+          idx++;
         }
         continue;
       }
       const digitI = Math.floor(i / step) % 10;
       const digitJ = Math.floor(j / step) % 10;
       const hasBorrow = borrowAllowed && digitI < digitJ;
-      if (hasBorrow && !borrowForced) {
+      if (hasBorrow && !borrowForced)
         continue;
-      }
-      if (!hasBorrow && borrowForced) {
+      if (!hasBorrow && borrowForced)
         continue;
-      }
       for (const fact of missingFacts) {
-        let text;
-        let answer;
-        let id;
-        switch (fact) {
-          case "first":
-            text = `? - ${j} = ${i - j}`;
-            answer = i;
-            id = `${category}_${i}_${j}_first`;
-            break;
-          case "second":
-            text = `${i} - ? = ${i - j}`;
-            answer = j;
-            id = `${category}_${i}_${j}_second`;
-            break;
-          case "result":
-          default:
-            text = `${i} - ${j} = ?`;
-            answer = i - j;
-            id = `${category}_${i}_${j}_result`;
-            break;
+        if (idx === targetIndex) {
+          return { problem: makeProblem2(category, i, j, fact), count: idx };
         }
-        allProblems.push({
-          id,
-          text,
-          answer
-        });
+        idx++;
       }
     }
   }
-  return allProblems;
+  return { count: idx };
 }
+var { count: count2, getProblem: getProblem2 } = makeGenerator(enumerate2);
 
 // src/division.ts
+var exports_division = {};
+__export(exports_division, {
+  getProblem: () => getProblem3,
+  count: () => count3
+});
 var generateProps3 = {
   ["Division: 10" /* Division_Ten */]: { answerMax: 10, divisorMax: 10 },
   ["Division: 10 (missing facts)" /* Division_Ten_Missing */]: {
@@ -632,50 +684,56 @@ var generateProps3 = {
     missingField: ["dividend", "divisor"]
   }
 };
-function generate3(category) {
+function makeProblem3(category, dividend, divisor, answer, field) {
+  switch (field) {
+    case "dividend":
+      return {
+        id: `${category}_${dividend}_${divisor}_dividend`,
+        text: `? / ${divisor} = ${answer}`,
+        answer: dividend
+      };
+    case "divisor":
+      return {
+        id: `${category}_${dividend}_${divisor}_divisor`,
+        text: `${dividend} / ? = ${answer}`,
+        answer: divisor
+      };
+    case "answer":
+      return {
+        id: `${category}_${dividend}_${divisor}_answer`,
+        text: `${dividend} / ${divisor} = ?`,
+        answer
+      };
+  }
+}
+function enumerate3(category, targetIndex) {
   const props = generateProps3[category];
   const { answerMax, divisorMax, missingField = "answer" } = props;
-  const allProblems = [];
   const missingFields = Array.isArray(missingField) ? missingField : [missingField];
+  let idx = 0;
   for (let answer = 0;answer <= answerMax; answer++) {
     for (let divisor = 1;divisor <= divisorMax; divisor++) {
       const dividend = answer * divisor;
       for (const field of missingFields) {
-        let text;
-        let problemAnswer;
-        let id;
-        switch (field) {
-          case "dividend":
-            text = `? / ${divisor} = ${answer}`;
-            problemAnswer = dividend;
-            id = `${category}_${dividend}_${divisor}_dividend`;
-            break;
-          case "divisor":
-            if (dividend === 0)
-              continue;
-            text = `${dividend} / ? = ${answer}`;
-            problemAnswer = divisor;
-            id = `${category}_${dividend}_${divisor}_divisor`;
-            break;
-          case "answer":
-          default:
-            text = `${dividend} / ${divisor} = ?`;
-            problemAnswer = answer;
-            id = `${category}_${dividend}_${divisor}_answer`;
-            break;
+        if (field === "divisor" && dividend === 0)
+          continue;
+        if (idx === targetIndex) {
+          return { problem: makeProblem3(category, dividend, divisor, answer, field), count: idx };
         }
-        allProblems.push({
-          id,
-          text,
-          answer: problemAnswer
-        });
+        idx++;
       }
     }
   }
-  return allProblems;
+  return { count: idx };
 }
+var { count: count3, getProblem: getProblem3 } = makeGenerator(enumerate3);
 
 // src/multiplication.ts
+var exports_multiplication = {};
+__export(exports_multiplication, {
+  getProblem: () => getProblem4,
+  count: () => count4
+});
 var generateProps4 = {
   ["Multiplication: 10" /* Multiplication_Ten */]: { xMax: 10, yMax: 10 },
   ["Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */]: {
@@ -696,60 +754,76 @@ var generateProps4 = {
     missingField: ["first", "second"]
   }
 };
-function generate4(category) {
+function makeProblem4(category, i, j, field) {
+  switch (field) {
+    case "first":
+      return {
+        id: `${category}_${i}_${j}_first`,
+        text: `? × ${j} = ${i * j}`,
+        answer: i
+      };
+    case "second":
+      return {
+        id: `${category}_${i}_${j}_second`,
+        text: `${i} × ? = ${i * j}`,
+        answer: j
+      };
+    case "answer":
+      return {
+        id: `${category}_${i}_${j}_answer`,
+        text: `${i} × ${j} = ?`,
+        answer: i * j
+      };
+  }
+}
+function enumerate4(category, targetIndex) {
   const props = generateProps4[category];
   const { xMax, yMax, missingField = "answer" } = props;
-  const allProblems = [];
   const missingFields = Array.isArray(missingField) ? missingField : [missingField];
+  let idx = 0;
   for (let i = 0;i <= xMax; i++) {
     for (let j = 0;j <= yMax; j++) {
       for (const field of missingFields) {
-        let text;
-        let problemAnswer;
-        let id;
-        switch (field) {
-          case "first":
-            if (j === 0)
-              continue;
-            text = `? × ${j} = ${i * j}`;
-            problemAnswer = i;
-            id = `${category}_${i}_${j}_first`;
-            break;
-          case "second":
-            if (i === 0)
-              continue;
-            text = `${i} × ? = ${i * j}`;
-            problemAnswer = j;
-            id = `${category}_${i}_${j}_second`;
-            break;
-          case "answer":
-          default:
-            text = `${i} × ${j} = ?`;
-            problemAnswer = i * j;
-            id = `${category}_${i}_${j}_answer`;
-            break;
+        if (field === "first" && j === 0)
+          continue;
+        if (field === "second" && i === 0)
+          continue;
+        if (idx === targetIndex) {
+          return { problem: makeProblem4(category, i, j, field), count: idx };
         }
-        allProblems.push({
-          id,
-          text,
-          answer: problemAnswer
-        });
+        idx++;
       }
     }
   }
-  return allProblems;
+  return { count: idx };
 }
+var { count: count4, getProblem: getProblem4 } = makeGenerator(enumerate4);
 
 // src/test.ts
-function generate5(category) {
-  return [
-    { id: "test-1", text: "1", answer: 1 },
-    { id: "test-2", text: "2", answer: 2 },
-    { id: "test-3", text: "3", answer: 3 }
-  ];
+var exports_test = {};
+__export(exports_test, {
+  getProblem: () => getProblem5,
+  count: () => count5
+});
+var problems = [
+  { id: "test-1", text: "1", answer: 1 },
+  { id: "test-2", text: "2", answer: 2 },
+  { id: "test-3", text: "3", answer: 3 },
+  { id: "test-67", text: "67", answer: 67 }
+];
+function count5(_category) {
+  return problems.length;
+}
+function getProblem5(_category, n) {
+  return problems[n % problems.length];
 }
 
 // src/comparison.ts
+var exports_comparison = {};
+__export(exports_comparison, {
+  getProblem: () => getProblem6,
+  count: () => count6
+});
 var generateProps5 = {
   ["Comparison: 10" /* Comparison_Ten */]: { max: 10 },
   ["Comparison: 20" /* Comparison_Twenty */]: { max: 20 },
@@ -761,23 +835,38 @@ var comparisonOptions = [
   { label: "=", value: 0 },
   { label: ">", value: 1 }
 ];
-function generate6(category) {
+function rangeSize(category) {
   const props = generateProps5[category];
   const { max, min = 0, step = 1 } = props;
-  const allProblems = [];
-  for (let x = min;x <= max; x += step) {
-    for (let y = min;y <= max; y += step) {
-      const answer = x < y ? -1 : x === y ? 0 : 1;
-      allProblems.push({
-        id: `${category}_${x}_${y}`,
-        text: `${x} ? ${y}`,
-        answer,
-        options: comparisonOptions
-      });
-    }
-  }
-  return allProblems;
+  return Math.floor((max - min) / step) + 1;
 }
+function count6(category) {
+  const size = rangeSize(category);
+  return size * size;
+}
+function getProblem6(category, n) {
+  const props = generateProps5[category];
+  const { min = 0, step = 1 } = props;
+  const size = rangeSize(category);
+  const xIdx = Math.floor(n / size);
+  const yIdx = n % size;
+  const x = min + xIdx * step;
+  const y = min + yIdx * step;
+  const answer = x < y ? -1 : x === y ? 0 : 1;
+  return {
+    id: `${category}_${x}_${y}`,
+    text: `${x} ? ${y}`,
+    answer,
+    options: comparisonOptions
+  };
+}
+
+// src/numberText.ts
+var exports_numberText = {};
+__export(exports_numberText, {
+  getProblem: () => getProblem7,
+  count: () => count7
+});
 
 // src/translations.ts
 var translations = {
@@ -845,6 +934,10 @@ var translations = {
     ["Subtraction: 1000 (with borrow)" /* Subtraction_ThousandWithBorrow */]: "Subtraction: 1000 (with borrow)",
     ["Subtraction: 1000" /* Subtraction_Thousand */]: "Subtraction: 1000",
     ["Subtraction: Hundreds" /* Subtraction_Hundreds */]: "Subtraction: Hundreds",
+    ["Mixed +/-: 10 (3 numbers)" /* Mixed_ThreeNumbers_Ten */]: "Mixed +/-: 10 (3 numbers)",
+    ["Mixed +/-: 20 (3 numbers)" /* Mixed_ThreeNumbers_Twenty */]: "Mixed +/-: 20 (3 numbers)",
+    ["Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */]: "Mixed +/-: 100 (3 numbers)",
+    ["Mixed +/-: 1000 (3 numbers)" /* Mixed_ThreeNumbers_Thousand */]: "Mixed +/-: 1000 (3 numbers)",
     ["Multiplication: 10" /* Multiplication_Ten */]: "Multiplication: 10",
     ["Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */]: "Multiplication: 10 (missing facts)",
     ["Multiplication: 20" /* Multiplication_Twenty */]: "Multiplication: 20",
@@ -894,6 +987,7 @@ var translations = {
     ["Next/Previous: 20" /* NextPrevious_Twenty */]: "Next/Previous: 20",
     group_Addition: "Addition",
     group_Subtraction: "Subtraction",
+    group_Mixed: "Mixed +/-",
     group_Multiplication: "Multiplication",
     group_Division: "Division",
     group_Comparison: "Comparison",
@@ -904,7 +998,9 @@ var translations = {
     rpg_title: "Choose Your Spells",
     rpg_subtitle: "Select the math spells you wish to master",
     rpg_select_categories: "Spell Book",
-    rpg_start_battle: "Enter Battle"
+    rpg_start_battle: "Enter Battle",
+    rpg_adventure_link: "Cat Math Adventure \uD83D\uDC08‍⬛",
+    new_sticker: "NEW"
   },
   sl: {
     title: "Mačja Matematika",
@@ -970,6 +1066,10 @@ var translations = {
     ["Subtraction: 1000 (with borrow)" /* Subtraction_ThousandWithBorrow */]: "Odštevanje: 1000 (s prehodom)",
     ["Subtraction: 1000" /* Subtraction_Thousand */]: "Odštevanje: 1000",
     ["Subtraction: Hundreds" /* Subtraction_Hundreds */]: "Odštevanje: stotice",
+    ["Mixed +/-: 10 (3 numbers)" /* Mixed_ThreeNumbers_Ten */]: "Mešano +/-: 10 (3 števila)",
+    ["Mixed +/-: 20 (3 numbers)" /* Mixed_ThreeNumbers_Twenty */]: "Mešano +/-: 20 (3 števila)",
+    ["Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */]: "Mešano +/-: 100 (3 števila)",
+    ["Mixed +/-: 1000 (3 numbers)" /* Mixed_ThreeNumbers_Thousand */]: "Mešano +/-: 1000 (3 števila)",
     ["Multiplication: 10" /* Multiplication_Ten */]: "Množenje: 10",
     ["Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */]: "Množenje: 10 (neznani člen)",
     ["Multiplication: 20" /* Multiplication_Twenty */]: "Množenje: 20",
@@ -1019,6 +1119,7 @@ var translations = {
     ["Next/Previous: 20" /* NextPrevious_Twenty */]: "Predhodnik/Naslednik: 20",
     group_Addition: "Seštevanje",
     group_Subtraction: "Odštevanje",
+    group_Mixed: "Mešano +/-",
     group_Multiplication: "Množenje",
     group_Division: "Deljenje",
     group_Comparison: "Primerjanje",
@@ -1034,7 +1135,9 @@ var translations = {
     rpg_title: "Izberi Uroke",
     rpg_subtitle: "Izberi matematične uroke za vadbo",
     rpg_select_categories: "Knjiga Urokov",
-    rpg_start_battle: "Vstopi v Bitko"
+    rpg_start_battle: "Vstopi v Bitko",
+    rpg_adventure_link: "Avantura Mačja Matematika \uD83D\uDC08‍⬛",
+    new_sticker: "NOVO"
   }
 };
 
@@ -1059,6 +1162,13 @@ function t(key) {
     console.error(`Missing translation for language ${lang} and key: ${key}`);
   }
   return translated || key;
+}
+function localizeProblemText(text) {
+  const lang = getCurrentLanguage();
+  if (lang === "sl") {
+    return text.replace(/ × /g, " · ").replace(/ \/ /g, " : ");
+  }
+  return text.replace(/ \/ /g, " ÷ ");
 }
 function getCategoryDisplayName(category) {
   const lang = getCurrentLanguage();
@@ -1132,127 +1242,203 @@ function getNumberWord(n) {
     return `${enTens[tens]}-${onesWord}`;
   }
 }
-function generateNumberToText(maxNumber, category) {
-  const problems = [];
-  for (let n = 0;n <= maxNumber; n++) {
-    problems.push({
+function getMaxNumber(category) {
+  switch (category) {
+    case "Number to Text: 10" /* NumberToText_Ten */:
+    case "Text to Number: 10" /* TextToNumber_Ten */:
+      return 10;
+    case "Number to Text: 20" /* NumberToText_Twenty */:
+    case "Text to Number: 20" /* TextToNumber_Twenty */:
+      return 20;
+    case "Number to Text: 100" /* NumberToText_Hundred */:
+    case "Text to Number: 100" /* TextToNumber_Hundred */:
+      return 100;
+    case "Number to Text: 1000" /* NumberToText_Thousand */:
+    case "Text to Number: 1000" /* TextToNumber_Thousand */:
+      return 1000;
+    default:
+      return 0;
+  }
+}
+function isNumberToText(category) {
+  return category === "Number to Text: 10" /* NumberToText_Ten */ || category === "Number to Text: 20" /* NumberToText_Twenty */ || category === "Number to Text: 100" /* NumberToText_Hundred */ || category === "Number to Text: 1000" /* NumberToText_Thousand */;
+}
+function count7(category) {
+  return getMaxNumber(category) + 1;
+}
+function getProblem7(category, n) {
+  if (isNumberToText(category)) {
+    return {
       id: `${category}_${n}`,
       text: `${n} = ?`,
       answer: getNumberWord(n)
-    });
-  }
-  return problems;
-}
-function generateTextToNumber(maxNumber, category) {
-  const problems = [];
-  for (let n = 0;n <= maxNumber; n++) {
-    problems.push({
+    };
+  } else {
+    return {
       id: `${category}_${n}`,
       text: `${getNumberWord(n)} = ?`,
       answer: n
-    });
-  }
-  return problems;
-}
-function generate7(category) {
-  switch (category) {
-    case "Number to Text: 10" /* NumberToText_Ten */:
-      return generateNumberToText(10, category);
-    case "Number to Text: 20" /* NumberToText_Twenty */:
-      return generateNumberToText(20, category);
-    case "Number to Text: 100" /* NumberToText_Hundred */:
-      return generateNumberToText(100, category);
-    case "Number to Text: 1000" /* NumberToText_Thousand */:
-      return generateNumberToText(1000, category);
-    case "Text to Number: 10" /* TextToNumber_Ten */:
-      return generateTextToNumber(10, category);
-    case "Text to Number: 20" /* TextToNumber_Twenty */:
-      return generateTextToNumber(20, category);
-    case "Text to Number: 100" /* TextToNumber_Hundred */:
-      return generateTextToNumber(100, category);
-    case "Text to Number: 1000" /* TextToNumber_Thousand */:
-      return generateTextToNumber(1000, category);
-    default:
-      return [];
+    };
   }
 }
 
 // src/nextPrevious.ts
+var exports_nextPrevious = {};
+__export(exports_nextPrevious, {
+  getProblem: () => getProblem8,
+  count: () => count8
+});
 var generateProps6 = {
   ["Next/Previous: 10" /* NextPrevious_Ten */]: { max: 10, min: 0 },
   ["Next/Previous: 20" /* NextPrevious_Twenty */]: { max: 20, min: 0 }
 };
-function generate8(category) {
+function count8(category) {
   const props = generateProps6[category];
-  let { max, min } = props;
-  min = min ?? 0;
-  const allProblems = [];
-  for (let i = min;i <= max; i++) {
-    if (i > min) {
-      allProblems.push({
-        id: `${category}_${i}_prev`,
-        text: `?, ${i}`,
-        answer: i - 1
-      });
-    }
-    if (i < max) {
-      allProblems.push({
-        id: `${category}_${i}_next`,
-        text: `${i}, ?`,
-        answer: i + 1
-      });
-    }
+  const min = props.min ?? 0;
+  return 2 * (props.max - min);
+}
+function getProblem8(category, n) {
+  const props = generateProps6[category];
+  const min = props.min ?? 0;
+  const range = props.max - min;
+  if (n < range) {
+    const i = min + 1 + n;
+    return {
+      id: `${category}_${i}_prev`,
+      text: `?, ${i}`,
+      answer: i - 1
+    };
+  } else {
+    const i = min + (n - range);
+    return {
+      id: `${category}_${i}_next`,
+      text: `${i}, ?`,
+      answer: i + 1
+    };
   }
-  return allProblems;
 }
 
-// src/problem.ts
-var generateFnPerGroup = {
-  Addition: (category) => generate(category),
-  Subtraction: (category) => generate2(category),
-  Multiplication: (category) => generate4(category),
-  Division: (category) => generate3(category),
-  Comparison: (category) => generate6(category),
-  NumberText: (category) => generate7(category),
-  NextPrevious: (category) => generate8(category),
-  Test: (category) => generate5(category)
+// src/mixed.ts
+var exports_mixed = {};
+__export(exports_mixed, {
+  getProblem: () => getProblem9,
+  count: () => count9
+});
+var generateProps7 = {
+  ["Mixed +/-: 10 (3 numbers)" /* Mixed_ThreeNumbers_Ten */]: { max: 10 },
+  ["Mixed +/-: 20 (3 numbers)" /* Mixed_ThreeNumbers_Twenty */]: { max: 20 },
+  ["Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */]: { max: 100, min: 10 },
+  ["Mixed +/-: 1000 (3 numbers)" /* Mixed_ThreeNumbers_Thousand */]: { max: 1000, min: 100 }
 };
-var cache = {};
-function getCachedProblems(category) {
-  if (!cache[category]) {
-    populateCache(category);
-  }
-  return cache[category];
+function patternACountForA(aPrime, R) {
+  const L = R - aPrime;
+  return (L + 1) * (aPrime + 1) + L * (L + 1) / 2;
 }
-function populateCache(category) {
-  cache[category] = generateFnPerGroup[categoryToGroup[category]](category);
+function patternBCountForA(aPrime, R) {
+  const D = R - aPrime;
+  return (aPrime + 1) * (D + 1) + aPrime * (aPrime + 1) / 2;
+}
+function lookupPatternA(category, n, min, step, R) {
+  let remaining = n;
+  for (let aPrime = 0;aPrime <= R; aPrime++) {
+    const aCount = patternACountForA(aPrime, R);
+    if (remaining < aCount) {
+      for (let bPrime = 0;bPrime <= R - aPrime; bPrime++) {
+        const cCount = aPrime + bPrime + 1;
+        if (remaining < cCount) {
+          const cPrime = remaining;
+          const a = min + aPrime * step;
+          const b = min + bPrime * step;
+          const c = min + cPrime * step;
+          return {
+            id: `${category}_${a}_add_${b}_sub_${c}_result`,
+            text: `${a} + ${b} - ${c} = ?`,
+            answer: a + b - c
+          };
+        }
+        remaining -= cCount;
+      }
+    }
+    remaining -= aCount;
+  }
+  throw new Error("Index out of bounds");
+}
+function lookupPatternB(category, n, min, step, R) {
+  let remaining = n;
+  for (let aPrime = 0;aPrime <= R; aPrime++) {
+    const aCount = patternBCountForA(aPrime, R);
+    if (remaining < aCount) {
+      for (let bPrime = 0;bPrime <= aPrime; bPrime++) {
+        const cCount = R - aPrime + bPrime + 1;
+        if (remaining < cCount) {
+          const cPrime = remaining;
+          const a = min + aPrime * step;
+          const b = min + bPrime * step;
+          const c = min + cPrime * step;
+          return {
+            id: `${category}_${a}_sub_${b}_add_${c}_result`,
+            text: `${a} - ${b} + ${c} = ?`,
+            answer: a - b + c
+          };
+        }
+        remaining -= cCount;
+      }
+    }
+    remaining -= aCount;
+  }
+  throw new Error("Index out of bounds");
+}
+function enumerate5(category, targetIndex) {
+  const props = generateProps7[category];
+  const { max } = props;
+  const min = props.min ?? 0;
+  const step = props.step ?? 1;
+  const R = (max - min) / step;
+  let countA = 0;
+  for (let aPrime = 0;aPrime <= R; aPrime++) {
+    countA += patternACountForA(aPrime, R);
+  }
+  let countB = 0;
+  for (let aPrime = 0;aPrime <= R; aPrime++) {
+    countB += patternBCountForA(aPrime, R);
+  }
+  const total = countA + countB;
+  if (targetIndex < 0) {
+    return { count: total };
+  }
+  if (targetIndex < countA) {
+    return { problem: lookupPatternA(category, targetIndex, min, step, R), count: total };
+  }
+  return { problem: lookupPatternB(category, targetIndex - countA, min, step, R), count: total };
+}
+var { count: count9, getProblem: getProblem9 } = makeGenerator(enumerate5);
+
+// src/problem.ts
+var generatorPerGroup = {
+  Addition: exports_addition,
+  Subtraction: exports_subtraction,
+  Multiplication: exports_multiplication,
+  Division: exports_division,
+  Mixed: exports_mixed,
+  Comparison: exports_comparison,
+  NumberText: exports_numberText,
+  NextPrevious: exports_nextPrevious,
+  Test: exports_test
+};
+function getGenerator(category) {
+  return generatorPerGroup[categoryToGroup[category]];
 }
 function getRandomProblem(category) {
-  const problems = getCachedProblems(category);
-  return problems[Math.floor(Math.random() * problems.length)];
-}
-function removeSolvedProblem(category, problemId) {
-  const problems = getCachedProblems(category);
-  if (problems) {
-    cache[category] = problems.filter((p) => p.id !== problemId);
-  }
-  if (cache[category]?.length === 0) {
-    populateCache(category);
-    return true;
-  }
-  return false;
+  const gen = getGenerator(category);
+  const total = gen.count(category);
+  const n = Math.floor(Math.random() * total);
+  return gen.getProblem(category, n);
 }
 
 // src/app.ts
-function getProblem(categories) {
+function getProblem10(categories) {
   const category = categories[Math.floor(Math.random() * categories.length)];
-  return { problem: generateProblem(category), category };
-}
-function generateProblem(category) {
-  return getRandomProblem(category);
-}
-function solvedProblem(category, problemId) {
-  return removeSolvedProblem(category, problemId);
+  return { problem: getRandomProblem(category), category };
 }
 function getCategories() {
   return categoryGroups;
@@ -1261,8 +1447,7 @@ function getYearGroupsSl() {
   return yearGroupsSl;
 }
 export {
-  solvedProblem,
   getYearGroupsSl,
-  getProblem,
+  getProblem10 as getProblem,
   getCategories
 };

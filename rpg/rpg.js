@@ -3552,7 +3552,7 @@ class TexturePoolClass {
     });
     return new Texture({
       source: textureSource,
-      label: `texturePool_${count++}`
+      label: `texturePool_${count10++}`
     });
   }
   getOptimalTexture(frameWidth, frameHeight, resolution = 1, antialias) {
@@ -3607,7 +3607,7 @@ class TexturePoolClass {
     this._texturePool = {};
   }
 }
-var count = 0, TexturePool;
+var count10 = 0, TexturePool;
 var init_TexturePool = __esm(() => {
   init_pow2();
   init_GlobalResourceRegistry();
@@ -4523,12 +4523,12 @@ var _Ticker = class _Ticker2 {
     if (!this._head) {
       return 0;
     }
-    let count2 = 0;
+    let count11 = 0;
     let current = this._head;
     while (current = current.next) {
-      count2++;
+      count11++;
     }
-    return count2;
+    return count11;
   }
   start() {
     if (!this.started) {
@@ -11697,23 +11697,23 @@ var init_buildCircle = __esm(() => {
       }
       centerX /= points.length / 2;
       centerY /= points.length / 2;
-      let count2 = verticesOffset;
-      vertices[count2 * verticesStride] = centerX;
-      vertices[count2 * verticesStride + 1] = centerY;
-      const centerIndex = count2++;
+      let count11 = verticesOffset;
+      vertices[count11 * verticesStride] = centerX;
+      vertices[count11 * verticesStride + 1] = centerY;
+      const centerIndex = count11++;
       for (let i2 = 0;i2 < points.length; i2 += 2) {
-        vertices[count2 * verticesStride] = points[i2];
-        vertices[count2 * verticesStride + 1] = points[i2 + 1];
+        vertices[count11 * verticesStride] = points[i2];
+        vertices[count11 * verticesStride + 1] = points[i2 + 1];
         if (i2 > 0) {
-          indices[indicesOffset++] = count2;
+          indices[indicesOffset++] = count11;
           indices[indicesOffset++] = centerIndex;
-          indices[indicesOffset++] = count2 - 1;
+          indices[indicesOffset++] = count11 - 1;
         }
-        count2++;
+        count11++;
       }
       indices[indicesOffset++] = centerIndex + 1;
       indices[indicesOffset++] = centerIndex;
-      indices[indicesOffset++] = count2 - 1;
+      indices[indicesOffset++] = count11 - 1;
     }
   };
   buildEllipse = { ...buildCircle, extension: { ...buildCircle.extension, name: "ellipse" } };
@@ -12580,20 +12580,20 @@ var init_buildRectangle = __esm(() => {
       return true;
     },
     triangulate(points, vertices, verticesStride, verticesOffset, indices, indicesOffset) {
-      let count2 = 0;
+      let count11 = 0;
       verticesOffset *= verticesStride;
-      vertices[verticesOffset + count2] = points[0];
-      vertices[verticesOffset + count2 + 1] = points[1];
-      count2 += verticesStride;
-      vertices[verticesOffset + count2] = points[2];
-      vertices[verticesOffset + count2 + 1] = points[3];
-      count2 += verticesStride;
-      vertices[verticesOffset + count2] = points[6];
-      vertices[verticesOffset + count2 + 1] = points[7];
-      count2 += verticesStride;
-      vertices[verticesOffset + count2] = points[4];
-      vertices[verticesOffset + count2 + 1] = points[5];
-      count2 += verticesStride;
+      vertices[verticesOffset + count11] = points[0];
+      vertices[verticesOffset + count11 + 1] = points[1];
+      count11 += verticesStride;
+      vertices[verticesOffset + count11] = points[2];
+      vertices[verticesOffset + count11 + 1] = points[3];
+      count11 += verticesStride;
+      vertices[verticesOffset + count11] = points[6];
+      vertices[verticesOffset + count11 + 1] = points[7];
+      count11 += verticesStride;
+      vertices[verticesOffset + count11] = points[4];
+      vertices[verticesOffset + count11 + 1] = points[5];
+      count11 += verticesStride;
       const verticesIndex = verticesOffset / verticesStride;
       indices[indicesOffset++] = verticesIndex;
       indices[indicesOffset++] = verticesIndex + 1;
@@ -12624,16 +12624,16 @@ var init_buildTriangle = __esm(() => {
       return true;
     },
     triangulate(points, vertices, verticesStride, verticesOffset, indices, indicesOffset) {
-      let count2 = 0;
+      let count11 = 0;
       verticesOffset *= verticesStride;
-      vertices[verticesOffset + count2] = points[0];
-      vertices[verticesOffset + count2 + 1] = points[1];
-      count2 += verticesStride;
-      vertices[verticesOffset + count2] = points[2];
-      vertices[verticesOffset + count2 + 1] = points[3];
-      count2 += verticesStride;
-      vertices[verticesOffset + count2] = points[4];
-      vertices[verticesOffset + count2 + 1] = points[5];
+      vertices[verticesOffset + count11] = points[0];
+      vertices[verticesOffset + count11 + 1] = points[1];
+      count11 += verticesStride;
+      vertices[verticesOffset + count11] = points[2];
+      vertices[verticesOffset + count11 + 1] = points[3];
+      count11 += verticesStride;
+      vertices[verticesOffset + count11] = points[4];
+      vertices[verticesOffset + count11 + 1] = points[5];
       const verticesIndex = verticesOffset / verticesStride;
       indices[indicesOffset++] = verticesIndex;
       indices[indicesOffset++] = verticesIndex + 1;
@@ -17919,7 +17919,7 @@ var contextSettings, _CanvasTextMetrics = class _CanvasTextMetrics2 {
     let width = 0;
     let line = "";
     let lines = "";
-    const cache2 = /* @__PURE__ */ Object.create(null);
+    const cache = /* @__PURE__ */ Object.create(null);
     const { letterSpacing, whiteSpace } = style;
     const collapseSpaces = _CanvasTextMetrics2._collapseSpaces(whiteSpace);
     const collapseNewlines = _CanvasTextMetrics2._collapseNewlines(whiteSpace);
@@ -17945,7 +17945,7 @@ var contextSettings, _CanvasTextMetrics = class _CanvasTextMetrics2 {
           continue;
         }
       }
-      const tokenWidth = _CanvasTextMetrics2._getFromCache(token, letterSpacing, cache2, context2);
+      const tokenWidth = _CanvasTextMetrics2._getFromCache(token, letterSpacing, cache, context2);
       if (tokenWidth > wordWrapWidth) {
         if (line !== "") {
           lines += _CanvasTextMetrics2._addLine(line);
@@ -17969,7 +17969,7 @@ var contextSettings, _CanvasTextMetrics = class _CanvasTextMetrics2 {
               k2++;
             }
             j2 += k2 - 1;
-            const characterWidth = _CanvasTextMetrics2._getFromCache(char, letterSpacing, cache2, context2);
+            const characterWidth = _CanvasTextMetrics2._getFromCache(char, letterSpacing, cache, context2);
             if (characterWidth + width > wordWrapWidth) {
               lines += _CanvasTextMetrics2._addLine(line);
               canPrependSpaces = false;
@@ -18013,11 +18013,11 @@ var contextSettings, _CanvasTextMetrics = class _CanvasTextMetrics2 {
 ` : line;
     return line;
   }
-  static _getFromCache(key, letterSpacing, cache2, context2) {
-    let width = cache2[key];
+  static _getFromCache(key, letterSpacing, cache, context2) {
+    let width = cache[key];
     if (typeof width !== "number") {
       width = _CanvasTextMetrics2._measureText(key, letterSpacing, context2) + letterSpacing;
-      cache2[key] = width;
+      cache[key] = width;
     }
     return width;
   }
@@ -26964,7 +26964,7 @@ class GpuStateSystem {
   contextChange(gpu) {
     this.gpu = gpu;
   }
-  getColorTargets(state, count2) {
+  getColorTargets(state, count11) {
     const blend = GpuBlendModesToPixi[state.blendMode] || GpuBlendModesToPixi.normal;
     const targets = [];
     const target = {
@@ -26972,7 +26972,7 @@ class GpuStateSystem {
       writeMask: 0,
       blend
     };
-    for (let i2 = 0;i2 < count2; i2++) {
+    for (let i2 = 0;i2 < count11; i2++) {
       targets[i2] = target;
     }
     return targets;
@@ -29083,8 +29083,8 @@ class GlRenderTargetAdaptor {
     }
   }
   _setDrawBuffers(renderTarget, gl) {
-    const count2 = renderTarget.colorTextures.length;
-    const bufferArray = this._drawBuffersCache[count2];
+    const count11 = renderTarget.colorTextures.length;
+    const bufferArray = this._drawBuffersCache[count11];
     if (this._renderer.context.webGLVersion === 1) {
       const ext = this._renderer.context.extensions.drawBuffers;
       if (!ext) {
@@ -30911,6 +30911,12 @@ var categoryGroups = {
     "Subtraction: 1000" /* Subtraction_Thousand */,
     "Subtraction: Hundreds" /* Subtraction_Hundreds */
   ],
+  Mixed: [
+    "Mixed +/-: 10 (3 numbers)" /* Mixed_ThreeNumbers_Ten */,
+    "Mixed +/-: 20 (3 numbers)" /* Mixed_ThreeNumbers_Twenty */,
+    "Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */,
+    "Mixed +/-: 1000 (3 numbers)" /* Mixed_ThreeNumbers_Thousand */
+  ],
   Multiplication: [
     "Multiplication: 10" /* Multiplication_Ten */,
     "Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */,
@@ -30959,6 +30965,7 @@ var yearGroupsSl = {
     "Subtraction: 10" /* Subtraction_Ten */,
     "Subtraction: 10 (missing facts)" /* Subtraction_Ten_Missing */,
     "Subtraction: 10 (3 numbers)" /* Subtraction_ThreeNumbers_Ten */,
+    "Mixed +/-: 10 (3 numbers)" /* Mixed_ThreeNumbers_Ten */,
     "Comparison: 10" /* Comparison_Ten */,
     "Comparison: 20" /* Comparison_Twenty */,
     "Number to Text: 10" /* NumberToText_Ten */,
@@ -30976,6 +30983,7 @@ var yearGroupsSl = {
     "Subtraction: 20" /* Subtraction_Twenty */,
     "Subtraction: 20 (missing facts)" /* Subtraction_Twenty_Missing */,
     "Subtraction: 20 (3 numbers)" /* Subtraction_ThreeNumbers_Twenty */,
+    "Mixed +/-: 20 (3 numbers)" /* Mixed_ThreeNumbers_Twenty */,
     "Subtraction: Tens" /* Subtraction_Tens */,
     "Number to Text: 100" /* NumberToText_Hundred */,
     "Text to Number: 100" /* TextToNumber_Hundred */
@@ -30992,6 +31000,7 @@ var yearGroupsSl = {
     "Subtraction: 100" /* Subtraction_Hundred */,
     "Subtraction: 100 (missing facts)" /* Subtraction_Hundred_Missing */,
     "Subtraction: 100 (3 numbers)" /* Subtraction_ThreeNumbers_Hundred */,
+    "Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */,
     "Subtraction: Hundreds" /* Subtraction_Hundreds */,
     "Multiplication: 10" /* Multiplication_Ten */,
     "Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */,
@@ -31010,6 +31019,7 @@ var yearGroupsSl = {
     "Subtraction: 1000 (with borrow)" /* Subtraction_ThousandWithBorrow */,
     "Subtraction: 1000" /* Subtraction_Thousand */,
     "Subtraction: 1000 (3 numbers)" /* Subtraction_ThreeNumbers_Thousand */,
+    "Mixed +/-: 1000 (3 numbers)" /* Mixed_ThreeNumbers_Thousand */,
     "Multiplication: 20" /* Multiplication_Twenty */,
     "Multiplication: 20 (missing facts)" /* Multiplication_Twenty_Missing */,
     "Division: 20" /* Division_Twenty */,
@@ -31032,8 +31042,29 @@ var categoryToGroup = (() => {
   }
   return dict;
 })();
+function makeGenerator(enumerate) {
+  const countCache = new Map;
+  return {
+    count(category) {
+      let c = countCache.get(category);
+      if (c === undefined) {
+        c = enumerate(category, -1).count;
+        countCache.set(category, c);
+      }
+      return c;
+    },
+    getProblem(category, n) {
+      return enumerate(category, n).problem;
+    }
+  };
+}
 
 // src/addition.ts
+var exports_addition = {};
+__export(exports_addition, {
+  getProblem: () => getProblem,
+  count: () => count
+});
 var generateProps = {
   ["Addition: 10" /* Addition_Ten */]: { xMax: 10, yMax: 10 },
   ["Addition: 10 (3 numbers)" /* Addition_ThreeNumbers_Ten */]: {
@@ -31180,7 +31211,37 @@ var generateProps = {
     maxResult: 1000
   }
 };
-function generate(category) {
+function makeProblem(category, i, j, fact) {
+  const result = i + j;
+  switch (fact) {
+    case "first":
+      return {
+        id: `${category}_${i}_${j}_first`,
+        text: `? + ${j} = ${result}`,
+        answer: i
+      };
+    case "second":
+      return {
+        id: `${category}_${i}_${j}_second`,
+        text: `${i} + ? = ${result}`,
+        answer: j
+      };
+    case "result":
+      return {
+        id: `${category}_${i}_${j}_result`,
+        text: `${i} + ${j} = ?`,
+        answer: result
+      };
+  }
+}
+function makeThreeNumberProblem(category, i, j, k) {
+  return {
+    id: `${category}_${i}_${j}_${k}_result`,
+    text: `${i} + ${j} + ${k} = ?`,
+    answer: i + j + k
+  };
+}
+function enumerate(category, targetIndex) {
   const props = generateProps[category];
   let {
     xMax,
@@ -31199,8 +31260,8 @@ function generate(category) {
   carryAllowed = carryAllowed ?? true;
   carryForced = carryForced ?? false;
   missingFact = missingFact ?? "result";
-  const allProblems = [];
   const missingFacts = Array.isArray(missingFact) ? missingFact : [missingFact];
+  let idx = 0;
   for (let i = xMin;i <= xMax; i += step) {
     for (let j = yMin;j <= yMax; j += step) {
       if (props.threeNumbers) {
@@ -31211,60 +31272,41 @@ function generate(category) {
           const result2 = currentSum + k;
           if (maxResult && result2 > maxResult)
             continue;
-          const text = `${i} + ${j} + ${k} = ?`;
-          const answer = result2;
-          const id = `${category}_${i}_${j}_${k}_result`;
-          allProblems.push({ id, text, answer });
+          if (idx === targetIndex) {
+            return { problem: makeThreeNumberProblem(category, i, j, k), count: idx };
+          }
+          idx++;
         }
         continue;
       }
       const digitI = Math.floor(i / step) % 10;
       const digitJ = Math.floor(j / step) % 10;
       const hasCarry = carryAllowed && digitI + digitJ >= 10;
-      if (hasCarry && !carryForced) {
+      if (hasCarry && !carryForced)
         continue;
-      }
-      if (!hasCarry && carryForced) {
+      if (!hasCarry && carryForced)
         continue;
-      }
       const result = i + j;
-      if (maxResult && result > maxResult) {
+      if (maxResult && result > maxResult)
         continue;
-      }
       for (const fact of missingFacts) {
-        let text;
-        let answer;
-        let id;
-        switch (fact) {
-          case "first":
-            text = `? + ${j} = ${result}`;
-            answer = i;
-            id = `${category}_${i}_${j}_first`;
-            break;
-          case "second":
-            text = `${i} + ? = ${result}`;
-            answer = j;
-            id = `${category}_${i}_${j}_second`;
-            break;
-          case "result":
-          default:
-            text = `${i} + ${j} = ?`;
-            answer = result;
-            id = `${category}_${i}_${j}_result`;
-            break;
+        if (idx === targetIndex) {
+          return { problem: makeProblem(category, i, j, fact), count: idx };
         }
-        allProblems.push({
-          id,
-          text,
-          answer
-        });
+        idx++;
       }
     }
   }
-  return allProblems;
+  return { count: idx };
 }
+var { count, getProblem } = makeGenerator(enumerate);
 
 // src/subtraction.ts
+var exports_subtraction = {};
+__export(exports_subtraction, {
+  getProblem: () => getProblem2,
+  count: () => count2
+});
 var generateProps2 = {
   ["Subtraction: 10" /* Subtraction_Ten */]: { xMax: 10, yMax: 10 },
   ["Subtraction: 10 (3 numbers)" /* Subtraction_ThreeNumbers_Ten */]: {
@@ -31375,7 +31417,36 @@ var generateProps2 = {
     step: 100
   }
 };
-function generate2(category) {
+function makeProblem2(category, i, j, fact) {
+  switch (fact) {
+    case "first":
+      return {
+        id: `${category}_${i}_${j}_first`,
+        text: `? - ${j} = ${i - j}`,
+        answer: i
+      };
+    case "second":
+      return {
+        id: `${category}_${i}_${j}_second`,
+        text: `${i} - ? = ${i - j}`,
+        answer: j
+      };
+    case "result":
+      return {
+        id: `${category}_${i}_${j}_result`,
+        text: `${i} - ${j} = ?`,
+        answer: i - j
+      };
+  }
+}
+function makeThreeNumberProblem2(category, i, j, k) {
+  return {
+    id: `${category}_${i}_${j}_${k}_result`,
+    text: `${i} - ${j} - ${k} = ?`,
+    answer: i - j - k
+  };
+}
+function enumerate2(category, targetIndex) {
   const props = generateProps2[category];
   let {
     xMax,
@@ -31393,8 +31464,8 @@ function generate2(category) {
   borrowAllowed = borrowAllowed ?? true;
   borrowForced = borrowForced ?? false;
   missingFact = missingFact ?? "result";
-  const allProblems = [];
   const missingFacts = Array.isArray(missingFact) ? missingFact : [missingFact];
+  let idx = 0;
   for (let i = xMin;i <= xMax; i += step) {
     for (let j = yMin;j <= yMax; j += step) {
       if (i < j)
@@ -31404,57 +31475,38 @@ function generate2(category) {
         for (let k = yMin;k <= yMax; k += step) {
           if (currentDiff < k)
             continue;
-          const result = currentDiff - k;
-          const text = `${i} - ${j} - ${k} = ?`;
-          const answer = result;
-          const id = `${category}_${i}_${j}_${k}_result`;
-          allProblems.push({ id, text, answer });
+          if (idx === targetIndex) {
+            return { problem: makeThreeNumberProblem2(category, i, j, k), count: idx };
+          }
+          idx++;
         }
         continue;
       }
       const digitI = Math.floor(i / step) % 10;
       const digitJ = Math.floor(j / step) % 10;
       const hasBorrow = borrowAllowed && digitI < digitJ;
-      if (hasBorrow && !borrowForced) {
+      if (hasBorrow && !borrowForced)
         continue;
-      }
-      if (!hasBorrow && borrowForced) {
+      if (!hasBorrow && borrowForced)
         continue;
-      }
       for (const fact of missingFacts) {
-        let text;
-        let answer;
-        let id;
-        switch (fact) {
-          case "first":
-            text = `? - ${j} = ${i - j}`;
-            answer = i;
-            id = `${category}_${i}_${j}_first`;
-            break;
-          case "second":
-            text = `${i} - ? = ${i - j}`;
-            answer = j;
-            id = `${category}_${i}_${j}_second`;
-            break;
-          case "result":
-          default:
-            text = `${i} - ${j} = ?`;
-            answer = i - j;
-            id = `${category}_${i}_${j}_result`;
-            break;
+        if (idx === targetIndex) {
+          return { problem: makeProblem2(category, i, j, fact), count: idx };
         }
-        allProblems.push({
-          id,
-          text,
-          answer
-        });
+        idx++;
       }
     }
   }
-  return allProblems;
+  return { count: idx };
 }
+var { count: count2, getProblem: getProblem2 } = makeGenerator(enumerate2);
 
 // src/division.ts
+var exports_division = {};
+__export(exports_division, {
+  getProblem: () => getProblem3,
+  count: () => count3
+});
 var generateProps3 = {
   ["Division: 10" /* Division_Ten */]: { answerMax: 10, divisorMax: 10 },
   ["Division: 10 (missing facts)" /* Division_Ten_Missing */]: {
@@ -31475,50 +31527,56 @@ var generateProps3 = {
     missingField: ["dividend", "divisor"]
   }
 };
-function generate3(category) {
+function makeProblem3(category, dividend, divisor, answer, field) {
+  switch (field) {
+    case "dividend":
+      return {
+        id: `${category}_${dividend}_${divisor}_dividend`,
+        text: `? / ${divisor} = ${answer}`,
+        answer: dividend
+      };
+    case "divisor":
+      return {
+        id: `${category}_${dividend}_${divisor}_divisor`,
+        text: `${dividend} / ? = ${answer}`,
+        answer: divisor
+      };
+    case "answer":
+      return {
+        id: `${category}_${dividend}_${divisor}_answer`,
+        text: `${dividend} / ${divisor} = ?`,
+        answer
+      };
+  }
+}
+function enumerate3(category, targetIndex) {
   const props = generateProps3[category];
   const { answerMax, divisorMax, missingField = "answer" } = props;
-  const allProblems = [];
   const missingFields = Array.isArray(missingField) ? missingField : [missingField];
+  let idx = 0;
   for (let answer = 0;answer <= answerMax; answer++) {
     for (let divisor = 1;divisor <= divisorMax; divisor++) {
       const dividend = answer * divisor;
       for (const field of missingFields) {
-        let text;
-        let problemAnswer;
-        let id;
-        switch (field) {
-          case "dividend":
-            text = `? / ${divisor} = ${answer}`;
-            problemAnswer = dividend;
-            id = `${category}_${dividend}_${divisor}_dividend`;
-            break;
-          case "divisor":
-            if (dividend === 0)
-              continue;
-            text = `${dividend} / ? = ${answer}`;
-            problemAnswer = divisor;
-            id = `${category}_${dividend}_${divisor}_divisor`;
-            break;
-          case "answer":
-          default:
-            text = `${dividend} / ${divisor} = ?`;
-            problemAnswer = answer;
-            id = `${category}_${dividend}_${divisor}_answer`;
-            break;
+        if (field === "divisor" && dividend === 0)
+          continue;
+        if (idx === targetIndex) {
+          return { problem: makeProblem3(category, dividend, divisor, answer, field), count: idx };
         }
-        allProblems.push({
-          id,
-          text,
-          answer: problemAnswer
-        });
+        idx++;
       }
     }
   }
-  return allProblems;
+  return { count: idx };
 }
+var { count: count3, getProblem: getProblem3 } = makeGenerator(enumerate3);
 
 // src/multiplication.ts
+var exports_multiplication = {};
+__export(exports_multiplication, {
+  getProblem: () => getProblem4,
+  count: () => count4
+});
 var generateProps4 = {
   ["Multiplication: 10" /* Multiplication_Ten */]: { xMax: 10, yMax: 10 },
   ["Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */]: {
@@ -31539,60 +31597,76 @@ var generateProps4 = {
     missingField: ["first", "second"]
   }
 };
-function generate4(category) {
+function makeProblem4(category, i, j, field) {
+  switch (field) {
+    case "first":
+      return {
+        id: `${category}_${i}_${j}_first`,
+        text: `? × ${j} = ${i * j}`,
+        answer: i
+      };
+    case "second":
+      return {
+        id: `${category}_${i}_${j}_second`,
+        text: `${i} × ? = ${i * j}`,
+        answer: j
+      };
+    case "answer":
+      return {
+        id: `${category}_${i}_${j}_answer`,
+        text: `${i} × ${j} = ?`,
+        answer: i * j
+      };
+  }
+}
+function enumerate4(category, targetIndex) {
   const props = generateProps4[category];
   const { xMax, yMax, missingField = "answer" } = props;
-  const allProblems = [];
   const missingFields = Array.isArray(missingField) ? missingField : [missingField];
+  let idx = 0;
   for (let i = 0;i <= xMax; i++) {
     for (let j = 0;j <= yMax; j++) {
       for (const field of missingFields) {
-        let text;
-        let problemAnswer;
-        let id;
-        switch (field) {
-          case "first":
-            if (j === 0)
-              continue;
-            text = `? × ${j} = ${i * j}`;
-            problemAnswer = i;
-            id = `${category}_${i}_${j}_first`;
-            break;
-          case "second":
-            if (i === 0)
-              continue;
-            text = `${i} × ? = ${i * j}`;
-            problemAnswer = j;
-            id = `${category}_${i}_${j}_second`;
-            break;
-          case "answer":
-          default:
-            text = `${i} × ${j} = ?`;
-            problemAnswer = i * j;
-            id = `${category}_${i}_${j}_answer`;
-            break;
+        if (field === "first" && j === 0)
+          continue;
+        if (field === "second" && i === 0)
+          continue;
+        if (idx === targetIndex) {
+          return { problem: makeProblem4(category, i, j, field), count: idx };
         }
-        allProblems.push({
-          id,
-          text,
-          answer: problemAnswer
-        });
+        idx++;
       }
     }
   }
-  return allProblems;
+  return { count: idx };
 }
+var { count: count4, getProblem: getProblem4 } = makeGenerator(enumerate4);
 
 // src/test.ts
-function generate5(category) {
-  return [
-    { id: "test-1", text: "1", answer: 1 },
-    { id: "test-2", text: "2", answer: 2 },
-    { id: "test-3", text: "3", answer: 3 }
-  ];
+var exports_test = {};
+__export(exports_test, {
+  getProblem: () => getProblem5,
+  count: () => count5
+});
+var problems = [
+  { id: "test-1", text: "1", answer: 1 },
+  { id: "test-2", text: "2", answer: 2 },
+  { id: "test-3", text: "3", answer: 3 },
+  { id: "test-67", text: "67", answer: 67 }
+];
+function count5(_category) {
+  return problems.length;
+}
+function getProblem5(_category, n) {
+  return problems[n % problems.length];
 }
 
 // src/comparison.ts
+var exports_comparison = {};
+__export(exports_comparison, {
+  getProblem: () => getProblem6,
+  count: () => count6
+});
 var generateProps5 = {
   ["Comparison: 10" /* Comparison_Ten */]: { max: 10 },
   ["Comparison: 20" /* Comparison_Twenty */]: { max: 20 },
@@ -31604,23 +31678,38 @@ var comparisonOptions = [
   { label: "=", value: 0 },
   { label: ">", value: 1 }
 ];
-function generate6(category) {
+function rangeSize(category) {
   const props = generateProps5[category];
   const { max, min = 0, step = 1 } = props;
-  const allProblems = [];
-  for (let x = min;x <= max; x += step) {
-    for (let y = min;y <= max; y += step) {
-      const answer = x < y ? -1 : x === y ? 0 : 1;
-      allProblems.push({
-        id: `${category}_${x}_${y}`,
-        text: `${x} ? ${y}`,
-        answer,
-        options: comparisonOptions
-      });
-    }
-  }
-  return allProblems;
+  return Math.floor((max - min) / step) + 1;
 }
+function count6(category) {
+  const size = rangeSize(category);
+  return size * size;
+}
+function getProblem6(category, n) {
+  const props = generateProps5[category];
+  const { min = 0, step = 1 } = props;
+  const size = rangeSize(category);
+  const xIdx = Math.floor(n / size);
+  const yIdx = n % size;
+  const x = min + xIdx * step;
+  const y = min + yIdx * step;
+  const answer = x < y ? -1 : x === y ? 0 : 1;
+  return {
+    id: `${category}_${x}_${y}`,
+    text: `${x} ? ${y}`,
+    answer,
+    options: comparisonOptions
+  };
+}
+
+// src/numberText.ts
+var exports_numberText = {};
+__export(exports_numberText, {
+  getProblem: () => getProblem7,
+  count: () => count7
+});
 
 // src/translations.ts
 var translations = {
@@ -31688,6 +31777,10 @@ var translations = {
     ["Subtraction: 1000 (with borrow)" /* Subtraction_ThousandWithBorrow */]: "Subtraction: 1000 (with borrow)",
     ["Subtraction: 1000" /* Subtraction_Thousand */]: "Subtraction: 1000",
     ["Subtraction: Hundreds" /* Subtraction_Hundreds */]: "Subtraction: Hundreds",
+    ["Mixed +/-: 10 (3 numbers)" /* Mixed_ThreeNumbers_Ten */]: "Mixed +/-: 10 (3 numbers)",
+    ["Mixed +/-: 20 (3 numbers)" /* Mixed_ThreeNumbers_Twenty */]: "Mixed +/-: 20 (3 numbers)",
+    ["Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */]: "Mixed +/-: 100 (3 numbers)",
+    ["Mixed +/-: 1000 (3 numbers)" /* Mixed_ThreeNumbers_Thousand */]: "Mixed +/-: 1000 (3 numbers)",
     ["Multiplication: 10" /* Multiplication_Ten */]: "Multiplication: 10",
     ["Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */]: "Multiplication: 10 (missing facts)",
     ["Multiplication: 20" /* Multiplication_Twenty */]: "Multiplication: 20",
@@ -31737,6 +31830,7 @@ var translations = {
     ["Next/Previous: 20" /* NextPrevious_Twenty */]: "Next/Previous: 20",
     group_Addition: "Addition",
     group_Subtraction: "Subtraction",
+    group_Mixed: "Mixed +/-",
     group_Multiplication: "Multiplication",
     group_Division: "Division",
     group_Comparison: "Comparison",
@@ -31747,7 +31841,9 @@ var translations = {
     rpg_title: "Choose Your Spells",
     rpg_subtitle: "Select the math spells you wish to master",
     rpg_select_categories: "Spell Book",
-    rpg_start_battle: "Enter Battle"
+    rpg_start_battle: "Enter Battle",
+    rpg_adventure_link: "Cat Math Adventure \uD83D\uDC08‍⬛",
+    new_sticker: "NEW"
   },
   sl: {
     title: "Mačja Matematika",
@@ -31813,6 +31909,10 @@ var translations = {
     ["Subtraction: 1000 (with borrow)" /* Subtraction_ThousandWithBorrow */]: "Odštevanje: 1000 (s prehodom)",
     ["Subtraction: 1000" /* Subtraction_Thousand */]: "Odštevanje: 1000",
     ["Subtraction: Hundreds" /* Subtraction_Hundreds */]: "Odštevanje: stotice",
+    ["Mixed +/-: 10 (3 numbers)" /* Mixed_ThreeNumbers_Ten */]: "Mešano +/-: 10 (3 števila)",
+    ["Mixed +/-: 20 (3 numbers)" /* Mixed_ThreeNumbers_Twenty */]: "Mešano +/-: 20 (3 števila)",
+    ["Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */]: "Mešano +/-: 100 (3 števila)",
+    ["Mixed +/-: 1000 (3 numbers)" /* Mixed_ThreeNumbers_Thousand */]: "Mešano +/-: 1000 (3 števila)",
     ["Multiplication: 10" /* Multiplication_Ten */]: "Množenje: 10",
     ["Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */]: "Množenje: 10 (neznani člen)",
     ["Multiplication: 20" /* Multiplication_Twenty */]: "Množenje: 20",
@@ -31862,6 +31962,7 @@ var translations = {
     ["Next/Previous: 20" /* NextPrevious_Twenty */]: "Predhodnik/Naslednik: 20",
     group_Addition: "Seštevanje",
     group_Subtraction: "Odštevanje",
+    group_Mixed: "Mešano +/-",
     group_Multiplication: "Množenje",
     group_Division: "Deljenje",
     group_Comparison: "Primerjanje",
@@ -31877,7 +31978,9 @@ var translations = {
     rpg_title: "Izberi Uroke",
     rpg_subtitle: "Izberi matematične uroke za vadbo",
     rpg_select_categories: "Knjiga Urokov",
-    rpg_start_battle: "Vstopi v Bitko"
+    rpg_start_battle: "Vstopi v Bitko",
+    rpg_adventure_link: "Avantura Mačja Matematika \uD83D\uDC08‍⬛",
+    new_sticker: "NOVO"
   }
 };
 
@@ -31902,6 +32005,13 @@ function t(key) {
     console.error(`Missing translation for language ${lang} and key: ${key}`);
   }
   return translated || key;
+}
+function localizeProblemText(text) {
+  const lang = getCurrentLanguage();
+  if (lang === "sl") {
+    return text.replace(/ × /g, " · ").replace(/ \/ /g, " : ");
+  }
+  return text.replace(/ \/ /g, " ÷ ");
 }
 function getCategoryDisplayName(category) {
   const lang = getCurrentLanguage();
@@ -31975,127 +32085,203 @@ function getNumberWord(n) {
     return `${enTens[tens]}-${onesWord}`;
   }
 }
-function generateNumberToText(maxNumber, category) {
-  const problems = [];
-  for (let n = 0;n <= maxNumber; n++) {
-    problems.push({
+function getMaxNumber(category) {
+  switch (category) {
+    case "Number to Text: 10" /* NumberToText_Ten */:
+    case "Text to Number: 10" /* TextToNumber_Ten */:
+      return 10;
+    case "Number to Text: 20" /* NumberToText_Twenty */:
+    case "Text to Number: 20" /* TextToNumber_Twenty */:
+      return 20;
+    case "Number to Text: 100" /* NumberToText_Hundred */:
+    case "Text to Number: 100" /* TextToNumber_Hundred */:
+      return 100;
+    case "Number to Text: 1000" /* NumberToText_Thousand */:
+    case "Text to Number: 1000" /* TextToNumber_Thousand */:
+      return 1000;
+    default:
+      return 0;
+  }
+}
+function isNumberToText(category) {
+  return category === "Number to Text: 10" /* NumberToText_Ten */ || category === "Number to Text: 20" /* NumberToText_Twenty */ || category === "Number to Text: 100" /* NumberToText_Hundred */ || category === "Number to Text: 1000" /* NumberToText_Thousand */;
+}
+function count7(category) {
+  return getMaxNumber(category) + 1;
+}
+function getProblem7(category, n) {
+  if (isNumberToText(category)) {
+    return {
       id: `${category}_${n}`,
       text: `${n} = ?`,
       answer: getNumberWord(n)
-    });
-  }
-  return problems;
-}
-function generateTextToNumber(maxNumber, category) {
-  const problems = [];
-  for (let n = 0;n <= maxNumber; n++) {
-    problems.push({
+    };
+  } else {
+    return {
       id: `${category}_${n}`,
       text: `${getNumberWord(n)} = ?`,
       answer: n
-    });
-  }
-  return problems;
-}
-function generate7(category) {
-  switch (category) {
-    case "Number to Text: 10" /* NumberToText_Ten */:
-      return generateNumberToText(10, category);
-    case "Number to Text: 20" /* NumberToText_Twenty */:
-      return generateNumberToText(20, category);
-    case "Number to Text: 100" /* NumberToText_Hundred */:
-      return generateNumberToText(100, category);
-    case "Number to Text: 1000" /* NumberToText_Thousand */:
-      return generateNumberToText(1000, category);
-    case "Text to Number: 10" /* TextToNumber_Ten */:
-      return generateTextToNumber(10, category);
-    case "Text to Number: 20" /* TextToNumber_Twenty */:
-      return generateTextToNumber(20, category);
-    case "Text to Number: 100" /* TextToNumber_Hundred */:
-      return generateTextToNumber(100, category);
-    case "Text to Number: 1000" /* TextToNumber_Thousand */:
-      return generateTextToNumber(1000, category);
-    default:
-      return [];
+    };
   }
 }
 
 // src/nextPrevious.ts
+var exports_nextPrevious = {};
+__export(exports_nextPrevious, {
+  getProblem: () => getProblem8,
+  count: () => count8
+});
 var generateProps6 = {
   ["Next/Previous: 10" /* NextPrevious_Ten */]: { max: 10, min: 0 },
   ["Next/Previous: 20" /* NextPrevious_Twenty */]: { max: 20, min: 0 }
 };
-function generate8(category) {
+function count8(category) {
   const props = generateProps6[category];
-  let { max, min } = props;
-  min = min ?? 0;
-  const allProblems = [];
-  for (let i = min;i <= max; i++) {
-    if (i > min) {
-      allProblems.push({
-        id: `${category}_${i}_prev`,
-        text: `?, ${i}`,
-        answer: i - 1
-      });
-    }
-    if (i < max) {
-      allProblems.push({
-        id: `${category}_${i}_next`,
-        text: `${i}, ?`,
-        answer: i + 1
-      });
-    }
+  const min = props.min ?? 0;
+  return 2 * (props.max - min);
+}
+function getProblem8(category, n) {
+  const props = generateProps6[category];
+  const min = props.min ?? 0;
+  const range = props.max - min;
+  if (n < range) {
+    const i = min + 1 + n;
+    return {
+      id: `${category}_${i}_prev`,
+      text: `?, ${i}`,
+      answer: i - 1
+    };
+  } else {
+    const i = min + (n - range);
+    return {
+      id: `${category}_${i}_next`,
+      text: `${i}, ?`,
+      answer: i + 1
+    };
   }
-  return allProblems;
 }
 
-// src/problem.ts
-var generateFnPerGroup = {
-  Addition: (category) => generate(category),
-  Subtraction: (category) => generate2(category),
-  Multiplication: (category) => generate4(category),
-  Division: (category) => generate3(category),
-  Comparison: (category) => generate6(category),
-  NumberText: (category) => generate7(category),
-  NextPrevious: (category) => generate8(category),
-  Test: (category) => generate5(category)
+// src/mixed.ts
+var exports_mixed = {};
+__export(exports_mixed, {
+  getProblem: () => getProblem9,
+  count: () => count9
+});
+var generateProps7 = {
+  ["Mixed +/-: 10 (3 numbers)" /* Mixed_ThreeNumbers_Ten */]: { max: 10 },
+  ["Mixed +/-: 20 (3 numbers)" /* Mixed_ThreeNumbers_Twenty */]: { max: 20 },
+  ["Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */]: { max: 100, min: 10 },
+  ["Mixed +/-: 1000 (3 numbers)" /* Mixed_ThreeNumbers_Thousand */]: { max: 1000, min: 100 }
 };
-var cache = {};
-function getCachedProblems(category) {
-  if (!cache[category]) {
-    populateCache(category);
-  }
-  return cache[category];
+function patternACountForA(aPrime, R) {
+  const L = R - aPrime;
+  return (L + 1) * (aPrime + 1) + L * (L + 1) / 2;
 }
-function populateCache(category) {
-  cache[category] = generateFnPerGroup[categoryToGroup[category]](category);
+function patternBCountForA(aPrime, R) {
+  const D = R - aPrime;
+  return (aPrime + 1) * (D + 1) + aPrime * (aPrime + 1) / 2;
+}
+function lookupPatternA(category, n, min, step, R) {
+  let remaining = n;
+  for (let aPrime = 0;aPrime <= R; aPrime++) {
+    const aCount = patternACountForA(aPrime, R);
+    if (remaining < aCount) {
+      for (let bPrime = 0;bPrime <= R - aPrime; bPrime++) {
+        const cCount = aPrime + bPrime + 1;
+        if (remaining < cCount) {
+          const cPrime = remaining;
+          const a = min + aPrime * step;
+          const b = min + bPrime * step;
+          const c = min + cPrime * step;
+          return {
+            id: `${category}_${a}_add_${b}_sub_${c}_result`,
+            text: `${a} + ${b} - ${c} = ?`,
+            answer: a + b - c
+          };
+        }
+        remaining -= cCount;
+      }
+    }
+    remaining -= aCount;
+  }
+  throw new Error("Index out of bounds");
+}
+function lookupPatternB(category, n, min, step, R) {
+  let remaining = n;
+  for (let aPrime = 0;aPrime <= R; aPrime++) {
+    const aCount = patternBCountForA(aPrime, R);
+    if (remaining < aCount) {
+      for (let bPrime = 0;bPrime <= aPrime; bPrime++) {
+        const cCount = R - aPrime + bPrime + 1;
+        if (remaining < cCount) {
+          const cPrime = remaining;
+          const a = min + aPrime * step;
+          const b = min + bPrime * step;
+          const c = min + cPrime * step;
+          return {
+            id: `${category}_${a}_sub_${b}_add_${c}_result`,
+            text: `${a} - ${b} + ${c} = ?`,
+            answer: a - b + c
+          };
+        }
+        remaining -= cCount;
+      }
+    }
+    remaining -= aCount;
+  }
+  throw new Error("Index out of bounds");
+}
+function enumerate5(category, targetIndex) {
+  const props = generateProps7[category];
+  const { max } = props;
+  const min = props.min ?? 0;
+  const step = props.step ?? 1;
+  const R = (max - min) / step;
+  let countA = 0;
+  for (let aPrime = 0;aPrime <= R; aPrime++) {
+    countA += patternACountForA(aPrime, R);
+  }
+  let countB = 0;
+  for (let aPrime = 0;aPrime <= R; aPrime++) {
+    countB += patternBCountForA(aPrime, R);
+  }
+  const total = countA + countB;
+  if (targetIndex < 0) {
+    return { count: total };
+  }
+  if (targetIndex < countA) {
+    return { problem: lookupPatternA(category, targetIndex, min, step, R), count: total };
+  }
+  return { problem: lookupPatternB(category, targetIndex - countA, min, step, R), count: total };
+}
+var { count: count9, getProblem: getProblem9 } = makeGenerator(enumerate5);
+
+// src/problem.ts
+var generatorPerGroup = {
+  Addition: exports_addition,
+  Subtraction: exports_subtraction,
+  Multiplication: exports_multiplication,
+  Division: exports_division,
+  Mixed: exports_mixed,
+  Comparison: exports_comparison,
+  NumberText: exports_numberText,
+  NextPrevious: exports_nextPrevious,
+  Test: exports_test
+};
+function getGenerator(category) {
+  return generatorPerGroup[categoryToGroup[category]];
 }
 function getRandomProblem(category) {
-  const problems = getCachedProblems(category);
-  return problems[Math.floor(Math.random() * problems.length)];
-}
-function removeSolvedProblem(category, problemId) {
-  const problems = getCachedProblems(category);
-  if (problems) {
-    cache[category] = problems.filter((p) => p.id !== problemId);
-  }
-  if (cache[category]?.length === 0) {
-    populateCache(category);
-    return true;
-  }
-  return false;
+  const gen = getGenerator(category);
+  const total = gen.count(category);
+  const n = Math.floor(Math.random() * total);
+  return gen.getProblem(category, n);
 }
 
 // src/app.ts
-function getProblem(categories) {
+function getProblem10(categories) {
   const category = categories[Math.floor(Math.random() * categories.length)];
-  return { problem: generateProblem(category), category };
-}
-function generateProblem(category) {
-  return getRandomProblem(category);
-}
-function solvedProblem(category, problemId) {
-  return removeSolvedProblem(category, problemId);
+  return { problem: getRandomProblem(category), category };
 }
 function getCategories() {
   return categoryGroups;
@@ -32876,7 +33062,7 @@ var _Loader = class _Loader2 {
     }
     const options = typeof onProgressOrOptions === "function" ? { ..._Loader2.defaultOptions, ...this.loadOptions, onProgress: onProgressOrOptions } : { ..._Loader2.defaultOptions, ...this.loadOptions, ...onProgressOrOptions || {} };
     const { onProgress, onError, strategy, retryCount, retryDelay } = options;
-    let count2 = 0;
+    let count11 = 0;
     const assets = {};
     const singleAsset = isSingleItem(assetsToLoadIn);
     const assetsToLoad = convertToList(assetsToLoadIn, (item) => ({
@@ -32890,9 +33076,9 @@ var _Loader = class _Loader2 {
       if (assets[asset.src])
         return;
       await this._loadAssetWithRetry(url, asset, { onProgress, onError, strategy, retryCount, retryDelay }, assets);
-      count2 += asset.progressSize || 1;
+      count11 += asset.progressSize || 1;
       if (onProgress)
-        onProgress(count2 / total);
+        onProgress(count11 / total);
     });
     await Promise.all(promises);
     return singleAsset ? assets[assetsToLoad[0].src] : assets;
@@ -34207,7 +34393,6 @@ class Actor extends Container {
   attackPower;
   defensePower;
   speed;
-  xpDrop;
   xp = 0;
   constructor({
     texture,
@@ -34215,8 +34400,7 @@ class Actor extends Container {
     health,
     attackPower,
     defensePower,
-    speed,
-    xpDrop
+    speed
   }) {
     super();
     this.health = health;
@@ -34224,7 +34408,6 @@ class Actor extends Container {
     this.attackPower = attackPower;
     this.defensePower = defensePower;
     this.speed = speed;
-    this.xpDrop = xpDrop;
     this.sprite = new Sprite(texture);
     this.sprite.anchor.set(0.5, 1);
     this.sprite.scale.set(textureScale);
@@ -34599,6 +34782,10 @@ class Wizard extends Actor {
   meteor = new SpellState(500);
   meteorGraphic = null;
   meteorBurst = new BurstState(250);
+  sparkles = [];
+  sparkleTimer = 0;
+  sparkleInterval = 0;
+  sparkleMaxCount = 0;
   constructor(xp) {
     const xpFactor = 1 + xp / 100;
     super({
@@ -34607,9 +34794,28 @@ class Wizard extends Actor {
       health: Math.floor(100 * xpFactor),
       attackPower: Math.floor(5 * xpFactor),
       defensePower: Math.floor(xpFactor),
-      speed: Math.floor(6 * xpFactor),
-      xpDrop: 0
+      speed: Math.floor(6 * xpFactor)
     });
+    this.updateSparkleConfig(xp);
+  }
+  updateSparkleConfig(xp) {
+    const progress = getXpProgress(xp);
+    if (progress < 0.2) {
+      this.sparkleInterval = 0;
+      this.sparkleMaxCount = 0;
+    } else if (progress < 0.4) {
+      this.sparkleInterval = 600;
+      this.sparkleMaxCount = 3;
+    } else if (progress < 0.6) {
+      this.sparkleInterval = 400;
+      this.sparkleMaxCount = 5;
+    } else if (progress < 0.8) {
+      this.sparkleInterval = 250;
+      this.sparkleMaxCount = 8;
+    } else {
+      this.sparkleInterval = 150;
+      this.sparkleMaxCount = 12;
+    }
   }
   updateHealthBar() {
     const ratio = Math.max(this.health / this.maxHealth, 0.02);
@@ -34624,6 +34830,13 @@ class Wizard extends Actor {
     if (level >= 7 && roll < 0.1) {
       damage *= 4;
       await this.castMeteorStrike(target);
+      const splashDamage = Math.floor(damage * 0.2);
+      const results = [{ target, damage }];
+      for (const d2 of defenders) {
+        if (d2 !== target)
+          results.push({ target: d2, damage: splashDamage });
+      }
+      return results;
     } else if (level >= 6 && roll < 0.15) {
       damage = Math.floor(damage * 3.5);
       await this.castArcaneBeam(target);
@@ -34642,7 +34855,7 @@ class Wizard extends Actor {
       await this.castMagicMissile(target);
     } else {
       let isCritical = false;
-      if (level > 1 && Math.random() < 0.25) {
+      if (Math.random() < 0.25) {
         isCritical = true;
         damage *= 2;
       }
@@ -34936,6 +35149,7 @@ class Wizard extends Actor {
   }
   levelUpStats(newXp) {
     this.xp += newXp;
+    this.updateSparkleConfig(this.xp);
     const xpFactor = 1 + this.xp / 100;
     this.maxHealth = Math.floor(100 * xpFactor);
     this.health = this.maxHealth;
@@ -35054,6 +35268,45 @@ class Wizard extends Actor {
     this.parent.addChild(trail);
     this.magicTrails.push({ graphic: trail, life: 300 });
   }
+  updateSparkles(time) {
+    if (this.sparkleInterval === 0)
+      return;
+    this.sparkleTimer += time.deltaMS;
+    if (this.sparkleTimer >= this.sparkleInterval && this.sparkles.length < this.sparkleMaxCount) {
+      this.sparkleTimer = 0;
+      const maxLife = 800 + Math.random() * 600;
+      const angle = Math.random() * Math.PI * 2;
+      const sparkle = new Graphics;
+      sparkle.star(0, 0, 4, 4, 1.5);
+      sparkle.fill({ color: 16772744 });
+      sparkle.zIndex = 999;
+      const spawnRadius = 30 + Math.random() * 40;
+      sparkle.x = this.x + Math.cos(angle) * spawnRadius;
+      sparkle.y = this.y - 80 - Math.random() * 120;
+      this.parent.addChild(sparkle);
+      this.sparkles.push({
+        graphic: sparkle,
+        life: maxLife,
+        maxLife,
+        vx: (Math.random() - 0.5) * 0.02,
+        vy: -0.02 - Math.random() * 0.03
+      });
+    }
+    for (let i2 = this.sparkles.length - 1;i2 >= 0; i2--) {
+      const s2 = this.sparkles[i2];
+      s2.life -= time.deltaMS;
+      const t3 = s2.life / s2.maxLife;
+      s2.graphic.alpha = t3 * 0.8;
+      s2.graphic.scale.set(0.5 + t3 * 0.5);
+      s2.graphic.x += s2.vx * time.deltaMS;
+      s2.graphic.y += s2.vy * time.deltaMS;
+      if (s2.life <= 0) {
+        this.parent.removeChild(s2.graphic);
+        s2.graphic.destroy();
+        this.sparkles.splice(i2, 1);
+      }
+    }
+  }
   removeGraphic(g2) {
     this.parent.removeChild(g2);
     g2.destroy();
@@ -35075,6 +35328,7 @@ class Wizard extends Actor {
   }
   update(time, isSine) {
     super.update(time, isSine);
+    this.updateSparkles(time);
     const hasWork = this.magic.isCasting || this.magicBurst.isBursting || this.area.isCasting || this.missiles.isCasting || this.missileBursts.length > 0 || this.lightning.isCasting || this.lightningBurst.isBursting || this.fireBolt.isCasting || this.fireBoltBurst.isBursting || this.frost.isCasting || this.frostBursts.length > 0 || this.beam.isCasting || this.meteor.isCasting || this.meteorBurst.isBursting || this.magicTrails.length > 0 || this.levelUp_.isCasting || this.levelUpParticles.length > 0;
     if (!hasWork)
       return;
@@ -35471,6 +35725,186 @@ function getWizardLevel(xp) {
   }
   return Math.ceil((xp - 50) / 100) + 1;
 }
+function getXpProgress(xp) {
+  if (xp < 51) {
+    return xp / 51;
+  }
+  return (xp - 50) % 100 / 100;
+}
+// src/rpg/enemies/enemyConfig.json
+var enemyConfig_default = {
+  rat: {
+    texturePath: "assets/rat.png",
+    textureScale: 0.5,
+    health: 12,
+    attackPower: 4,
+    defensePower: 0,
+    speed: 4
+  },
+  dire_rat: {
+    texturePath: "assets/ratLeader.png",
+    textureScale: 0.5,
+    health: 24,
+    attackPower: 5,
+    defensePower: 2,
+    speed: 5
+  },
+  slime: {
+    texturePath: "assets/slime.png",
+    textureScale: 0.25,
+    health: 45,
+    attackPower: 8,
+    defensePower: 0,
+    speed: 15
+  },
+  goblin: {
+    texturePath: "assets/goblin.png",
+    textureScale: 0.3,
+    health: 144,
+    attackPower: 29,
+    defensePower: 2,
+    speed: 25
+  },
+  skeleton: {
+    texturePath: "assets/skeleton.png",
+    textureScale: 0.25,
+    health: 38,
+    attackPower: 7,
+    defensePower: 3,
+    speed: 4
+  },
+  zombie: {
+    texturePath: "assets/zombie.png",
+    textureScale: 0.3,
+    health: 50,
+    attackPower: 8,
+    defensePower: 4,
+    speed: 2
+  },
+  bat: {
+    texturePath: "assets/bat.png",
+    textureScale: 0.25,
+    health: 45,
+    attackPower: 8,
+    defensePower: 0,
+    speed: 8
+  },
+  wolf: {
+    texturePath: "assets/wolf.png",
+    textureScale: 0.3,
+    health: 35,
+    attackPower: 8,
+    defensePower: 2,
+    speed: 7
+  },
+  treant: {
+    texturePath: "assets/treant.png",
+    textureScale: 0.45,
+    health: 70,
+    attackPower: 10,
+    defensePower: 5,
+    speed: 3
+  },
+  dummy: {
+    texturePath: "assets/dummy.png",
+    textureScale: 0.15,
+    health: 1,
+    attackPower: 0,
+    defensePower: 0,
+    speed: 0.000000001
+  },
+  spider: {
+    texturePath: "assets/spider.png",
+    textureScale: 0.25,
+    health: 50,
+    attackPower: 10,
+    defensePower: 1,
+    speed: 20
+  },
+  mushroom: {
+    texturePath: "assets/mushroom.png",
+    textureScale: 0.25,
+    health: 40,
+    attackPower: 8,
+    defensePower: 1,
+    speed: 12
+  },
+  poison_slime: {
+    texturePath: "assets/poisonSlime.png",
+    textureScale: 0.25,
+    health: 125,
+    attackPower: 24,
+    defensePower: 1,
+    speed: 30
+  },
+  giant_bat: {
+    texturePath: "assets/bat.png",
+    textureScale: 0.35,
+    health: 24,
+    attackPower: 5,
+    defensePower: 1,
+    speed: 9,
+    tint: "0xdd4444"
+  },
+  giant_spider: {
+    texturePath: "assets/spider.png",
+    textureScale: 0.6,
+    health: 40,
+    attackPower: 7,
+    defensePower: 3,
+    speed: 6,
+    tint: "0x8844aa"
+  },
+  skeleton_warrior: {
+    texturePath: "assets/skeletonWarrior.png",
+    textureScale: 0.25,
+    health: 45,
+    attackPower: 8,
+    defensePower: 4,
+    speed: 5
+  },
+  dire_wolf: {
+    texturePath: "assets/wolf.png",
+    textureScale: 0.4,
+    health: 48,
+    attackPower: 10,
+    defensePower: 3,
+    speed: 8,
+    tint: "0x444466"
+  },
+  ghost: {
+    texturePath: "assets/ghost.png",
+    textureScale: 0.25,
+    health: 32,
+    attackPower: 9,
+    defensePower: 2,
+    speed: 7
+  },
+  dark_skeleton: {
+    texturePath: "assets/darkSkeleton.png",
+    textureScale: 0.3,
+    health: 55,
+    attackPower: 9,
+    defensePower: 5,
+    speed: 4
+  },
+  fire_slime: {
+    texturePath: "assets/fireSlime.png",
+    textureScale: 0.35,
+    health: 60,
+    attackPower: 11,
+    defensePower: 3,
+    speed: 4
+  },
+  dragon: {
+    texturePath: "assets/dragon.png",
+    textureScale: 0.6,
+    health: 120,
+    attackPower: 14,
+    defensePower: 6,
+    speed: 5
+  }
+};
 
 // src/rpg/enemies/enemyConfig.ts
 var EnemyType = {
@@ -35496,200 +35930,17 @@ var EnemyType = {
   FireSlime: "fire_slime",
   Dragon: "dragon"
 };
-var enemyConfig = {
-  [EnemyType.Rat]: {
-    texturePath: "assets/rat.png",
-    textureScale: 0.5,
-    health: 12,
-    attackPower: 4,
-    defensePower: 0,
-    speed: 4,
-    xpDrop: 8
-  },
-  [EnemyType.DireRat]: {
-    texturePath: "assets/ratLeader.png",
-    textureScale: 0.5,
-    health: 24,
-    attackPower: 5,
-    defensePower: 2,
-    speed: 5,
-    xpDrop: 20
-  },
-  [EnemyType.Slime]: {
-    texturePath: "assets/slime.png",
-    textureScale: 0.25,
-    health: 45,
-    attackPower: 8,
-    defensePower: 0,
-    speed: 15,
-    xpDrop: 10
-  },
-  [EnemyType.Goblin]: {
-    texturePath: "assets/goblin.png",
-    textureScale: 0.3,
-    health: 144,
-    attackPower: 29,
-    defensePower: 2,
-    speed: 25,
-    xpDrop: 22
-  },
-  [EnemyType.Skeleton]: {
-    texturePath: "assets/skeleton.png",
-    textureScale: 0.25,
-    health: 38,
-    attackPower: 7,
-    defensePower: 3,
-    speed: 4,
-    xpDrop: 25
-  },
-  [EnemyType.Zombie]: {
-    texturePath: "assets/zombie.png",
-    textureScale: 0.3,
-    health: 50,
-    attackPower: 8,
-    defensePower: 4,
-    speed: 2,
-    xpDrop: 32
-  },
-  [EnemyType.Bat]: {
-    texturePath: "assets/bat.png",
-    textureScale: 0.25,
-    health: 45,
-    attackPower: 8,
-    defensePower: 0,
-    speed: 8,
-    xpDrop: 10
-  },
-  [EnemyType.Wolf]: {
-    texturePath: "assets/wolf.png",
-    textureScale: 0.3,
-    health: 35,
-    attackPower: 8,
-    defensePower: 2,
-    speed: 7,
-    xpDrop: 28
-  },
-  [EnemyType.Treant]: {
-    texturePath: "assets/treant.png",
-    textureScale: 0.45,
-    health: 70,
-    attackPower: 10,
-    defensePower: 5,
-    speed: 3,
-    xpDrop: 60
-  },
-  [EnemyType.Dummy]: {
-    texturePath: "assets/dummy.png",
-    textureScale: 0.15,
-    health: 1,
-    attackPower: 0,
-    defensePower: 0,
-    speed: 0.000000001,
-    xpDrop: 1
-  },
-  [EnemyType.Spider]: {
-    texturePath: "assets/spider.png",
-    textureScale: 0.25,
-    health: 50,
-    attackPower: 10,
-    defensePower: 1,
-    speed: 20,
-    xpDrop: 12
-  },
-  [EnemyType.Mushroom]: {
-    texturePath: "assets/mushroom.png",
-    textureScale: 0.25,
-    health: 40,
-    attackPower: 8,
-    defensePower: 1,
-    speed: 12,
-    xpDrop: 10
-  },
-  [EnemyType.PoisonSlime]: {
-    texturePath: "assets/poisonSlime.png",
-    textureScale: 0.25,
-    health: 125,
-    attackPower: 24,
-    defensePower: 1,
-    speed: 30,
-    xpDrop: 16
-  },
-  [EnemyType.GiantBat]: {
-    texturePath: "assets/bat.png",
-    textureScale: 0.35,
-    health: 24,
-    attackPower: 5,
-    defensePower: 1,
-    speed: 9,
-    xpDrop: 18,
-    tint: 14500932
-  },
-  [EnemyType.GiantSpider]: {
-    texturePath: "assets/spider.png",
-    textureScale: 0.6,
-    health: 40,
-    attackPower: 7,
-    defensePower: 3,
-    speed: 6,
-    xpDrop: 30,
-    tint: 8930474
-  },
-  [EnemyType.SkeletonWarrior]: {
-    texturePath: "assets/skeletonWarrior.png",
-    textureScale: 0.25,
-    health: 45,
-    attackPower: 8,
-    defensePower: 4,
-    speed: 5,
-    xpDrop: 35
-  },
-  [EnemyType.DireWolf]: {
-    texturePath: "assets/wolf.png",
-    textureScale: 0.4,
-    health: 48,
-    attackPower: 10,
-    defensePower: 3,
-    speed: 8,
-    xpDrop: 40,
-    tint: 4473958
-  },
-  [EnemyType.Ghost]: {
-    texturePath: "assets/ghost.png",
-    textureScale: 0.25,
-    health: 32,
-    attackPower: 9,
-    defensePower: 2,
-    speed: 7,
-    xpDrop: 35
-  },
-  [EnemyType.DarkSkeleton]: {
-    texturePath: "assets/darkSkeleton.png",
-    textureScale: 0.3,
-    health: 55,
-    attackPower: 9,
-    defensePower: 5,
-    speed: 4,
-    xpDrop: 45
-  },
-  [EnemyType.FireSlime]: {
-    texturePath: "assets/fireSlime.png",
-    textureScale: 0.35,
-    health: 60,
-    attackPower: 11,
-    defensePower: 3,
-    speed: 4,
-    xpDrop: 50
-  },
-  [EnemyType.Dragon]: {
-    texturePath: "assets/dragon.png",
-    textureScale: 0.6,
-    health: 120,
-    attackPower: 14,
-    defensePower: 6,
-    speed: 5,
-    xpDrop: 100
+function parseConfig(json) {
+  const result = {};
+  for (const [key, value] of Object.entries(json)) {
+    result[key] = {
+      ...value,
+      tint: value.tint !== undefined ? Number(value.tint) : undefined
+    };
   }
-};
+  return result;
+}
+var enemyConfig = parseConfig(enemyConfig_default);
 
 class Enemy extends Actor {
   constructor(texture, config) {
@@ -35699,8 +35950,7 @@ class Enemy extends Actor {
       health: config.health,
       attackPower: config.attackPower,
       defensePower: config.defensePower,
-      speed: config.speed,
-      xpDrop: config.xpDrop
+      speed: config.speed
     });
     if (config.tint !== undefined) {
       this.sprite.tint = config.tint;
@@ -35893,6 +36143,8 @@ class BattleManager {
   wave = 0;
   area = 0;
   turnCounter = 0;
+  heroAttacks = 0;
+  enemyNormalizedAttacks = 0;
   stage;
   background;
   xp = 0;
@@ -35983,20 +36235,20 @@ class BattleManager {
     this.enemyParty = [];
     const area2 = areas[this.area];
     this.enemyParty.push(...await this._makeEnemies(area2.waves[this.wave]));
-    const count2 = this.enemyParty.length;
+    const count11 = this.enemyParty.length;
     const minX = 450;
     const maxX = 750;
     const minY = 480;
     const maxY = 570;
     const enterPromises = [];
     const enterFromX = standardWidth + 100;
-    for (let i2 = 0;i2 < count2; i2++) {
+    for (let i2 = 0;i2 < count11; i2++) {
       const actor = this.enemyParty[i2];
-      if (count2 === 1) {
+      if (count11 === 1) {
         actor.x = (minX + maxX) / 2;
         actor.y = (minY + maxY) / 2;
       } else {
-        actor.x = minX + i2 / (count2 - 1) * (maxX - minX);
+        actor.x = minX + i2 / (count11 - 1) * (maxX - minX);
         actor.y = minY + i2 % 2 * (maxY - minY);
       }
       actor.zIndex = actor.y;
@@ -36034,6 +36286,7 @@ class BattleManager {
     while (!this.turns[0]?.isHero) {
       const turn = this.turns[0];
       this.turnCounter++;
+      this.enemyNormalizedAttacks += 1 / this.enemyParty.length;
       if (await this.enemyAttack(turn.actor)) {
         await turn.actor.runLeft();
         return true;
@@ -36054,6 +36307,7 @@ class BattleManager {
   }
   async correctAnswer() {
     this.turnCounter++;
+    this.heroAttacks++;
     const prevLevel = getWizardLevel(this.xp);
     this.xp++;
     this.onXpChange?.(this.xp);
@@ -36380,7 +36634,7 @@ class ProblemUI {
     this.container.style.transform = `translate(-50%, -50%) scale(${scale})`;
   }
   setProblem(text, options, answerType = "number") {
-    this.problemText.text = text;
+    this.problemText.text = localizeProblemText(text);
     this.problemText.style.fill = "#ffffff";
     if (answerType === "string") {
       this.input.inputMode = "text";
@@ -36457,7 +36711,38 @@ class ProblemUI {
   }
 }
 
+// src/constants.ts
+var numberOfRewardImages = 12;
+var SOLVED_COUNT_PREFIX = "solved_count:";
+function getSolvedCount(category) {
+  return parseInt(localStorage.getItem(SOLVED_COUNT_PREFIX + category) || "0");
+}
+function incrementSolvedCount(category) {
+  const count11 = getSolvedCount(category) + 1;
+  localStorage.setItem(SOLVED_COUNT_PREFIX + category, count11.toString());
+}
+
 // src/rpg/rpg.ts
+function show67EasterEgg() {
+  const container = document.createElement("div");
+  container.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;pointer-events:none;display:flex;gap:8px;";
+  const digits = ["6", "7"].map((d2, i2) => {
+    const el = document.createElement("div");
+    el.textContent = d2;
+    el.style.cssText = `font-size:100px;font-weight:bold;color:#667eea;animation:jump67 0.4s ease-in-out ${i2 * 0.2}s infinite alternate;`;
+    return el;
+  });
+  digits.forEach((d2) => container.appendChild(d2));
+  const style = document.createElement("style");
+  style.textContent = "@keyframes jump67{0%{transform:translateY(0)}100%{transform:translateY(-40px)}}";
+  container.appendChild(style);
+  document.body.appendChild(container);
+  setTimeout(() => {
+    container.style.transition = "opacity 0.3s";
+    container.style.opacity = "0";
+    container.addEventListener("transitionend", () => container.remove());
+  }, 1500);
+}
 async function init2() {
   const app = new Application;
   globalThis.__PIXI_APP__ = app;
@@ -36486,7 +36771,7 @@ async function init2() {
   } else {
     selectedCategories = ["Addition: 10" /* Addition_Ten */];
   }
-  let currentProblem = getProblem(selectedCategories);
+  let currentProblem = getProblem10(selectedCategories);
   const startXp = parseInt(localStorage.getItem("xp") || "0");
   const startArea = parseInt(localStorage.getItem("rpg_area") || "0");
   const battleManager = new BattleManager(world, startXp, startArea);
@@ -36496,7 +36781,7 @@ async function init2() {
   const mathUI = new ProblemUI(gameStage, onSubmit);
   mathUI.setProblem(currentProblem.problem.text, currentProblem.problem.options, typeof currentProblem.problem.answer);
   function nextProblem() {
-    currentProblem = getProblem(selectedCategories);
+    currentProblem = getProblem10(selectedCategories);
     mathUI.setProblem(currentProblem.problem.text, currentProblem.problem.options, typeof currentProblem.problem.answer);
   }
   app.ticker.add((time) => {
@@ -36570,6 +36855,9 @@ async function init2() {
       correct: isCorrect
     });
     if (isCorrect) {
+      if (currentProblem.problem.answer === 67)
+        show67EasterEgg();
+      incrementSolvedCount(currentProblem.category);
       await mathUI.showSuccess();
       nextProblem();
     } else {
