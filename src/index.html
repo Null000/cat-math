@@ -335,6 +335,33 @@
 				transition: all 0.3s ease;
 			}
 
+			.adventure-link {
+				position: relative;
+			}
+
+			.new-sticker {
+				position: absolute;
+				top: -10px;
+				right: -10px;
+				background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+				color: white;
+				font-size: 0.55em;
+				font-weight: 800;
+				padding: 3px 8px;
+				border-radius: 6px;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+				box-shadow: 0 2px 8px rgba(229, 62, 62, 0.4);
+				transform: rotate(12deg);
+				pointer-events: none;
+				animation: stickerPulse 2s ease-in-out infinite;
+			}
+
+			@keyframes stickerPulse {
+				0%, 100% { transform: rotate(12deg) scale(1); }
+				50% { transform: rotate(12deg) scale(1.1); }
+			}
+
 			.adventure-link:hover {
 				transform: translateY(-2px);
 				box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
@@ -366,7 +393,11 @@
 				href="./rpg/index.html"
 				class="adventure-link"
 				data-i18n="rpg_adventure_link"
-				>Cat Math Adventure 🐈‍⬛</a
+				>Cat Math Adventure 🐈‍⬛<span
+					class="new-sticker"
+					data-i18n="new_sticker"
+					>NEW</span
+				></a
 			>
 			<div class="category-selection" id="category-selection">
 				<h2 data-i18n="select_categories">

@@ -166,6 +166,7 @@ export const translations = {
 
 		// Navigation
 		rpg_adventure_link: "Cat Math Adventure 🐈‍⬛",
+		new_sticker: "NEW",
 	},
 	sl: {
 		title: "Mačja Matematika",
@@ -336,6 +337,7 @@ export const translations = {
 		rpg_start_battle: "Vstopi v Bitko",
 
 		// Navigation
-		rpg_adventure_link: "Dogodivščina Mačja Matematika 🐈‍⬛",
+		rpg_adventure_link: "Avantura Mačja Matematika 🐈‍⬛",
+		new_sticker: "NOVO",
 	},
 };
