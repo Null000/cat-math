@@ -1375,5 +1375,5 @@ export function getXpProgress(xp: number): number {
 	if (xp < 51) {
 		return xp / 51;
 	}
-	return ((xp - 50) % 100) / 100;
+	return ((xp - 51) % 100) / 100;
 }
