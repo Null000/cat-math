@@ -36776,8 +36776,14 @@ async function init2() {
   const startArea = parseInt(localStorage.getItem("rpg_area") || "0");
   const battleManager = new BattleManager(world, startXp, startArea);
   battleManager.onXpChange = (xp) => localStorage.setItem("xp", xp.toString());
-  battleManager.onAreaChange = (area2) => localStorage.setItem("rpg_area", area2.toString());
+  battleManager.onAreaChange = (area2) => {
+    localStorage.setItem("rpg_area", area2.toString());
+    gtag("event", "rpg_new_area", { area: area2 });
+  };
   await battleManager.init();
+  gtag("event", "rpg_start", {
+    categories: selectedCategories.join(";")
+  });
   const mathUI = new ProblemUI(gameStage, onSubmit);
   mathUI.setProblem(currentProblem.problem.text, currentProblem.problem.options, typeof currentProblem.problem.answer);
   function nextProblem() {
@@ -36850,7 +36856,7 @@ async function init2() {
     } else {
       isCorrect = solution.trim() === currentProblem.problem.answer.toString();
     }
-    gtag("event", "problem_answer", {
+    gtag("event", "rpg_problem_answer", {
       category: currentProblem.category,
       correct: isCorrect
     });
