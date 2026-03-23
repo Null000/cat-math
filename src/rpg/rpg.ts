@@ -7,17 +7,26 @@ import { ProblemUI } from "./ProblemUI.ts";
 
 declare function gtag(...args: any[]): void;
 
-function showSmileyEasterEgg() {
-	const el = document.createElement("div");
-	el.textContent = "😊";
-	el.style.cssText =
-		"position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:100px;z-index:9999;pointer-events:none;transition:transform 0.2s ease-out,opacity 0.3s;opacity:1;";
-	document.body.appendChild(el);
-	requestAnimationFrame(() => (el.style.transform = "translate(-50%,-50%) scale(1)"));
+function show67EasterEgg() {
+	const container = document.createElement("div");
+	container.style.cssText =
+		"position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;pointer-events:none;display:flex;gap:8px;";
+	const digits = ["6", "7"].map((d, i) => {
+		const el = document.createElement("div");
+		el.textContent = d;
+		el.style.cssText = `font-size:100px;font-weight:bold;color:#667eea;animation:jump67 0.4s ease-in-out ${i * 0.2}s infinite alternate;`;
+		return el;
+	});
+	digits.forEach((d) => container.appendChild(d));
+	const style = document.createElement("style");
+	style.textContent = "@keyframes jump67{0%{transform:translateY(0)}100%{transform:translateY(-40px)}}";
+	container.appendChild(style);
+	document.body.appendChild(container);
 	setTimeout(() => {
-		el.style.opacity = "0";
-		el.addEventListener("transitionend", () => el.remove());
-	}, 700);
+		container.style.transition = "opacity 0.3s";
+		container.style.opacity = "0";
+		container.addEventListener("transitionend", () => container.remove());
+	}, 1500);
 }
 
 async function init() {
@@ -182,7 +191,7 @@ async function init() {
 		});
 
 		if (isCorrect) {
-			if (currentProblem.problem.answer === 67) showSmileyEasterEgg();
+			if (currentProblem.problem.answer === 67) show67EasterEgg();
 			await mathUI.showSuccess();
 			nextProblem();
 		} else {
