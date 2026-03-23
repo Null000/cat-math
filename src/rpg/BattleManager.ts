@@ -220,7 +220,8 @@ export class BattleManager {
 		this.onXpChange?.(this.xp);
 		const newLevel = getWizardLevel(this.xp);
 
-		const attacker = this.heroParty[0]!;
+		const attacker = this.heroParty[0]! as Wizard;
+		attacker.updateSparkleConfig(this.xp);
 
 		// Trigger level-up animation if level changed
 		if (newLevel > prevLevel) {

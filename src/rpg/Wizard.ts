@@ -133,6 +133,12 @@ export class Wizard extends Actor {
 	private meteorGraphic: Graphics | null = null;
 	private meteorBurst = new BurstState(250);
 
+	// XP sparkle state
+	private sparkles: { graphic: Graphics; life: number; maxLife: number; vx: number; vy: number }[] = [];
+	private sparkleTimer: number = 0;
+	private sparkleInterval: number = 0; // ms between spawns, 0 = no sparkles
+	private sparkleMaxCount: number = 0;
+
 	constructor(xp: number) {
 		const xpFactor = 1 + xp / 100;
 		super({
@@ -143,6 +149,27 @@ export class Wizard extends Actor {
 			defensePower: Math.floor(xpFactor),
 			speed: Math.floor(6 * xpFactor),
 		});
+		this.updateSparkleConfig(xp);
+	}
+
+	updateSparkleConfig(xp: number) {
+		const progress = getXpProgress(xp);
+		if (progress < 0.2) {
+			this.sparkleInterval = 0;
+			this.sparkleMaxCount = 0;
+		} else if (progress < 0.4) {
+			this.sparkleInterval = 600;
+			this.sparkleMaxCount = 3;
+		} else if (progress < 0.6) {
+			this.sparkleInterval = 400;
+			this.sparkleMaxCount = 5;
+		} else if (progress < 0.8) {
+			this.sparkleInterval = 250;
+			this.sparkleMaxCount = 8;
+		} else {
+			this.sparkleInterval = 150;
+			this.sparkleMaxCount = 12;
+		}
 	}
 
 	updateHealthBar() {
@@ -717,6 +744,50 @@ export class Wizard extends Actor {
 	}
 
 	/** Removes a graphic from the parent, destroys it, and returns null for reassignment. */
+	private updateSparkles(time: Ticker) {
+		if (this.sparkleInterval === 0) return;
+
+		// Spawn new sparkles
+		this.sparkleTimer += time.deltaMS;
+		if (this.sparkleTimer >= this.sparkleInterval && this.sparkles.length < this.sparkleMaxCount) {
+			this.sparkleTimer = 0;
+			const maxLife = 800 + Math.random() * 600;
+			const angle = Math.random() * Math.PI * 2;
+			const sparkle = new Graphics();
+			sparkle.star(0, 0, 4, 4, 1.5);
+			sparkle.fill({color: 0xffee88});
+			sparkle.zIndex = 999;
+			// Spawn around the wizard sprite
+			const spawnRadius = 30 + Math.random() * 40;
+			sparkle.x = this.x + Math.cos(angle) * spawnRadius;
+			sparkle.y = this.y - 80 - Math.random() * 120;
+			this.parent!.addChild(sparkle);
+			this.sparkles.push({
+				graphic: sparkle,
+				life: maxLife,
+				maxLife,
+				vx: (Math.random() - 0.5) * 0.02,
+				vy: -0.02 - Math.random() * 0.03,
+			});
+		}
+
+		// Update existing sparkles
+		for (let i = this.sparkles.length - 1; i >= 0; i--) {
+			const s = this.sparkles[i]!;
+			s.life -= time.deltaMS;
+			const t = s.life / s.maxLife;
+			s.graphic.alpha = t * 0.8;
+			s.graphic.scale.set(0.5 + t * 0.5);
+			s.graphic.x += s.vx * time.deltaMS;
+			s.graphic.y += s.vy * time.deltaMS;
+			if (s.life <= 0) {
+				this.parent!.removeChild(s.graphic);
+				s.graphic.destroy();
+				this.sparkles.splice(i, 1);
+			}
+		}
+	}
+
 	private removeGraphic(g: Graphics): null {
 		this.parent!.removeChild(g);
 		g.destroy();
@@ -748,6 +819,8 @@ export class Wizard extends Actor {
 
 	override update(time: Ticker, isSine: boolean) {
 		super.update(time, isSine);
+
+		this.updateSparkles(time);
 
 		const hasWork =
 			this.magic.isCasting ||
@@ -1294,4 +1367,12 @@ export function getWizardLevel(xp: number): number {
 		return 1;
 	}
 	return Math.ceil((xp - 50) / 100) + 1;
+}
+
+/** Returns 0..1 progress within the current level toward the next level. */
+export function getXpProgress(xp: number): number {
+	if (xp < 51) {
+		return xp / 51;
+	}
+	return ((xp - 50) % 100) / 100;
 }
