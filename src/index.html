@@ -17,7 +17,7 @@
 
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Cat Math</title>
+		<title>Cat Math 🐈‍⬛</title>
 		<link
 			rel="icon"
 			type="image/png"
@@ -321,6 +321,25 @@
 				}
 			}
 
+			.adventure-link {
+				display: inline-block;
+				margin-bottom: 20px;
+				padding: 12px 24px;
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				color: white;
+				text-decoration: none;
+				border-radius: 12px;
+				font-size: 1.1em;
+				font-weight: 600;
+				box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+				transition: all 0.3s ease;
+			}
+
+			.adventure-link:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+			}
+
 			.checkbox-item:focus-within {
 				outline: 2px solid #667eea;
 				outline-offset: 2px;
@@ -343,6 +362,12 @@
 			<h1 data-i18n="title">
 				Math Practice <span class="brain-emoji">🐈‍⬛</span>
 			</h1>
+			<a
+				href="./rpg/index.html"
+				class="adventure-link"
+				data-i18n="rpg_adventure_link"
+				>Cat Math Adventure 🐈‍⬛</a
+			>
 			<div class="category-selection" id="category-selection">
 				<h2 data-i18n="select_categories">
 					Select Practice Categories

@@ -163,6 +163,9 @@ export const translations = {
 		rpg_subtitle: "Select the math spells you wish to master",
 		rpg_select_categories: "Spell Book",
 		rpg_start_battle: "Enter Battle",
+
+		// Navigation
+		rpg_adventure_link: "Cat Math Adventure 🐈‍⬛",
 	},
 	sl: {
 		title: "Mačja Matematika",
@@ -331,5 +334,8 @@ export const translations = {
 		rpg_subtitle: "Izberi matematične uroke za vadbo",
 		rpg_select_categories: "Knjiga Urokov",
 		rpg_start_battle: "Vstopi v Bitko",
+
+		// Navigation
+		rpg_adventure_link: "Dogodivščina Mačja Matematika 🐈‍⬛",
 	},
 };
