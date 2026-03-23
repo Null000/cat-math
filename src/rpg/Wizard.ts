@@ -152,7 +152,7 @@ export class Wizard extends Actor {
 		this.updateSparkleConfig(xp);
 	}
 
-	updateSparkleConfig(xp: number) {
+	private updateSparkleConfig(xp: number) {
 		const progress = getXpProgress(xp);
 		if (progress < 0.2) {
 			this.sparkleInterval = 0;
@@ -586,6 +586,7 @@ export class Wizard extends Actor {
 
 	levelUpStats(newXp: number) {
 		this.xp += newXp;
+		this.updateSparkleConfig(this.xp);
 		const xpFactor = 1 + this.xp / 100;
 		this.maxHealth = Math.floor(100 * xpFactor);
 		this.health = this.maxHealth;
