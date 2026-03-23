@@ -79,9 +79,15 @@ async function init() {
 	const battleManager = new BattleManager(world, startXp, startArea);
 	battleManager.onXpChange = (xp) =>
 		localStorage.setItem("xp", xp.toString());
-	battleManager.onAreaChange = (area) =>
+	battleManager.onAreaChange = (area) => {
 		localStorage.setItem("rpg_area", area.toString());
+		gtag("event", "rpg_new_area", { area });
+	};
 	await battleManager.init();
+
+	gtag("event", "rpg_start", {
+		categories: selectedCategories.join(";"),
+	});
 
 	// Create Math UI
 	const mathUI = new ProblemUI(gameStage, onSubmit);
@@ -186,7 +192,7 @@ async function init() {
 			isCorrect = solution.trim() === currentProblem.problem.answer.toString();
 		}
 
-		gtag("event", "problem_answer", {
+		gtag("event", "rpg_problem_answer", {
 			category: currentProblem.category,
 			correct: isCorrect,
 		});
