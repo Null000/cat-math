@@ -20,23 +20,32 @@ const comparisonOptions: Problem["options"] = [
 	{ label: ">", value: 1 },
 ];
 
-export function generate(category: Category): Problem[] {
+function rangeSize(category: Category): number {
 	const props = generateProps[category]!;
 	const { max, min = 0, step = 1 } = props;
+	return Math.floor((max - min) / step) + 1;
+}
 
-	const allProblems: Problem[] = [];
+export function count(category: Category): number {
+	const size = rangeSize(category);
+	return size * size;
+}
 
-	for (let x = min; x <= max; x += step) {
-		for (let y = min; y <= max; y += step) {
-			const answer = x < y ? -1 : x === y ? 0 : 1;
-			allProblems.push({
-				id: `${category}_${x}_${y}`,
-				text: `${x} ? ${y}`,
-				answer,
-				options: comparisonOptions,
-			});
-		}
-	}
+export function getProblem(category: Category, n: number): Problem {
+	const props = generateProps[category]!;
+	const { min = 0, step = 1 } = props;
+	const size = rangeSize(category);
 
-	return allProblems;
+	const xIdx = Math.floor(n / size);
+	const yIdx = n % size;
+	const x = min + xIdx * step;
+	const y = min + yIdx * step;
+
+	const answer = x < y ? -1 : x === y ? 0 : 1;
+	return {
+		id: `${category}_${x}_${y}`,
+		text: `${x} ? ${y}`,
+		answer,
+		options: comparisonOptions,
+	};
 }

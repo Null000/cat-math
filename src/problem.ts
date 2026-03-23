@@ -10,59 +10,30 @@ import * as nextPrevious from "./nextPrevious.ts";
 import * as mixed from "./mixed.ts";
 import { categoryToGroup } from "./common.ts";
 
-export type ProblemCache = Record<string, Problem[]>;
+interface Generator {
+	count: (category: Category) => number;
+	getProblem: (category: Category, n: number) => Problem;
+}
 
-const generateFnPerGroup: Record<string, (category: Category) => Problem[]> = {
-	Addition: (category) => addition.generate(category),
-	Subtraction: (category) => subtraction.generate(category),
-	Multiplication: (category) => multiplication.generate(category),
-	Division: (category) => division.generate(category),
-	Mixed: (category) => mixed.generate(category),
-	Comparison: (category) => comparison.generate(category),
-	NumberText: (category) => numberText.generate(category),
-	NextPrevious: (category) => nextPrevious.generate(category),
-	Test: (category) => test.generate(category),
+const generatorPerGroup: Record<string, Generator> = {
+	Addition: addition,
+	Subtraction: subtraction,
+	Multiplication: multiplication,
+	Division: division,
+	Mixed: mixed,
+	Comparison: comparison,
+	NumberText: numberText,
+	NextPrevious: nextPrevious,
+	Test: test,
 };
 
-const cache: ProblemCache = {};
-
-/**
- * Initialize or get cached problems for a category
- */
-function getCachedProblems(category: Category): Problem[] {
-	if (!cache[category]) {
-		populateCache(category);
-	}
-	return cache[category]!;
+function getGenerator(category: Category): Generator {
+	return generatorPerGroup[categoryToGroup[category]]!;
 }
 
-function populateCache(category: Category): void {
-	cache[category] = generateFnPerGroup[categoryToGroup[category]]!(category);
-}
-
-/**
- * Get a random problem from the cached problems for a category
- */
-export function getRandomProblem(category: Category): Problem {
-	const problems = getCachedProblems(category);
-	return problems[Math.floor(Math.random() * problems.length)]!;
-}
-
-/**
- * Remove a solved problem from the cache
- * Returns true this was the last problem
- */
-export function removeSolvedProblem(
-	category: Category,
-	problemId: string,
-): boolean {
-	const problems = getCachedProblems(category);
-	if (problems) {
-		cache[category] = problems.filter((p) => p.id !== problemId);
-	}
-	if (cache[category]?.length === 0) {
-		populateCache(category);
-		return true;
-	}
-	return false;
+export function getRandomProblem(category: Category) {
+	const gen = getGenerator(category);
+	const total = gen.count(category);
+	const n = Math.floor(Math.random() * total);
+	return gen.getProblem(category, n);
 }

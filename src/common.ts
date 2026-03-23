@@ -249,3 +249,22 @@ export const categoryToGroup: Record<Category, string> = (() => {
 	}
 	return dict as Record<Category, string>;
 })();
+
+export type EnumerateFn = (category: Category, targetIndex: number) => { problem?: Problem; count: number };
+
+export function makeGenerator(enumerate: EnumerateFn) {
+	const countCache = new Map<Category, number>();
+	return {
+		count(category: Category): number {
+			let c = countCache.get(category);
+			if (c === undefined) {
+				c = enumerate(category, -1).count;
+				countCache.set(category, c);
+			}
+			return c;
+		},
+		getProblem(category: Category, n: number): Problem {
+			return enumerate(category, n).problem!;
+		},
+	};
+}

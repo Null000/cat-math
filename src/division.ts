@@ -1,4 +1,4 @@
-import { Category, Problem } from "./common.ts";
+import { Category, Problem, makeGenerator } from "./common.ts";
 
 const generateProps: Record<
 	string,
@@ -30,52 +30,50 @@ const generateProps: Record<
 	},
 };
 
-export function generate(category: Category): Problem[] {
+function makeProblem(category: Category, dividend: number, divisor: number, answer: number, field: "dividend" | "divisor" | "answer"): Problem {
+	switch (field) {
+		case "dividend":
+			return {
+				id: `${category}_${dividend}_${divisor}_dividend`,
+				text: `? / ${divisor} = ${answer}`,
+				answer: dividend,
+			};
+		case "divisor":
+			return {
+				id: `${category}_${dividend}_${divisor}_divisor`,
+				text: `${dividend} / ? = ${answer}`,
+				answer: divisor,
+			};
+		case "answer":
+			return {
+				id: `${category}_${dividend}_${divisor}_answer`,
+				text: `${dividend} / ${divisor} = ?`,
+				answer: answer,
+			};
+	}
+}
+
+function enumerate(category: Category, targetIndex: number): { problem?: Problem; count: number } {
 	const props = generateProps[category]!;
 	const { answerMax, divisorMax, missingField = "answer" } = props;
+	const missingFields = Array.isArray(missingField) ? missingField : [missingField];
 
-	const allProblems: Problem[] = [];
-	const missingFields = Array.isArray(missingField)
-		? missingField
-		: [missingField];
-
+	let idx = 0;
 	for (let answer = 0; answer <= answerMax; answer++) {
 		for (let divisor = 1; divisor <= divisorMax; divisor++) {
 			const dividend = answer * divisor;
 
 			for (const field of missingFields) {
-				let text: string;
-				let problemAnswer: number;
-				let id: string;
+				if (field === "divisor" && dividend === 0) continue;
 
-				switch (field) {
-					case "dividend":
-						text = `? / ${divisor} = ${answer}`;
-						problemAnswer = dividend;
-						id = `${category}_${dividend}_${divisor}_dividend`;
-						break;
-					case "divisor":
-						if (dividend === 0) continue;
-						text = `${dividend} / ? = ${answer}`;
-						problemAnswer = divisor;
-						id = `${category}_${dividend}_${divisor}_divisor`;
-						break;
-					case "answer":
-					default:
-						text = `${dividend} / ${divisor} = ?`;
-						problemAnswer = answer;
-						id = `${category}_${dividend}_${divisor}_answer`;
-						break;
+				if (idx === targetIndex) {
+					return { problem: makeProblem(category, dividend, divisor, answer, field), count: idx };
 				}
-
-				allProblems.push({
-					id,
-					text,
-					answer: problemAnswer,
-				});
+				idx++;
 			}
 		}
 	}
-
-	return allProblems;
+	return { count: idx };
 }
+
+export const { count, getProblem } = makeGenerator(enumerate);

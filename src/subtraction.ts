@@ -1,4 +1,4 @@
-import { Category, Problem } from "./common.ts";
+import { Category, Problem, makeGenerator } from "./common.ts";
 
 const generateProps: Record<
 	string,
@@ -126,7 +126,38 @@ const generateProps: Record<
 	},
 };
 
-export function generate(category: Category): Problem[] {
+function makeProblem(category: Category, i: number, j: number, fact: "first" | "second" | "result"): Problem {
+	switch (fact) {
+		case "first":
+			return {
+				id: `${category}_${i}_${j}_first`,
+				text: `? - ${j} = ${i - j}`,
+				answer: i,
+			};
+		case "second":
+			return {
+				id: `${category}_${i}_${j}_second`,
+				text: `${i} - ? = ${i - j}`,
+				answer: j,
+			};
+		case "result":
+			return {
+				id: `${category}_${i}_${j}_result`,
+				text: `${i} - ${j} = ?`,
+				answer: i - j,
+			};
+	}
+}
+
+function makeThreeNumberProblem(category: Category, i: number, j: number, k: number): Problem {
+	return {
+		id: `${category}_${i}_${j}_${k}_result`,
+		text: `${i} - ${j} - ${k} = ?`,
+		answer: i - j - k,
+	};
+}
+
+function enumerate(category: Category, targetIndex: number): { problem?: Problem; count: number } {
 	const props = generateProps[category]!;
 	let {
 		xMax,
@@ -145,67 +176,38 @@ export function generate(category: Category): Problem[] {
 	borrowForced = borrowForced ?? false;
 	missingFact = missingFact ?? "result";
 
-	const allProblems: Problem[] = [];
-	const missingFacts = Array.isArray(missingFact)
-		? missingFact
-		: [missingFact];
+	const missingFacts = Array.isArray(missingFact) ? missingFact : [missingFact];
 
+	let idx = 0;
 	for (let i = xMin; i <= xMax; i += step) {
 		for (let j = yMin; j <= yMax; j += step) {
-			if (i < j) continue; // Can't subtract to get negative
+			if (i < j) continue;
 			if (props.threeNumbers) {
 				const currentDiff = i - j;
 				for (let k = yMin; k <= yMax; k += step) {
 					if (currentDiff < k) continue;
-					const result = currentDiff - k;
-					const text = `${i} - ${j} - ${k} = ?`;
-					const answer = result;
-					const id = `${category}_${i}_${j}_${k}_result`;
-					allProblems.push({ id, text, answer });
+					if (idx === targetIndex) {
+						return { problem: makeThreeNumberProblem(category, i, j, k), count: idx };
+					}
+					idx++;
 				}
 				continue;
 			}
 			const digitI = Math.floor(i / step) % 10;
 			const digitJ = Math.floor(j / step) % 10;
 			const hasBorrow = borrowAllowed && digitI < digitJ;
-			if (hasBorrow && !borrowForced) {
-				continue;
-			}
-			if (!hasBorrow && borrowForced) {
-				continue;
-			}
+			if (hasBorrow && !borrowForced) continue;
+			if (!hasBorrow && borrowForced) continue;
 
 			for (const fact of missingFacts) {
-				let text: string;
-				let answer: number;
-				let id: string;
-
-				switch (fact) {
-					case "first":
-						text = `? - ${j} = ${i - j}`;
-						answer = i;
-						id = `${category}_${i}_${j}_first`;
-						break;
-					case "second":
-						text = `${i} - ? = ${i - j}`;
-						answer = j;
-						id = `${category}_${i}_${j}_second`;
-						break;
-					case "result":
-					default:
-						text = `${i} - ${j} = ?`;
-						answer = i - j;
-						id = `${category}_${i}_${j}_result`;
-						break;
+				if (idx === targetIndex) {
+					return { problem: makeProblem(category, i, j, fact), count: idx };
 				}
-
-				allProblems.push({
-					id,
-					text,
-					answer,
-				});
+				idx++;
 			}
 		}
 	}
-	return allProblems;
+	return { count: idx };
 }
+
+export const { count, getProblem } = makeGenerator(enumerate);

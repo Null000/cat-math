@@ -1,4 +1,4 @@
-import { getProblem, solvedProblem } from "./app.ts";
+import { getProblem } from "./app.ts";
 import { getCurrentLanguage, t, localizeProblemText, Language } from "./i18n.ts";
 import { Category, Problem } from "./common.ts";
 import { numberOfRewardImages } from "./constants.ts";
@@ -228,24 +228,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		selectedCategories = ["Addition: 10"];
 	}
 
-	// Load solved problems from localStorage and mark them as solved
-
-	for (const category of selectedCategories) {
-		const solvedProblemIds = JSON.parse(
-			localStorage.getItem(category) || "[]",
-		);
-
-		let flushCategoryCache = false;
-		for (const problemId of solvedProblemIds as string[]) {
-			flushCategoryCache =
-				flushCategoryCache ||
-				solvedProblem(category as Category, problemId);
-		}
-		if (flushCategoryCache) {
-			localStorage.removeItem(category);
-		}
-	}
-
 	// Function to reveal a random covered part of the reward image
 	function revealRandomPart() {
 		const coveredParts = gridParts.filter(
@@ -376,26 +358,6 @@ document.addEventListener("DOMContentLoaded", () => {
 			if (currentProblem.answer === 67) show67EasterEgg();
 			// Reveal a random part of the reward image
 			revealRandomPart();
-			// Remove the correctly solved problem from cache
-			const flushCategoryCache = solvedProblem(
-				currentCategory,
-				currentProblem.id,
-			);
-
-			if (flushCategoryCache) {
-				localStorage.removeItem(currentCategory);
-			}
-			// Store the solved problem in localStorage
-			const solvedProblemIds = JSON.parse(
-				localStorage.getItem(currentCategory) || "[]",
-			);
-			if (!solvedProblemIds.includes(currentProblem.id)) {
-				solvedProblemIds.push(currentProblem.id);
-				localStorage.setItem(
-					currentCategory,
-					JSON.stringify(solvedProblemIds),
-				);
-			}
 
 			// Update statistics for correct answer
 			stats.correct++;

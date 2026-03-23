@@ -1,4 +1,4 @@
-import { Category, Problem } from "./common.ts";
+import { Category, Problem, makeGenerator } from "./common.ts";
 
 const generateProps: Record<
 	string,
@@ -30,50 +30,49 @@ const generateProps: Record<
 	},
 };
 
-export function generate(category: Category): Problem[] {
+function makeProblem(category: Category, i: number, j: number, field: "first" | "second" | "answer"): Problem {
+	switch (field) {
+		case "first":
+			return {
+				id: `${category}_${i}_${j}_first`,
+				text: `? × ${j} = ${i * j}`,
+				answer: i,
+			};
+		case "second":
+			return {
+				id: `${category}_${i}_${j}_second`,
+				text: `${i} × ? = ${i * j}`,
+				answer: j,
+			};
+		case "answer":
+			return {
+				id: `${category}_${i}_${j}_answer`,
+				text: `${i} × ${j} = ?`,
+				answer: i * j,
+			};
+	}
+}
+
+function enumerate(category: Category, targetIndex: number): { problem?: Problem; count: number } {
 	const props = generateProps[category]!;
 	const { xMax, yMax, missingField = "answer" } = props;
+	const missingFields = Array.isArray(missingField) ? missingField : [missingField];
 
-	const allProblems: Problem[] = [];
-	const missingFields = Array.isArray(missingField)
-		? missingField
-		: [missingField];
-
+	let idx = 0;
 	for (let i = 0; i <= xMax; i++) {
 		for (let j = 0; j <= yMax; j++) {
 			for (const field of missingFields) {
-				let text: string;
-				let problemAnswer: number;
-				let id: string;
+				if (field === "first" && j === 0) continue;
+				if (field === "second" && i === 0) continue;
 
-				switch (field) {
-					case "first":
-						if (j === 0) continue;
-						text = `? × ${j} = ${i * j}`;
-						problemAnswer = i;
-						id = `${category}_${i}_${j}_first`;
-						break;
-					case "second":
-						if (i === 0) continue;
-						text = `${i} × ? = ${i * j}`;
-						problemAnswer = j;
-						id = `${category}_${i}_${j}_second`;
-						break;
-					case "answer":
-					default:
-						text = `${i} × ${j} = ?`;
-						problemAnswer = i * j;
-						id = `${category}_${i}_${j}_answer`;
-						break;
+				if (idx === targetIndex) {
+					return { problem: makeProblem(category, i, j, field), count: idx };
 				}
-
-				allProblems.push({
-					id,
-					text,
-					answer: problemAnswer,
-				});
+				idx++;
 			}
 		}
 	}
-	return allProblems;
+	return { count: idx };
 }
+
+export const { count, getProblem } = makeGenerator(enumerate);

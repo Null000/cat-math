@@ -66,66 +66,50 @@ function getNumberWord(n: number): string {
 	}
 }
 
-function shuffled<T>(arr: T[]): T[] {
-	const copy = arr.slice();
-	for (let i = copy.length - 1; i > 0; i--) {
-		const j = Math.floor(Math.random() * (i + 1));
-		const tmp = copy[i]!;
-		copy[i] = copy[j]!;
-		copy[j] = tmp;
+function getMaxNumber(category: Category): number {
+	switch (category) {
+		case Category.NumberToText_Ten:
+		case Category.TextToNumber_Ten:
+			return 10;
+		case Category.NumberToText_Twenty:
+		case Category.TextToNumber_Twenty:
+			return 20;
+		case Category.NumberToText_Hundred:
+		case Category.TextToNumber_Hundred:
+			return 100;
+		case Category.NumberToText_Thousand:
+		case Category.TextToNumber_Thousand:
+			return 1000;
+		default:
+			return 0;
 	}
-	return copy;
 }
 
-function generateNumberToText(maxNumber: number, category: Category): Problem[] {
-	const problems: Problem[] = [];
+function isNumberToText(category: Category): boolean {
+	return (
+		category === Category.NumberToText_Ten ||
+		category === Category.NumberToText_Twenty ||
+		category === Category.NumberToText_Hundred ||
+		category === Category.NumberToText_Thousand
+	);
+}
 
-	for (let n = 0; n <= maxNumber; n++) {
-		// Generate direct text inputs
+export function count(category: Category): number {
+	return getMaxNumber(category) + 1;
+}
 
-		problems.push({
+export function getProblem(category: Category, n: number): Problem {
+	if (isNumberToText(category)) {
+		return {
 			id: `${category}_${n}`,
 			text: `${n} = ?`,
 			answer: getNumberWord(n),
-		});
-	}
-
-	return problems;
-}
-
-function generateTextToNumber(maxNumber: number, category: Category): Problem[] {
-	const problems: Problem[] = [];
-
-	for (let n = 0; n <= maxNumber; n++) {
-		problems.push({
+		};
+	} else {
+		return {
 			id: `${category}_${n}`,
 			text: `${getNumberWord(n)} = ?`,
 			answer: n,
-		});
-	}
-
-	return problems;
-}
-
-export function generate(category: Category): Problem[] {
-	switch (category) {
-		case Category.NumberToText_Ten:
-			return generateNumberToText(10, category);
-		case Category.NumberToText_Twenty:
-			return generateNumberToText(20, category);
-		case Category.NumberToText_Hundred:
-			return generateNumberToText(100, category);
-		case Category.NumberToText_Thousand:
-			return generateNumberToText(1000, category);
-		case Category.TextToNumber_Ten:
-			return generateTextToNumber(10, category);
-		case Category.TextToNumber_Twenty:
-			return generateTextToNumber(20, category);
-		case Category.TextToNumber_Hundred:
-			return generateTextToNumber(100, category);
-		case Category.TextToNumber_Thousand:
-			return generateTextToNumber(1000, category);
-		default:
-			return [];
+		};
 	}
 }
