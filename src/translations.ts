@@ -167,6 +167,16 @@ export const translations = {
 		// Navigation
 		rpg_adventure_link: "Cat Math Adventure 🐈‍⬛",
 		new_sticker: "NEW",
+
+		// RPG Area Dialogue
+		rpg_area_0: "Time to practice my spells!",
+		rpg_area_1: "I hear rats in this forest...",
+		rpg_area_2: "It's getting dark in here...",
+		rpg_area_3: "Ugh, this swamp reeks!",
+		rpg_area_4: "The air is thin up here!",
+		rpg_area_5: "I can barely see...",
+		rpg_area_6: "What happened to this place?",
+		rpg_area_7: "It's scorching hot! Final battle!",
 	},
 	sl: {
 		title: "Mačja Matematika",
@@ -339,5 +349,15 @@ export const translations = {
 		// Navigation
 		rpg_adventure_link: "Avantura Mačja Matematika 🐈‍⬛",
 		new_sticker: "NOVO",
+
+		// RPG Area Dialogue
+		rpg_area_0: "Čas za vajo čarovnij!",
+		rpg_area_1: "Slišim podgane v tem gozdu...",
+		rpg_area_2: "Tukaj postaja temno...",
+		rpg_area_3: "Fuj, to močvirje smrdi!",
+		rpg_area_4: "Zrak je tukaj redek!",
+		rpg_area_5: "Komaj vidim...",
+		rpg_area_6: "Kaj se je zgodilo s tem krajem?",
+		rpg_area_7: "Pekoče vroče! Zadnja bitka!",
 	},
 };

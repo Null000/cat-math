@@ -7,9 +7,13 @@ const LOCAL_STORAGE_KEY = "math_practice_language";
 const DEFAULT_LANGUAGE: Language = "sl"; // Defaulting to Slovenian as per request implication, or could be 'en'
 
 export function getCurrentLanguage(): Language {
-	const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-	if (stored === "en" || stored === "sl") {
-		return stored;
+	try {
+		const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+		if (stored === "en" || stored === "sl") {
+			return stored;
+		}
+	} catch {
+		// localStorage unavailable (e.g. running in Bun/Node)
 	}
 	return DEFAULT_LANGUAGE;
 }

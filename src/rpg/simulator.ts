@@ -345,7 +345,7 @@ async function runSimulations() {
 		console.log('end ex: ' + state.xp + ', area: ' + state.area + ', turns: ' + state.playerTurns);
 		printAttackRatios(state.attackRatios);
 	} catch (e) {
-		console.log('ex: ' + e);
+		console.error(e);
 	}
 
 	const prevAreaSum: number[] = [];

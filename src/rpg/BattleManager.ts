@@ -31,6 +31,7 @@ export class BattleManager {
 	private resolveFade: (() => void) | null = null;
 	onXpChange?: (xp: number) => void;
 	onAreaChange?: (area: number) => void;
+	afterAreaChange?: () => Promise<void>;
 
 	//for simulator
 	_makeEnemies = makeEnemies;
@@ -270,6 +271,7 @@ export class BattleManager {
 
 				await this.init();
 				await this.fadeIn();
+				await this.afterAreaChange?.();
 			} else {
 				await this.initEnemy();
 				this.initTurns();

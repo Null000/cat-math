@@ -5,6 +5,7 @@ import { getProblem } from "../app.ts";
 import { Category } from "../common.ts";
 import { ProblemUI } from "./ProblemUI.ts";
 import { incrementSolvedCount } from "../constants.ts";
+import { t } from "../i18n.ts";
 
 declare function gtag(...args: any[]): void;
 
@@ -83,6 +84,15 @@ async function init() {
 		localStorage.setItem("rpg_area", area.toString());
 		gtag("event", "rpg_new_area", { area });
 	};
+	battleManager.afterAreaChange = async () => {
+		const wizard = battleManager.heroParty[0];
+		if (!wizard) return;
+		const key = `rpg_area_${battleManager.area}`;
+		const text = t(key);
+		if (text !== key) {
+			await wizard.showSpeechBubble(text, 10000);
+		}
+	};
 	await battleManager.init();
 
 	gtag("event", "rpg_start", {
@@ -110,6 +120,8 @@ async function init() {
 	app.ticker.add((time) => {
 		battleManager.update(time);
 	});
+
+	battleManager.afterAreaChange?.();
 
 	// Handle resize
 	function resize() {
