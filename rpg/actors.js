@@ -34331,58 +34331,58 @@ var enemyConfig_default = {
   slime: {
     texturePath: "assets/slime.png",
     textureScale: 0.25,
-    health: 45,
-    attackPower: 8,
+    health: 92,
+    attackPower: 11,
     defensePower: 0,
     speed: 15
   },
   goblin: {
     texturePath: "assets/goblin.png",
     textureScale: 0.3,
-    health: 144,
-    attackPower: 29,
+    health: 183,
+    attackPower: 32,
     defensePower: 2,
     speed: 25
   },
   skeleton: {
     texturePath: "assets/skeleton.png",
     textureScale: 0.25,
-    health: 38,
-    attackPower: 7,
+    health: 489,
+    attackPower: 25,
     defensePower: 3,
-    speed: 4
+    speed: 15
   },
   zombie: {
     texturePath: "assets/zombie.png",
     textureScale: 0.3,
-    health: 50,
-    attackPower: 8,
+    health: 566,
+    attackPower: 26,
     defensePower: 4,
-    speed: 2
+    speed: 20
   },
   bat: {
     texturePath: "assets/bat.png",
     textureScale: 0.25,
-    health: 45,
-    attackPower: 8,
+    health: 92,
+    attackPower: 11,
     defensePower: 0,
     speed: 8
   },
   wolf: {
     texturePath: "assets/wolf.png",
     textureScale: 0.3,
-    health: 35,
-    attackPower: 8,
+    health: 450,
+    attackPower: 28,
     defensePower: 2,
-    speed: 7
+    speed: 26
   },
   treant: {
     texturePath: "assets/treant.png",
     textureScale: 0.45,
-    health: 70,
-    attackPower: 10,
+    health: 1590,
+    attackPower: 45,
     defensePower: 5,
-    speed: 3
+    speed: 26
   },
   dummy: {
     texturePath: "assets/dummy.png",
@@ -34395,93 +34395,93 @@ var enemyConfig_default = {
   spider: {
     texturePath: "assets/spider.png",
     textureScale: 0.25,
-    health: 50,
-    attackPower: 10,
+    health: 102,
+    attackPower: 14,
     defensePower: 1,
     speed: 20
   },
   mushroom: {
     texturePath: "assets/mushroom.png",
     textureScale: 0.25,
-    health: 40,
-    attackPower: 8,
+    health: 81,
+    attackPower: 11,
     defensePower: 1,
     speed: 12
   },
   poison_slime: {
     texturePath: "assets/poisonSlime.png",
     textureScale: 0.25,
-    health: 125,
-    attackPower: 24,
+    health: 159,
+    attackPower: 27,
     defensePower: 1,
     speed: 30
   },
   giant_bat: {
     texturePath: "assets/bat.png",
     textureScale: 0.35,
-    health: 24,
-    attackPower: 5,
+    health: 309,
+    attackPower: 17,
     defensePower: 1,
-    speed: 9,
+    speed: 34,
     tint: "0xdd4444"
   },
   giant_spider: {
     texturePath: "assets/spider.png",
     textureScale: 0.6,
-    health: 40,
-    attackPower: 7,
+    health: 515,
+    attackPower: 25,
     defensePower: 3,
-    speed: 6,
+    speed: 22,
     tint: "0x8844aa"
   },
   skeleton_warrior: {
     texturePath: "assets/skeletonWarrior.png",
     textureScale: 0.25,
-    health: 45,
-    attackPower: 8,
+    health: 509,
+    attackPower: 26,
     defensePower: 4,
-    speed: 5
+    speed: 50
   },
   dire_wolf: {
     texturePath: "assets/wolf.png",
     textureScale: 0.4,
-    health: 48,
-    attackPower: 10,
+    health: 543,
+    attackPower: 33,
     defensePower: 3,
-    speed: 8,
+    speed: 80,
     tint: "0x444466"
   },
   ghost: {
     texturePath: "assets/ghost.png",
     textureScale: 0.25,
-    health: 32,
-    attackPower: 9,
+    health: 728,
+    attackPower: 40,
     defensePower: 2,
-    speed: 7
+    speed: 62
   },
   dark_skeleton: {
     texturePath: "assets/darkSkeleton.png",
     textureScale: 0.3,
-    health: 55,
-    attackPower: 9,
+    health: 1249,
+    attackPower: 40,
     defensePower: 5,
-    speed: 4
+    speed: 36
   },
   fire_slime: {
     texturePath: "assets/fireSlime.png",
     textureScale: 0.35,
-    health: 60,
-    attackPower: 11,
+    health: 1040,
+    attackPower: 52,
     defensePower: 3,
-    speed: 4
+    speed: 45
   },
   dragon: {
     texturePath: "assets/dragon.png",
     textureScale: 0.6,
-    health: 120,
-    attackPower: 14,
+    health: 2080,
+    attackPower: 71,
     defensePower: 6,
-    speed: 5
+    speed: 40
   }
 };
 
