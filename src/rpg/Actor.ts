@@ -256,7 +256,7 @@ export abstract class Actor extends Container {
 		this.healthBar.x = shakeX;
 
 		if (this.speechBubble) {
-			this.speechBubble.y = -this.sprite.height + offset - 40 + shakeY;
+			this.speechBubble.y = -this.sprite.height + offset + shakeY + 30;
 			this.speechBubble.x = shakeX;
 		}
 	}
