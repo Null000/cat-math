@@ -18,18 +18,19 @@ import fs from 'fs/promises'
 // Types
 // ============================================================================
 
-type SimEvent =
+export type SimEvent =
 	| { turn: number; event: "death"; area: number; wave: number; xp: number }
 	| { turn: number; event: "levelUp"; newLevel: number; xp: number }
 	| { turn: number; event: "areaChange"; newArea: number; xp: number };
 
-interface EnemyStatFactors {
+export interface EnemyStatFactors {
 	enemyTypes: EnemyType[];
 	hpFactor: number;
 	attackFactor: number;
+	speedFactor: number;
 }
 
-interface SimulationResult {
+export interface SimulationResult {
 	state: State;
 	events: SimEvent[];
 }
@@ -47,7 +48,14 @@ interface SweepResult {
 // Simulator Factories
 // ============================================================================
 
-function makeSimulatorEnemies(plan: EnemyType[]): Actor[] {
+export function padAreas() {
+	const lastArea = areas[areas.length - 1]!;
+	for (let i = areas.length; i < 1000; i++) {
+		areas.push(lastArea);
+	}
+}
+
+export function makeSimulatorEnemies(plan: EnemyType[]): Actor[] {
 	return plan.map((type) => {
 		const enemy = createSimulatorEnemy(type);
 		fakeAnimations(enemy);
@@ -94,6 +102,7 @@ function applyStatFactors(
 			enemy.health = Math.floor(enemy.health * factors.hpFactor);
 			enemy.maxHealth = Math.floor(enemy.maxHealth * factors.hpFactor);
 			enemy.attackPower = Math.floor(enemy.attackPower * factors.attackFactor);
+			enemy.speed = Math.floor(enemy.speed * factors.speedFactor);
 		}
 	}
 }
@@ -102,14 +111,14 @@ function applyStatFactors(
 // Main Simulation
 // ============================================================================
 
-interface AreaAttackRatio {
+export interface AreaAttackRatio {
 	area: number;
 	heroAttacks: number;
 	enemyNormalizedAttacks: number;
 	ratio: number;
 }
 
-interface State {
+export interface State {
 	xp: number,
 	area: number,
 	playerTurns: number,
@@ -124,7 +133,7 @@ const stats: {
 	dead: number;
 }[] = [];
 
-async function runSimulation(
+export async function runSimulation(
 	startState: State,
 	planOverride?: EnemyType[],
 	statFactors?: EnemyStatFactors,
@@ -329,6 +338,7 @@ async function runSimulations() {
 				enemyTypes: Array.from(enemiesInArea),
 				attackFactor: 1,
 				hpFactor: 1,
+				speedFactor: 1,
 			});
 			state = result.state;
 		}
@@ -388,6 +398,7 @@ async function runSweep(enemyTypes: EnemyType[], lives: number): Promise<void> {
 				enemyTypes,
 				hpFactor,
 				attackFactor,
+				speedFactor: 1,
 			};
 
 			let state: State = {xp: 0, area: 0, playerTurns: 0, attackRatios: []};
@@ -465,7 +476,7 @@ async function runSweep(enemyTypes: EnemyType[], lives: number): Promise<void> {
 // Entry Point
 // ============================================================================
 
-function getNewEnemiesInArea(targetArea: number): EnemyType[] {
+export function getNewEnemiesInArea(targetArea: number): EnemyType[] {
 	const existingEnemies = new Set<EnemyType>();
 	for (let i = 0; i < targetArea; i++) {
 		for (let wave of areas[i]!.waves) {
@@ -486,14 +497,17 @@ function getNewEnemiesInArea(targetArea: number): EnemyType[] {
 	return Array.from(enemiesInArea);
 }
 
+if (import.meta.main) {
+
 const mode = process.argv[2];
 
 if (mode === "area") {
 	const targetArea = parseInt(process.argv[3] ?? "");
 	const powerFactor = parseFloat(process.argv[4] ?? "");
+	const speedFactor = parseFloat(process.argv[5] ?? "1");
 
 	if (isNaN(targetArea) || isNaN(powerFactor)) {
-		console.error("Usage: bun run src/rpg/simulator.ts area <areaNumber> <powerFactor>");
+		console.error("Usage: bun run src/rpg/simulator.ts area <areaNumber> <powerFactor> [speedFactor]");
 		process.exit(1);
 	}
 
@@ -509,7 +523,7 @@ if (mode === "area") {
 	}
 
 	const newEnemies = getNewEnemiesInArea(targetArea);
-	console.log(`Area ${targetArea}, power factor ${powerFactor}`);
+	console.log(`Area ${targetArea}, power factor ${powerFactor}, speed factor ${speedFactor}`);
 	console.log(`New enemies in area: ${newEnemies.join(", ")}`);
 
 	// Print enemy stats for all enemies in order of appearance
@@ -542,10 +556,11 @@ if (mode === "area") {
 		enemyTypes: newEnemies,
 		hpFactor: powerFactor,
 		attackFactor: powerFactor,
+		speedFactor,
 	};
 
 	let state: State = { xp: 0, area: 0, playerTurns: 0, attackRatios: [] };
-	const lives = 20;
+	const lives = parseInt(process.argv[6] ?? "20");
 	let livesUsed = 0;
 	let lastPrintedArea = -1;
 	let lastAreaXp = 0;
@@ -588,3 +603,5 @@ if (mode === "area") {
 } else {
 	await runSimulations();
 }
+
+} // if (import.meta.main)

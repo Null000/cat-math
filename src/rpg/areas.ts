@@ -118,7 +118,7 @@ export const areas: Area[] = [
 		],
 	},
 
-	// Area 7 — Volcano (introduces FireSlime, Dragon — endless)
+	// Area 7 — Volcano (introduces FireSlime, Dragon — final area)
 	{
 		background: BackgroundType.Volcano,
 		waves: [
@@ -127,13 +127,11 @@ export const areas: Area[] = [
 			[E.DireWolf, E.DireWolf],
 			[E.FireSlime, E.DarkSkeleton, E.DireWolf],
 			[E.Dragon],
-			...Array.from({ length: 500 }, () => [
-				E.Dragon,
-				E.FireSlime,
-				E.DarkSkeleton,
-				E.DireWolf,
-				E.DireWolf,
-			]),
+			[E.Dragon, E.FireSlime, E.FireSlime],
+			[E.Dragon, E.DarkSkeleton, E.DireWolf],
+			[E.Dragon, E.FireSlime, E.DireWolf, E.DireWolf],
+			[E.Dragon, E.Dragon, E.FireSlime],
+			[E.Dragon, E.Dragon, E.DarkSkeleton, E.DireWolf, E.DireWolf],
 		],
 	},
 ];
