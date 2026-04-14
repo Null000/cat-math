@@ -3552,7 +3552,7 @@ class TexturePoolClass {
     });
     return new Texture({
       source: textureSource,
-      label: `texturePool_${count10++}`
+      label: `texturePool_${count11++}`
     });
   }
   getOptimalTexture(frameWidth, frameHeight, resolution = 1, antialias) {
@@ -3607,7 +3607,7 @@ class TexturePoolClass {
     this._texturePool = {};
   }
 }
-var count10 = 0, TexturePool;
+var count11 = 0, TexturePool;
 var init_TexturePool = __esm(() => {
   init_pow2();
   init_GlobalResourceRegistry();
@@ -4523,12 +4523,12 @@ var _Ticker = class _Ticker2 {
     if (!this._head) {
       return 0;
     }
-    let count11 = 0;
+    let count12 = 0;
     let current = this._head;
     while (current = current.next) {
-      count11++;
+      count12++;
     }
-    return count11;
+    return count12;
   }
   start() {
     if (!this.started) {
@@ -11697,23 +11697,23 @@ var init_buildCircle = __esm(() => {
       }
       centerX /= points.length / 2;
       centerY /= points.length / 2;
-      let count11 = verticesOffset;
-      vertices[count11 * verticesStride] = centerX;
-      vertices[count11 * verticesStride + 1] = centerY;
-      const centerIndex = count11++;
+      let count12 = verticesOffset;
+      vertices[count12 * verticesStride] = centerX;
+      vertices[count12 * verticesStride + 1] = centerY;
+      const centerIndex = count12++;
       for (let i2 = 0;i2 < points.length; i2 += 2) {
-        vertices[count11 * verticesStride] = points[i2];
-        vertices[count11 * verticesStride + 1] = points[i2 + 1];
+        vertices[count12 * verticesStride] = points[i2];
+        vertices[count12 * verticesStride + 1] = points[i2 + 1];
         if (i2 > 0) {
-          indices[indicesOffset++] = count11;
+          indices[indicesOffset++] = count12;
           indices[indicesOffset++] = centerIndex;
-          indices[indicesOffset++] = count11 - 1;
+          indices[indicesOffset++] = count12 - 1;
         }
-        count11++;
+        count12++;
       }
       indices[indicesOffset++] = centerIndex + 1;
       indices[indicesOffset++] = centerIndex;
-      indices[indicesOffset++] = count11 - 1;
+      indices[indicesOffset++] = count12 - 1;
     }
   };
   buildEllipse = { ...buildCircle, extension: { ...buildCircle.extension, name: "ellipse" } };
@@ -12580,20 +12580,20 @@ var init_buildRectangle = __esm(() => {
       return true;
     },
     triangulate(points, vertices, verticesStride, verticesOffset, indices, indicesOffset) {
-      let count11 = 0;
+      let count12 = 0;
       verticesOffset *= verticesStride;
-      vertices[verticesOffset + count11] = points[0];
-      vertices[verticesOffset + count11 + 1] = points[1];
-      count11 += verticesStride;
-      vertices[verticesOffset + count11] = points[2];
-      vertices[verticesOffset + count11 + 1] = points[3];
-      count11 += verticesStride;
-      vertices[verticesOffset + count11] = points[6];
-      vertices[verticesOffset + count11 + 1] = points[7];
-      count11 += verticesStride;
-      vertices[verticesOffset + count11] = points[4];
-      vertices[verticesOffset + count11 + 1] = points[5];
-      count11 += verticesStride;
+      vertices[verticesOffset + count12] = points[0];
+      vertices[verticesOffset + count12 + 1] = points[1];
+      count12 += verticesStride;
+      vertices[verticesOffset + count12] = points[2];
+      vertices[verticesOffset + count12 + 1] = points[3];
+      count12 += verticesStride;
+      vertices[verticesOffset + count12] = points[6];
+      vertices[verticesOffset + count12 + 1] = points[7];
+      count12 += verticesStride;
+      vertices[verticesOffset + count12] = points[4];
+      vertices[verticesOffset + count12 + 1] = points[5];
+      count12 += verticesStride;
       const verticesIndex = verticesOffset / verticesStride;
       indices[indicesOffset++] = verticesIndex;
       indices[indicesOffset++] = verticesIndex + 1;
@@ -12624,16 +12624,16 @@ var init_buildTriangle = __esm(() => {
       return true;
     },
     triangulate(points, vertices, verticesStride, verticesOffset, indices, indicesOffset) {
-      let count11 = 0;
+      let count12 = 0;
       verticesOffset *= verticesStride;
-      vertices[verticesOffset + count11] = points[0];
-      vertices[verticesOffset + count11 + 1] = points[1];
-      count11 += verticesStride;
-      vertices[verticesOffset + count11] = points[2];
-      vertices[verticesOffset + count11 + 1] = points[3];
-      count11 += verticesStride;
-      vertices[verticesOffset + count11] = points[4];
-      vertices[verticesOffset + count11 + 1] = points[5];
+      vertices[verticesOffset + count12] = points[0];
+      vertices[verticesOffset + count12 + 1] = points[1];
+      count12 += verticesStride;
+      vertices[verticesOffset + count12] = points[2];
+      vertices[verticesOffset + count12 + 1] = points[3];
+      count12 += verticesStride;
+      vertices[verticesOffset + count12] = points[4];
+      vertices[verticesOffset + count12 + 1] = points[5];
       const verticesIndex = verticesOffset / verticesStride;
       indices[indicesOffset++] = verticesIndex;
       indices[indicesOffset++] = verticesIndex + 1;
@@ -26964,7 +26964,7 @@ class GpuStateSystem {
   contextChange(gpu) {
     this.gpu = gpu;
   }
-  getColorTargets(state, count11) {
+  getColorTargets(state, count12) {
     const blend = GpuBlendModesToPixi[state.blendMode] || GpuBlendModesToPixi.normal;
     const targets = [];
     const target = {
@@ -26972,7 +26972,7 @@ class GpuStateSystem {
       writeMask: 0,
       blend
     };
-    for (let i2 = 0;i2 < count11; i2++) {
+    for (let i2 = 0;i2 < count12; i2++) {
       targets[i2] = target;
     }
     return targets;
@@ -29083,8 +29083,8 @@ class GlRenderTargetAdaptor {
     }
   }
   _setDrawBuffers(renderTarget, gl) {
-    const count11 = renderTarget.colorTextures.length;
-    const bufferArray = this._drawBuffersCache[count11];
+    const count12 = renderTarget.colorTextures.length;
+    const bufferArray = this._drawBuffersCache[count12];
     if (this._renderer.context.webGLVersion === 1) {
       const ext = this._renderer.context.extensions.drawBuffers;
       if (!ext) {
@@ -30917,6 +30917,7 @@ var categoryGroups = {
     "Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */,
     "Mixed +/-: 1000 (3 numbers)" /* Mixed_ThreeNumbers_Thousand */
   ],
+  MixedOps: ["Mixed operations: 100 (3 numbers)" /* Mixed_Operations_Hundred */],
   Multiplication: [
     "Multiplication: 10" /* Multiplication_Ten */,
     "Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */,
@@ -31001,6 +31002,7 @@ var yearGroupsSl = {
     "Subtraction: 100 (missing facts)" /* Subtraction_Hundred_Missing */,
     "Subtraction: 100 (3 numbers)" /* Subtraction_ThreeNumbers_Hundred */,
     "Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */,
+    "Mixed operations: 100 (3 numbers)" /* Mixed_Operations_Hundred */,
     "Subtraction: Hundreds" /* Subtraction_Hundreds */,
     "Multiplication: 10" /* Multiplication_Ten */,
     "Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */,
@@ -31781,6 +31783,7 @@ var translations = {
     ["Mixed +/-: 20 (3 numbers)" /* Mixed_ThreeNumbers_Twenty */]: "Mixed +/-: 20 (3 numbers)",
     ["Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */]: "Mixed +/-: 100 (3 numbers)",
     ["Mixed +/-: 1000 (3 numbers)" /* Mixed_ThreeNumbers_Thousand */]: "Mixed +/-: 1000 (3 numbers)",
+    ["Mixed operations: 100 (3 numbers)" /* Mixed_Operations_Hundred */]: "Mixed operations: 100 (3 numbers)",
     ["Multiplication: 10" /* Multiplication_Ten */]: "Multiplication: 10",
     ["Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */]: "Multiplication: 10 (missing facts)",
     ["Multiplication: 20" /* Multiplication_Twenty */]: "Multiplication: 20",
@@ -31831,6 +31834,7 @@ var translations = {
     group_Addition: "Addition",
     group_Subtraction: "Subtraction",
     group_Mixed: "Mixed +/-",
+    group_MixedOps: "Mixed operations",
     group_Multiplication: "Multiplication",
     group_Division: "Division",
     group_Comparison: "Comparison",
@@ -31843,7 +31847,15 @@ var translations = {
     rpg_select_categories: "Spell Book",
     rpg_start_battle: "Enter Battle",
     rpg_adventure_link: "Cat Math Adventure \uD83D\uDC08‍⬛",
-    new_sticker: "NEW"
+    new_sticker: "NEW",
+    rpg_area_0: "Time to practice my spells!",
+    rpg_area_1: "I hear rats in this forest...",
+    rpg_area_2: "It's getting dark in here...",
+    rpg_area_3: "Ugh, this swamp reeks!",
+    rpg_area_4: "The air is thin up here!",
+    rpg_area_5: "I can barely see...",
+    rpg_area_6: "What happened to this place?",
+    rpg_area_7: "It's scorching hot! Final battle!"
   },
   sl: {
     title: "Mačja Matematika",
@@ -31913,6 +31925,7 @@ var translations = {
     ["Mixed +/-: 20 (3 numbers)" /* Mixed_ThreeNumbers_Twenty */]: "Mešano +/-: 20 (3 števila)",
     ["Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */]: "Mešano +/-: 100 (3 števila)",
     ["Mixed +/-: 1000 (3 numbers)" /* Mixed_ThreeNumbers_Thousand */]: "Mešano +/-: 1000 (3 števila)",
+    ["Mixed operations: 100 (3 numbers)" /* Mixed_Operations_Hundred */]: "Mešane operacije: 100 (3 števila)",
     ["Multiplication: 10" /* Multiplication_Ten */]: "Množenje: 10",
     ["Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */]: "Množenje: 10 (neznani člen)",
     ["Multiplication: 20" /* Multiplication_Twenty */]: "Množenje: 20",
@@ -31963,6 +31976,7 @@ var translations = {
     group_Addition: "Seštevanje",
     group_Subtraction: "Odštevanje",
     group_Mixed: "Mešano +/-",
+    group_MixedOps: "Mešane operacije",
     group_Multiplication: "Množenje",
     group_Division: "Deljenje",
     group_Comparison: "Primerjanje",
@@ -31980,7 +31994,15 @@ var translations = {
     rpg_select_categories: "Knjiga Urokov",
     rpg_start_battle: "Vstopi v Bitko",
     rpg_adventure_link: "Avantura Mačja Matematika \uD83D\uDC08‍⬛",
-    new_sticker: "NOVO"
+    new_sticker: "NOVO",
+    rpg_area_0: "Čas za vajo čarovnij!",
+    rpg_area_1: "Slišim podgane v tem gozdu...",
+    rpg_area_2: "Tukaj postaja temno...",
+    rpg_area_3: "Fuj, to močvirje smrdi!",
+    rpg_area_4: "Zrak je tukaj redek!",
+    rpg_area_5: "Komaj vidim...",
+    rpg_area_6: "Kaj se je zgodilo s tem krajem?",
+    rpg_area_7: "Pekoče vroče! Zadnja bitka!"
   }
 };
 
@@ -31988,10 +32010,12 @@ var translations = {
 var LOCAL_STORAGE_KEY = "math_practice_language";
 var DEFAULT_LANGUAGE = "sl";
 function getCurrentLanguage() {
-  const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-  if (stored === "en" || stored === "sl") {
-    return stored;
-  }
+  try {
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (stored === "en" || stored === "sl") {
+      return stored;
+    }
+  } catch {}
   return DEFAULT_LANGUAGE;
 }
 function setLanguage(lang) {
@@ -32256,6 +32280,183 @@ function enumerate5(category, targetIndex) {
 }
 var { count: count9, getProblem: getProblem9 } = makeGenerator(enumerate5);
 
+// src/mixedOps.ts
+var exports_mixedOps = {};
+__export(exports_mixedOps, {
+  getProblem: () => getProblem10,
+  count: () => count10
+});
+var generateProps8 = {
+  ["Mixed operations: 100 (3 numbers)" /* Mixed_Operations_Hundred */]: { max: 100, mulMax: 10 }
+};
+function enumerate6(category, targetIndex) {
+  const props = generateProps8[category];
+  const { max, mulMax } = props;
+  let idx = 0;
+  for (let a = 0;a <= mulMax; a++) {
+    for (let b = 0;b <= mulMax; b++) {
+      const m = a * b;
+      if (m > max)
+        continue;
+      for (let c = 0;c <= max - m; c++) {
+        if (idx === targetIndex) {
+          return {
+            problem: {
+              id: `${category}_${a}_mul_${b}_add_${c}_result`,
+              text: `${a} × ${b} + ${c} = ?`,
+              answer: m + c
+            },
+            count: idx
+          };
+        }
+        idx++;
+      }
+    }
+  }
+  for (let a = 0;a <= mulMax; a++) {
+    for (let b = 0;b <= mulMax; b++) {
+      const m = a * b;
+      if (m > max)
+        continue;
+      for (let c = 0;c <= m; c++) {
+        if (idx === targetIndex) {
+          return {
+            problem: {
+              id: `${category}_${a}_mul_${b}_sub_${c}_result`,
+              text: `${a} × ${b} - ${c} = ?`,
+              answer: m - c
+            },
+            count: idx
+          };
+        }
+        idx++;
+      }
+    }
+  }
+  for (let b = 1;b <= mulMax; b++) {
+    for (let q = 0;q <= mulMax; q++) {
+      const a = b * q;
+      if (a > max)
+        continue;
+      for (let c = 0;c <= max - q; c++) {
+        if (idx === targetIndex) {
+          return {
+            problem: {
+              id: `${category}_${a}_div_${b}_add_${c}_result`,
+              text: `${a} / ${b} + ${c} = ?`,
+              answer: q + c
+            },
+            count: idx
+          };
+        }
+        idx++;
+      }
+    }
+  }
+  for (let b = 1;b <= mulMax; b++) {
+    for (let q = 0;q <= mulMax; q++) {
+      const a = b * q;
+      if (a > max)
+        continue;
+      for (let c = 0;c <= q; c++) {
+        if (idx === targetIndex) {
+          return {
+            problem: {
+              id: `${category}_${a}_div_${b}_sub_${c}_result`,
+              text: `${a} / ${b} - ${c} = ?`,
+              answer: q - c
+            },
+            count: idx
+          };
+        }
+        idx++;
+      }
+    }
+  }
+  for (let b = 0;b <= mulMax; b++) {
+    for (let c = 0;c <= mulMax; c++) {
+      const m = b * c;
+      if (m > max)
+        continue;
+      for (let a = 0;a <= max - m; a++) {
+        if (idx === targetIndex) {
+          return {
+            problem: {
+              id: `${category}_${a}_add_${b}_mul_${c}_result`,
+              text: `${a} + ${b} × ${c} = ?`,
+              answer: a + m
+            },
+            count: idx
+          };
+        }
+        idx++;
+      }
+    }
+  }
+  for (let b = 0;b <= mulMax; b++) {
+    for (let c = 0;c <= mulMax; c++) {
+      const m = b * c;
+      if (m > max)
+        continue;
+      for (let a = m;a <= max; a++) {
+        if (idx === targetIndex) {
+          return {
+            problem: {
+              id: `${category}_${a}_sub_${b}_mul_${c}_result`,
+              text: `${a} - ${b} × ${c} = ?`,
+              answer: a - m
+            },
+            count: idx
+          };
+        }
+        idx++;
+      }
+    }
+  }
+  for (let c = 1;c <= mulMax; c++) {
+    for (let q = 0;q <= mulMax; q++) {
+      const b = c * q;
+      if (b > max)
+        continue;
+      for (let a = 0;a <= max - q; a++) {
+        if (idx === targetIndex) {
+          return {
+            problem: {
+              id: `${category}_${a}_add_${b}_div_${c}_result`,
+              text: `${a} + ${b} / ${c} = ?`,
+              answer: a + q
+            },
+            count: idx
+          };
+        }
+        idx++;
+      }
+    }
+  }
+  for (let c = 1;c <= mulMax; c++) {
+    for (let q = 0;q <= mulMax; q++) {
+      const b = c * q;
+      if (b > max)
+        continue;
+      for (let a = q;a <= max; a++) {
+        if (idx === targetIndex) {
+          return {
+            problem: {
+              id: `${category}_${a}_sub_${b}_div_${c}_result`,
+              text: `${a} - ${b} / ${c} = ?`,
+              answer: a - q
+            },
+            count: idx
+          };
+        }
+        idx++;
+      }
+    }
+  }
+  return { count: idx };
+}
+var { count: count10, getProblem: getProblem10 } = makeGenerator(enumerate6);
+
 // src/problem.ts
 var generatorPerGroup = {
   Addition: exports_addition,
@@ -32263,6 +32464,7 @@ var generatorPerGroup = {
   Multiplication: exports_multiplication,
   Division: exports_division,
   Mixed: exports_mixed,
+  MixedOps: exports_mixedOps,
   Comparison: exports_comparison,
   NumberText: exports_numberText,
   NextPrevious: exports_nextPrevious,
@@ -32279,7 +32481,7 @@ function getRandomProblem(category) {
 }
 
 // src/app.ts
-function getProblem10(categories) {
+function getProblem11(categories) {
   const category = categories[Math.floor(Math.random() * categories.length)];
   return { problem: getRandomProblem(category), category };
 }
@@ -33062,7 +33264,7 @@ var _Loader = class _Loader2 {
     }
     const options = typeof onProgressOrOptions === "function" ? { ..._Loader2.defaultOptions, ...this.loadOptions, onProgress: onProgressOrOptions } : { ..._Loader2.defaultOptions, ...this.loadOptions, ...onProgressOrOptions || {} };
     const { onProgress, onError, strategy, retryCount, retryDelay } = options;
-    let count11 = 0;
+    let count12 = 0;
     const assets = {};
     const singleAsset = isSingleItem(assetsToLoadIn);
     const assetsToLoad = convertToList(assetsToLoadIn, (item) => ({
@@ -33076,9 +33278,9 @@ var _Loader = class _Loader2 {
       if (assets[asset.src])
         return;
       await this._loadAssetWithRetry(url, asset, { onProgress, onError, strategy, retryCount, retryDelay }, assets);
-      count11 += asset.progressSize || 1;
+      count12 += asset.progressSize || 1;
       if (onProgress)
-        onProgress(count11 / total);
+        onProgress(count12 / total);
     });
     await Promise.all(promises);
     return singleAsset ? assets[assetsToLoad[0].src] : assets;
@@ -34582,7 +34784,7 @@ class Actor extends Container {
     this.healthBar.y = -this.sprite.height + offset - 20 + shakeY;
     this.healthBar.x = shakeX;
     if (this.speechBubble) {
-      this.speechBubble.y = -this.sprite.height + offset - 40 + shakeY;
+      this.speechBubble.y = -this.sprite.height + offset + shakeY + 30;
       this.speechBubble.x = shakeX;
     }
   }
@@ -36154,6 +36356,7 @@ class BattleManager {
   resolveFade = null;
   onXpChange;
   onAreaChange;
+  afterAreaChange;
   _makeEnemies = makeEnemies;
   _makeWizard = makeWizard;
   _makeBackground = makeBackground;
@@ -36233,20 +36436,20 @@ class BattleManager {
     this.enemyParty = [];
     const area2 = areas[this.area];
     this.enemyParty.push(...await this._makeEnemies(area2.waves[this.wave]));
-    const count11 = this.enemyParty.length;
+    const count12 = this.enemyParty.length;
     const minX = 450;
     const maxX = 750;
     const minY = 480;
     const maxY = 570;
     const enterPromises = [];
     const enterFromX = standardWidth + 100;
-    for (let i2 = 0;i2 < count11; i2++) {
+    for (let i2 = 0;i2 < count12; i2++) {
       const actor = this.enemyParty[i2];
-      if (count11 === 1) {
+      if (count12 === 1) {
         actor.x = (minX + maxX) / 2;
         actor.y = (minY + maxY) / 2;
       } else {
-        actor.x = minX + i2 / (count11 - 1) * (maxX - minX);
+        actor.x = minX + i2 / (count12 - 1) * (maxX - minX);
         actor.y = minY + i2 % 2 * (maxY - minY);
       }
       actor.zIndex = actor.y;
@@ -36337,6 +36540,7 @@ class BattleManager {
         }
         await this.init();
         await this.fadeIn();
+        await this.afterAreaChange?.();
       } else {
         await this.initEnemy();
         this.initTurns();
@@ -36716,8 +36920,8 @@ function getSolvedCount(category) {
   return parseInt(localStorage.getItem(SOLVED_COUNT_PREFIX + category) || "0");
 }
 function incrementSolvedCount(category) {
-  const count11 = getSolvedCount(category) + 1;
-  localStorage.setItem(SOLVED_COUNT_PREFIX + category, count11.toString());
+  const count12 = getSolvedCount(category) + 1;
+  localStorage.setItem(SOLVED_COUNT_PREFIX + category, count12.toString());
 }
 
 // src/rpg/rpg.ts
@@ -36769,7 +36973,7 @@ async function init2() {
   } else {
     selectedCategories = ["Addition: 10" /* Addition_Ten */];
   }
-  let currentProblem = getProblem10(selectedCategories);
+  let currentProblem = getProblem11(selectedCategories);
   const startXp = parseInt(localStorage.getItem("xp") || "0");
   const startArea = parseInt(localStorage.getItem("rpg_area") || "0");
   const battleManager = new BattleManager(world, startXp, startArea);
@@ -36778,6 +36982,16 @@ async function init2() {
     localStorage.setItem("rpg_area", area2.toString());
     gtag("event", "rpg_new_area", { area: area2 });
   };
+  battleManager.afterAreaChange = async () => {
+    const wizard = battleManager.heroParty[0];
+    if (!wizard)
+      return;
+    const key = `rpg_area_${battleManager.area}`;
+    const text = t(key);
+    if (text !== key) {
+      await wizard.showSpeechBubble(text, 1e4);
+    }
+  };
   await battleManager.init();
   gtag("event", "rpg_start", {
     categories: selectedCategories.join(";")
@@ -36785,12 +36999,13 @@ async function init2() {
   const mathUI = new ProblemUI(gameStage, onSubmit);
   mathUI.setProblem(currentProblem.problem.text, currentProblem.problem.options, typeof currentProblem.problem.answer);
   function nextProblem() {
-    currentProblem = getProblem10(selectedCategories);
+    currentProblem = getProblem11(selectedCategories);
     mathUI.setProblem(currentProblem.problem.text, currentProblem.problem.options, typeof currentProblem.problem.answer);
   }
   app.ticker.add((time) => {
     battleManager.update(time);
   });
+  battleManager.afterAreaChange?.();
   function resize() {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;

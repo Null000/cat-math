@@ -74,6 +74,7 @@ var categoryGroups = {
     "Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */,
     "Mixed +/-: 1000 (3 numbers)" /* Mixed_ThreeNumbers_Thousand */
   ],
+  MixedOps: ["Mixed operations: 100 (3 numbers)" /* Mixed_Operations_Hundred */],
   Multiplication: [
     "Multiplication: 10" /* Multiplication_Ten */,
     "Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */,
@@ -158,6 +159,7 @@ var yearGroupsSl = {
     "Subtraction: 100 (missing facts)" /* Subtraction_Hundred_Missing */,
     "Subtraction: 100 (3 numbers)" /* Subtraction_ThreeNumbers_Hundred */,
     "Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */,
+    "Mixed operations: 100 (3 numbers)" /* Mixed_Operations_Hundred */,
     "Subtraction: Hundreds" /* Subtraction_Hundreds */,
     "Multiplication: 10" /* Multiplication_Ten */,
     "Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */,
@@ -938,6 +940,7 @@ var translations = {
     ["Mixed +/-: 20 (3 numbers)" /* Mixed_ThreeNumbers_Twenty */]: "Mixed +/-: 20 (3 numbers)",
     ["Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */]: "Mixed +/-: 100 (3 numbers)",
     ["Mixed +/-: 1000 (3 numbers)" /* Mixed_ThreeNumbers_Thousand */]: "Mixed +/-: 1000 (3 numbers)",
+    ["Mixed operations: 100 (3 numbers)" /* Mixed_Operations_Hundred */]: "Mixed operations: 100 (3 numbers)",
     ["Multiplication: 10" /* Multiplication_Ten */]: "Multiplication: 10",
     ["Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */]: "Multiplication: 10 (missing facts)",
     ["Multiplication: 20" /* Multiplication_Twenty */]: "Multiplication: 20",
@@ -988,6 +991,7 @@ var translations = {
     group_Addition: "Addition",
     group_Subtraction: "Subtraction",
     group_Mixed: "Mixed +/-",
+    group_MixedOps: "Mixed operations",
     group_Multiplication: "Multiplication",
     group_Division: "Division",
     group_Comparison: "Comparison",
@@ -1000,7 +1004,15 @@ var translations = {
     rpg_select_categories: "Spell Book",
     rpg_start_battle: "Enter Battle",
     rpg_adventure_link: "Cat Math Adventure \uD83D\uDC08‍⬛",
-    new_sticker: "NEW"
+    new_sticker: "NEW",
+    rpg_area_0: "Time to practice my spells!",
+    rpg_area_1: "I hear rats in this forest...",
+    rpg_area_2: "It's getting dark in here...",
+    rpg_area_3: "Ugh, this swamp reeks!",
+    rpg_area_4: "The air is thin up here!",
+    rpg_area_5: "I can barely see...",
+    rpg_area_6: "What happened to this place?",
+    rpg_area_7: "It's scorching hot! Final battle!"
   },
   sl: {
     title: "Mačja Matematika",
@@ -1070,6 +1082,7 @@ var translations = {
     ["Mixed +/-: 20 (3 numbers)" /* Mixed_ThreeNumbers_Twenty */]: "Mešano +/-: 20 (3 števila)",
     ["Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */]: "Mešano +/-: 100 (3 števila)",
     ["Mixed +/-: 1000 (3 numbers)" /* Mixed_ThreeNumbers_Thousand */]: "Mešano +/-: 1000 (3 števila)",
+    ["Mixed operations: 100 (3 numbers)" /* Mixed_Operations_Hundred */]: "Mešane operacije: 100 (3 števila)",
     ["Multiplication: 10" /* Multiplication_Ten */]: "Množenje: 10",
     ["Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */]: "Množenje: 10 (neznani člen)",
     ["Multiplication: 20" /* Multiplication_Twenty */]: "Množenje: 20",
@@ -1120,6 +1133,7 @@ var translations = {
     group_Addition: "Seštevanje",
     group_Subtraction: "Odštevanje",
     group_Mixed: "Mešano +/-",
+    group_MixedOps: "Mešane operacije",
     group_Multiplication: "Množenje",
     group_Division: "Deljenje",
     group_Comparison: "Primerjanje",
@@ -1137,7 +1151,15 @@ var translations = {
     rpg_select_categories: "Knjiga Urokov",
     rpg_start_battle: "Vstopi v Bitko",
     rpg_adventure_link: "Avantura Mačja Matematika \uD83D\uDC08‍⬛",
-    new_sticker: "NOVO"
+    new_sticker: "NOVO",
+    rpg_area_0: "Čas za vajo čarovnij!",
+    rpg_area_1: "Slišim podgane v tem gozdu...",
+    rpg_area_2: "Tukaj postaja temno...",
+    rpg_area_3: "Fuj, to močvirje smrdi!",
+    rpg_area_4: "Zrak je tukaj redek!",
+    rpg_area_5: "Komaj vidim...",
+    rpg_area_6: "Kaj se je zgodilo s tem krajem?",
+    rpg_area_7: "Pekoče vroče! Zadnja bitka!"
   }
 };
 
@@ -1145,10 +1167,12 @@ var translations = {
 var LOCAL_STORAGE_KEY = "math_practice_language";
 var DEFAULT_LANGUAGE = "sl";
 function getCurrentLanguage() {
-  const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-  if (stored === "en" || stored === "sl") {
-    return stored;
-  }
+  try {
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (stored === "en" || stored === "sl") {
+      return stored;
+    }
+  } catch {}
   return DEFAULT_LANGUAGE;
 }
 function setLanguage(lang) {
@@ -1413,6 +1437,183 @@ function enumerate5(category, targetIndex) {
 }
 var { count: count9, getProblem: getProblem9 } = makeGenerator(enumerate5);
 
+// src/mixedOps.ts
+var exports_mixedOps = {};
+__export(exports_mixedOps, {
+  getProblem: () => getProblem10,
+  count: () => count10
+});
+var generateProps8 = {
+  ["Mixed operations: 100 (3 numbers)" /* Mixed_Operations_Hundred */]: { max: 100, mulMax: 10 }
+};
+function enumerate6(category, targetIndex) {
+  const props = generateProps8[category];
+  const { max, mulMax } = props;
+  let idx = 0;
+  for (let a = 0;a <= mulMax; a++) {
+    for (let b = 0;b <= mulMax; b++) {
+      const m = a * b;
+      if (m > max)
+        continue;
+      for (let c = 0;c <= max - m; c++) {
+        if (idx === targetIndex) {
+          return {
+            problem: {
+              id: `${category}_${a}_mul_${b}_add_${c}_result`,
+              text: `${a} × ${b} + ${c} = ?`,
+              answer: m + c
+            },
+            count: idx
+          };
+        }
+        idx++;
+      }
+    }
+  }
+  for (let a = 0;a <= mulMax; a++) {
+    for (let b = 0;b <= mulMax; b++) {
+      const m = a * b;
+      if (m > max)
+        continue;
+      for (let c = 0;c <= m; c++) {
+        if (idx === targetIndex) {
+          return {
+            problem: {
+              id: `${category}_${a}_mul_${b}_sub_${c}_result`,
+              text: `${a} × ${b} - ${c} = ?`,
+              answer: m - c
+            },
+            count: idx
+          };
+        }
+        idx++;
+      }
+    }
+  }
+  for (let b = 1;b <= mulMax; b++) {
+    for (let q = 0;q <= mulMax; q++) {
+      const a = b * q;
+      if (a > max)
+        continue;
+      for (let c = 0;c <= max - q; c++) {
+        if (idx === targetIndex) {
+          return {
+            problem: {
+              id: `${category}_${a}_div_${b}_add_${c}_result`,
+              text: `${a} / ${b} + ${c} = ?`,
+              answer: q + c
+            },
+            count: idx
+          };
+        }
+        idx++;
+      }
+    }
+  }
+  for (let b = 1;b <= mulMax; b++) {
+    for (let q = 0;q <= mulMax; q++) {
+      const a = b * q;
+      if (a > max)
+        continue;
+      for (let c = 0;c <= q; c++) {
+        if (idx === targetIndex) {
+          return {
+            problem: {
+              id: `${category}_${a}_div_${b}_sub_${c}_result`,
+              text: `${a} / ${b} - ${c} = ?`,
+              answer: q - c
+            },
+            count: idx
+          };
+        }
+        idx++;
+      }
+    }
+  }
+  for (let b = 0;b <= mulMax; b++) {
+    for (let c = 0;c <= mulMax; c++) {
+      const m = b * c;
+      if (m > max)
+        continue;
+      for (let a = 0;a <= max - m; a++) {
+        if (idx === targetIndex) {
+          return {
+            problem: {
+              id: `${category}_${a}_add_${b}_mul_${c}_result`,
+              text: `${a} + ${b} × ${c} = ?`,
+              answer: a + m
+            },
+            count: idx
+          };
+        }
+        idx++;
+      }
+    }
+  }
+  for (let b = 0;b <= mulMax; b++) {
+    for (let c = 0;c <= mulMax; c++) {
+      const m = b * c;
+      if (m > max)
+        continue;
+      for (let a = m;a <= max; a++) {
+        if (idx === targetIndex) {
+          return {
+            problem: {
+              id: `${category}_${a}_sub_${b}_mul_${c}_result`,
+              text: `${a} - ${b} × ${c} = ?`,
+              answer: a - m
+            },
+            count: idx
+          };
+        }
+        idx++;
+      }
+    }
+  }
+  for (let c = 1;c <= mulMax; c++) {
+    for (let q = 0;q <= mulMax; q++) {
+      const b = c * q;
+      if (b > max)
+        continue;
+      for (let a = 0;a <= max - q; a++) {
+        if (idx === targetIndex) {
+          return {
+            problem: {
+              id: `${category}_${a}_add_${b}_div_${c}_result`,
+              text: `${a} + ${b} / ${c} = ?`,
+              answer: a + q
+            },
+            count: idx
+          };
+        }
+        idx++;
+      }
+    }
+  }
+  for (let c = 1;c <= mulMax; c++) {
+    for (let q = 0;q <= mulMax; q++) {
+      const b = c * q;
+      if (b > max)
+        continue;
+      for (let a = q;a <= max; a++) {
+        if (idx === targetIndex) {
+          return {
+            problem: {
+              id: `${category}_${a}_sub_${b}_div_${c}_result`,
+              text: `${a} - ${b} / ${c} = ?`,
+              answer: a - q
+            },
+            count: idx
+          };
+        }
+        idx++;
+      }
+    }
+  }
+  return { count: idx };
+}
+var { count: count10, getProblem: getProblem10 } = makeGenerator(enumerate6);
+
 // src/problem.ts
 var generatorPerGroup = {
   Addition: exports_addition,
@@ -1420,6 +1621,7 @@ var generatorPerGroup = {
   Multiplication: exports_multiplication,
   Division: exports_division,
   Mixed: exports_mixed,
+  MixedOps: exports_mixedOps,
   Comparison: exports_comparison,
   NumberText: exports_numberText,
   NextPrevious: exports_nextPrevious,
@@ -1436,7 +1638,7 @@ function getRandomProblem(category) {
 }
 
 // src/app.ts
-function getProblem10(categories) {
+function getProblem11(categories) {
   const category = categories[Math.floor(Math.random() * categories.length)];
   return { problem: getRandomProblem(category), category };
 }
@@ -1454,8 +1656,8 @@ function getSolvedCount(category) {
   return parseInt(localStorage.getItem(SOLVED_COUNT_PREFIX + category) || "0");
 }
 function incrementSolvedCount(category) {
-  const count10 = getSolvedCount(category) + 1;
-  localStorage.setItem(SOLVED_COUNT_PREFIX + category, count10.toString());
+  const count11 = getSolvedCount(category) + 1;
+  localStorage.setItem(SOLVED_COUNT_PREFIX + category, count11.toString());
 }
 
 // src/index.ts
@@ -1573,12 +1775,12 @@ document.addEventListener("DOMContentLoaded", () => {
         checkbox.addEventListener("change", updateSelectedDisplay);
         const label = document.createElement("label");
         label.htmlFor = category;
-        const count10 = getSolvedCount(category);
+        const count11 = getSolvedCount(category);
         const labelText = document.createTextNode(getCategoryDisplayName(category));
         label.appendChild(labelText);
-        if (count10 > 0) {
+        if (count11 > 0) {
           const countSpan = document.createElement("span");
-          countSpan.textContent = ` (${count10} ${t("solved")})`;
+          countSpan.textContent = ` (${count11} ${t("solved")})`;
           countSpan.style.fontSize = "0.8em";
           countSpan.style.color = "#718096";
           countSpan.style.fontWeight = "normal";
