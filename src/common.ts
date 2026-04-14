@@ -46,6 +46,7 @@ export enum Category {
 	Mixed_ThreeNumbers_Twenty = "Mixed +/-: 20 (3 numbers)",
 	Mixed_ThreeNumbers_Hundred = "Mixed +/-: 100 (3 numbers)",
 	Mixed_ThreeNumbers_Thousand = "Mixed +/-: 1000 (3 numbers)",
+	Mixed_Operations_Hundred = "Mixed operations: 100 (3 numbers)",
 	Multiplication_Ten = "Multiplication: 10",
 	Multiplication_Ten_Missing = "Multiplication: 10 (missing facts)",
 	Multiplication_Twenty = "Multiplication: 20",
@@ -122,6 +123,7 @@ export const categoryGroups: Record<string, Category[]> = {
 		Category.Mixed_ThreeNumbers_Hundred,
 		Category.Mixed_ThreeNumbers_Thousand,
 	],
+	MixedOps: [Category.Mixed_Operations_Hundred],
 	Multiplication: [
 		Category.Multiplication_Ten,
 		Category.Multiplication_Ten_Missing,
@@ -207,6 +209,7 @@ export const yearGroupsSl: Record<string, Category[]> = {
 		Category.Subtraction_Hundred_Missing,
 		Category.Subtraction_ThreeNumbers_Hundred,
 		Category.Mixed_ThreeNumbers_Hundred,
+		Category.Mixed_Operations_Hundred,
 		Category.Subtraction_Hundreds,
 		Category.Multiplication_Ten,
 		Category.Multiplication_Ten_Missing,

@@ -86,6 +86,7 @@ export const translations = {
 		[Category.Mixed_ThreeNumbers_Twenty]: "Mixed +/-: 20 (3 numbers)",
 		[Category.Mixed_ThreeNumbers_Hundred]: "Mixed +/-: 100 (3 numbers)",
 		[Category.Mixed_ThreeNumbers_Thousand]: "Mixed +/-: 1000 (3 numbers)",
+		[Category.Mixed_Operations_Hundred]: "Mixed operations: 100 (3 numbers)",
 
 		[Category.Multiplication_Ten]: "Multiplication: 10",
 		[Category.Multiplication_Ten_Missing]:
@@ -148,6 +149,7 @@ export const translations = {
 		group_Addition: "Addition",
 		group_Subtraction: "Subtraction",
 		group_Mixed: "Mixed +/-",
+		group_MixedOps: "Mixed operations",
 		group_Multiplication: "Multiplication",
 		group_Division: "Division",
 		group_Comparison: "Comparison",
@@ -263,6 +265,7 @@ export const translations = {
 		[Category.Mixed_ThreeNumbers_Twenty]: "Mešano +/-: 20 (3 števila)",
 		[Category.Mixed_ThreeNumbers_Hundred]: "Mešano +/-: 100 (3 števila)",
 		[Category.Mixed_ThreeNumbers_Thousand]: "Mešano +/-: 1000 (3 števila)",
+		[Category.Mixed_Operations_Hundred]: "Mešane operacije: 100 (3 števila)",
 
 		[Category.Multiplication_Ten]: "Množenje: 10",
 		[Category.Multiplication_Ten_Missing]: "Množenje: 10 (neznani člen)",
@@ -323,6 +326,7 @@ export const translations = {
 		group_Addition: "Seštevanje",
 		group_Subtraction: "Odštevanje",
 		group_Mixed: "Mešano +/-",
+		group_MixedOps: "Mešane operacije",
 		group_Multiplication: "Množenje",
 		group_Division: "Deljenje",
 		group_Comparison: "Primerjanje",

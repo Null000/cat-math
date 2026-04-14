@@ -8,6 +8,7 @@ import * as comparison from "./comparison.ts";
 import * as numberText from "./numberText.ts";
 import * as nextPrevious from "./nextPrevious.ts";
 import * as mixed from "./mixed.ts";
+import * as mixedOps from "./mixedOps.ts";
 import { categoryToGroup } from "./common.ts";
 
 interface Generator {
@@ -21,6 +22,7 @@ const generatorPerGroup: Record<string, Generator> = {
 	Multiplication: multiplication,
 	Division: division,
 	Mixed: mixed,
+	MixedOps: mixedOps,
 	Comparison: comparison,
 	NumberText: numberText,
 	NextPrevious: nextPrevious,
