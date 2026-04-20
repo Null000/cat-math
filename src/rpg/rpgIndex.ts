@@ -2,15 +2,11 @@ import {Application, Sprite} from "pixi.js";
 import {getCategories, getYearGroupsSl} from "../app.ts";
 import {getRandomProblem} from "../problem.ts";
 import {getCategoryDisplayName, getCurrentLanguage, Language, setLanguage, t,} from "../i18n.ts";
-import {Category} from "../common.ts";
+import {Category, categoryGroups} from "../common.ts";
 import {getSolvedCount} from "../constants.ts";
 import {initWizard} from "./Wizard.ts";
 
-const CLOCK_CATEGORIES: ReadonlySet<Category> = new Set([
-	Category.Clock_HourHalf,
-	Category.Clock_Quarter,
-	Category.Clock_FiveMin,
-]);
+const CLOCK_CATEGORIES: ReadonlySet<Category> = new Set(categoryGroups.Clock);
 
 document.addEventListener("DOMContentLoaded", () => {
 	// Initialize Language
