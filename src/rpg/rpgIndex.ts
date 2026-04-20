@@ -6,6 +6,12 @@ import {Category} from "../common.ts";
 import {getSolvedCount} from "../constants.ts";
 import {initWizard} from "./Wizard.ts";
 
+const CLOCK_CATEGORIES: ReadonlySet<Category> = new Set([
+	Category.Clock_HourHalf,
+	Category.Clock_Quarter,
+	Category.Clock_FiveMin,
+]);
+
 document.addEventListener("DOMContentLoaded", () => {
 	// Initialize Language
 	const currentLang = getCurrentLanguage();
@@ -107,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		);
 
 		Object.entries(categories).forEach(([groupName, categoryList]) => {
-			if (groupName === "Test") return;
+			if (groupName === "Test" || groupName === "Clock") return;
 
 			const groupDetails = document.createElement("details");
 			groupDetails.className = "category-group";
@@ -120,6 +126,8 @@ document.addEventListener("DOMContentLoaded", () => {
 			checkboxGrid.className = "checkbox-grid";
 
 			categoryList.forEach((category) => {
+				if (CLOCK_CATEGORIES.has(category as Category)) return;
+
 				const checkboxItem = document.createElement("div");
 				checkboxItem.className = "checkbox-item";
 				checkboxItem.onclick = (e) => {
