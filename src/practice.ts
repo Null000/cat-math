@@ -267,7 +267,13 @@ document.addEventListener("DOMContentLoaded", () => {
 		currentProblem = result.problem;
 		currentCategory = result.category;
 
-		if (problemElement) problemElement.textContent = localizeProblemText(currentProblem.text);
+		if (problemElement) {
+			if (currentProblem.svg) {
+				problemElement.innerHTML = currentProblem.svg;
+			} else {
+				problemElement.textContent = localizeProblemText(currentProblem.text);
+			}
+		}
 
 		// Toggle between text input and option buttons
 		if (hasOptions(currentProblem)) {
