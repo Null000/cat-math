@@ -162,7 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		allTimes: [] as number[],
 		roundIncorrectProblems: new Map<
 			string,
-			{ correctAnswer: string; givenAnswers: string[] }
+			{ text: string; svg?: string; correctAnswer: string; givenAnswers: string[] }
 		>(),
 	};
 
@@ -412,19 +412,20 @@ document.addEventListener("DOMContentLoaded", () => {
 						feedbackSummary.innerHTML = `<div class="feedback-perfect">${t("perfect_round")}</div>`;
 					} else {
 						let html = `<span class="review-header">${t("review_header")}</span>`;
-						stats.roundIncorrectProblems.forEach(
-							(details, problemText) => {
-								html += `
+						stats.roundIncorrectProblems.forEach((details) => {
+							const problemMarkup = details.svg
+								? details.svg
+								: localizeProblemText(details.text);
+							html += `
                                 <div class="review-item">
-                                    <span class="review-problem">${localizeProblemText(problemText)}</span>
+                                    <span class="review-problem">${problemMarkup}</span>
                                     <div class="review-details">
                                         ${t("correct_answer")} <span class="review-correct">${details.correctAnswer}</span>,
                                         ${t("your_answers")} <span class="review-incorrect">${details.givenAnswers.join(", ")}</span>
                                     </div>
                                 </div>
                             `;
-							},
-						);
+						});
 						feedbackSummary.innerHTML = html;
 						stats.roundIncorrectProblems.clear();
 					}
@@ -444,17 +445,25 @@ document.addEventListener("DOMContentLoaded", () => {
 			stats.currentStreak = 0;
 
 			// Track incorrect answer for the round summary
-			const problemText = currentProblem.text;
-			if (!stats.roundIncorrectProblems.has(problemText)) {
-				stats.roundIncorrectProblems.set(problemText, {
+			const problemKey = currentProblem.id;
+			if (!stats.roundIncorrectProblems.has(problemKey)) {
+				const entry: {
+					text: string;
+					svg?: string;
+					correctAnswer: string;
+					givenAnswers: string[];
+				} = {
+					text: currentProblem.text,
 					correctAnswer: getOptionLabel(
 						currentProblem,
 						currentProblem.answer,
 					),
 					givenAnswers: [],
-				});
+				};
+				if (currentProblem.svg) entry.svg = currentProblem.svg;
+				stats.roundIncorrectProblems.set(problemKey, entry);
 			}
-			const record = stats.roundIncorrectProblems.get(problemText)!;
+			const record = stats.roundIncorrectProblems.get(problemKey)!;
 			const userLabel = getOptionLabel(currentProblem, userAnswer);
 			if (!record.givenAnswers.includes(userLabel)) {
 				record.givenAnswers.push(userLabel);
@@ -541,10 +550,13 @@ document.addEventListener("DOMContentLoaded", () => {
 				feedbackSummary.innerHTML = `<div class="feedback-perfect">${t("perfect_round")}</div>`;
 			} else {
 				let html = `<span class="review-header">${t("review_header")}</span>`;
-				stats.roundIncorrectProblems.forEach((details, problemText) => {
+				stats.roundIncorrectProblems.forEach((details) => {
+					const problemMarkup = details.svg
+						? details.svg
+						: localizeProblemText(details.text);
 					html += `
                         <div class="review-item">
-                            <span class="review-problem">${localizeProblemText(problemText)}</span>
+                            <span class="review-problem">${problemMarkup}</span>
                             <div class="review-details">
                                 ${t("correct_answer")} <span class="review-correct">${details.correctAnswer}</span>,
                                 ${t("your_answers")} <span class="review-incorrect">${details.givenAnswers.join(", ")}</span>
