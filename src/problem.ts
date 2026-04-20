@@ -9,6 +9,7 @@ import * as numberText from "./numberText.ts";
 import * as nextPrevious from "./nextPrevious.ts";
 import * as mixed from "./mixed.ts";
 import * as mixedOps from "./mixedOps.ts";
+import * as clockReading from "./clockReading.ts";
 import { categoryToGroup } from "./common.ts";
 
 interface Generator {
@@ -26,6 +27,7 @@ const generatorPerGroup: Record<string, Generator> = {
 	Comparison: comparison,
 	NumberText: numberText,
 	NextPrevious: nextPrevious,
+	Clock: clockReading,
 	Test: test,
 };
 
