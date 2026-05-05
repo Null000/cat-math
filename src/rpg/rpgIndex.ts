@@ -2,11 +2,9 @@ import {Application, Sprite} from "pixi.js";
 import {getCategories, getYearGroupsSl} from "../app.ts";
 import {getRandomProblem} from "../problem.ts";
 import {getCategoryDisplayName, getCurrentLanguage, Language, setLanguage, t,} from "../i18n.ts";
-import {Category, categoryGroups} from "../common.ts";
+import {Category} from "../common.ts";
 import {getSolvedCount} from "../constants.ts";
 import {initWizard} from "./Wizard.ts";
-
-const CLOCK_CATEGORIES: ReadonlySet<Category> = new Set(categoryGroups.Clock);
 
 document.addEventListener("DOMContentLoaded", () => {
 	// Initialize Language
@@ -109,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		);
 
 		Object.entries(categories).forEach(([groupName, categoryList]) => {
-			if (groupName === "Test" || groupName === "Clock") return;
+			if (groupName === "Test") return;
 
 			const groupDetails = document.createElement("details");
 			groupDetails.className = "category-group";
@@ -122,8 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
 			checkboxGrid.className = "checkbox-grid";
 
 			categoryList.forEach((category) => {
-				if (CLOCK_CATEGORIES.has(category as Category)) return;
-
 				const checkboxItem = document.createElement("div");
 				checkboxItem.className = "checkbox-item";
 				checkboxItem.onclick = (e) => {
@@ -192,7 +188,11 @@ document.addEventListener("DOMContentLoaded", () => {
 					);
 					const exampleDiv = document.createElement("div");
 					exampleDiv.className = "example-problem";
-					exampleDiv.textContent = exampleProblem.text;
+					if (exampleProblem.svg) {
+						exampleDiv.innerHTML = exampleProblem.svg;
+					} else {
+						exampleDiv.textContent = exampleProblem.text;
+					}
 					examplesList.appendChild(exampleDiv);
 				}
 
