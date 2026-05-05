@@ -203,9 +203,7 @@ export const yearGroupsSl: Record<string, Category[]> = {
 		Category.Mixed_ThreeNumbers_Twenty,
 		Category.Subtraction_Tens,
 		Category.NumberToText_Hundred,
-		Category.TextToNumber_Hundred,
-		Category.Clock_HourHalf,
-		Category.Clock_Quarter,
+		Category.TextToNumber_Hundred
 	],
 	"3. razred": [
 		Category.Addition_HundredWithoutCarry,
@@ -229,6 +227,8 @@ export const yearGroupsSl: Record<string, Category[]> = {
 		Category.Comparison_Hundred,
 		Category.NumberToText_Thousand,
 		Category.TextToNumber_Thousand,
+		Category.Clock_HourHalf,
+		Category.Clock_Quarter,
 		Category.Clock_FiveMin,
 	],
 	"4. razred": [
