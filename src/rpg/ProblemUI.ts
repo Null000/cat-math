@@ -9,6 +9,7 @@ export class ProblemUI {
 	private submitButton: HTMLButtonElement;
 	private inputRow: HTMLDivElement;
 	private optionsContainer: HTMLDivElement;
+	private problemSvgDiv: HTMLDivElement;
 
 	private styleTag: HTMLStyleElement;
 	private submitCallback: (solution: string) => void;
@@ -225,6 +226,26 @@ export class ProblemUI {
                 color: #e74c3c !important;
                 animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
             }
+
+            #problem-svg {
+                position: absolute;
+                width: 200px;
+                height: 200px;
+                background: white;
+                border-radius: 16px;
+                padding: 8px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+                box-sizing: border-box;
+                pointer-events: none;
+                display: none;
+                z-index: 1000;
+            }
+
+            #problem-svg .clock-svg {
+                display: block;
+                width: 100%;
+                height: 100%;
+            }
         `;
 		document.head.appendChild(this.styleTag);
 
@@ -256,9 +277,13 @@ export class ProblemUI {
 		this.optionsContainer = document.createElement("div");
 		this.optionsContainer.id = "options-container";
 
+		this.problemSvgDiv = document.createElement("div");
+		this.problemSvgDiv.id = "problem-svg";
+
 		this.container.appendChild(this.inputRow);
 		this.container.appendChild(this.optionsContainer);
 		document.body.appendChild(this.container);
+		document.body.appendChild(this.problemSvgDiv);
 
 		this.input.addEventListener("keyup", (event: KeyboardEvent) => {
 			if (event.key === "Enter") {
@@ -287,10 +312,26 @@ export class ProblemUI {
 		this.container.style.top = `${screenY}px`;
 		// Use translate to center the element on its coordinate
 		this.container.style.transform = `translate(-50%, -50%) scale(${scale})`;
+
+		// SVG overlay sits where the Pixi problem text lives (gameX, 150).
+		const svgScreenX = gameX * scale + offsetX;
+		const svgScreenY = 150 * scale + offsetY;
+		this.problemSvgDiv.style.left = `${svgScreenX}px`;
+		this.problemSvgDiv.style.top = `${svgScreenY}px`;
+		this.problemSvgDiv.style.transform = `translate(-50%, -50%) scale(${scale})`;
 	}
 
 	setProblem(text: string, options?: { label: string; value: number }[], answerType: "string" | "number" = "number", svg?: string) {
-		this.problemText.text = localizeProblemText(text);
+		if (svg) {
+			this.problemSvgDiv.innerHTML = svg;
+			this.problemSvgDiv.style.display = "block";
+			this.problemText.visible = false;
+		} else {
+			this.problemSvgDiv.innerHTML = "";
+			this.problemSvgDiv.style.display = "none";
+			this.problemText.visible = true;
+			this.problemText.text = localizeProblemText(text);
+		}
 		this.problemText.style.fill = "#ffffff"; // Reset color if changed
 
 		if (answerType === "string") {
