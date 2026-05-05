@@ -289,7 +289,7 @@ export class ProblemUI {
 		this.container.style.transform = `translate(-50%, -50%) scale(${scale})`;
 	}
 
-	setProblem(text: string, options?: { label: string; value: number }[], answerType: "string" | "number" = "number") {
+	setProblem(text: string, options?: { label: string; value: number }[], answerType: "string" | "number" = "number", svg?: string) {
 		this.problemText.text = localizeProblemText(text);
 		this.problemText.style.fill = "#ffffff"; // Reset color if changed
 
