@@ -188,7 +188,11 @@ document.addEventListener("DOMContentLoaded", () => {
 					);
 					const exampleDiv = document.createElement("div");
 					exampleDiv.className = "example-problem";
-					exampleDiv.textContent = exampleProblem.text;
+					if (exampleProblem.svg) {
+						exampleDiv.innerHTML = exampleProblem.svg;
+					} else {
+						exampleDiv.textContent = exampleProblem.text;
+					}
 					examplesList.appendChild(exampleDiv);
 				}
 

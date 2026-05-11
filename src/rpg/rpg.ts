@@ -104,7 +104,8 @@ async function init() {
 	mathUI.setProblem(
 		currentProblem.problem.text,
 		currentProblem.problem.options,
-		typeof currentProblem.problem.answer as "string" | "number"
+		typeof currentProblem.problem.answer as "string" | "number",
+		currentProblem.problem.svg,
 	);
 
 	function nextProblem() {
@@ -112,7 +113,8 @@ async function init() {
 		mathUI.setProblem(
 			currentProblem.problem.text,
 			currentProblem.problem.options,
-			typeof currentProblem.problem.answer as "string" | "number"
+			typeof currentProblem.problem.answer as "string" | "number",
+			currentProblem.problem.svg,
 		);
 	}
 

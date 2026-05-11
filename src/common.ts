@@ -1,6 +1,7 @@
 export interface Problem {
 	id: string;
 	text: string;
+	svg?: string;
 	answer: number | string;
 	options?: { label: string; value: number }[];
 }
@@ -77,6 +78,9 @@ export enum Category {
 	TextToNumber_Thousand = "Text to Number: 1000",
 	NextPrevious_Ten = "Next/Previous: 10",
 	NextPrevious_Twenty = "Next/Previous: 20",
+	Clock_HourHalf = "Clock: hour and half hour",
+	Clock_Quarter = "Clock: quarter hour",
+	Clock_FiveMin = "Clock: 5 minutes",
 	Test = "test",
 }
 
@@ -168,6 +172,11 @@ export const categoryGroups: Record<string, Category[]> = {
 		Category.NextPrevious_Ten,
 		Category.NextPrevious_Twenty,
 	],
+	Clock: [
+		Category.Clock_HourHalf,
+		Category.Clock_Quarter,
+		Category.Clock_FiveMin,
+	],
 	Test: [Category.Test],
 };
 
@@ -233,6 +242,9 @@ export const yearGroupsSl: Record<string, Category[]> = {
 		Category.Division_Ten_Missing,
 		Category.NumberToText_Thousand,
 		Category.TextToNumber_Thousand,
+		Category.Clock_HourHalf,
+		Category.Clock_Quarter,
+		Category.Clock_FiveMin,
 	],
 	"4. razred": [
 		Category.Addition_ThousandWithoutCarry,

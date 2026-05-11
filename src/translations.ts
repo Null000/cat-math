@@ -128,6 +128,10 @@ export const translations = {
 		[Category.NumberToText_Thousand]: "Number to Text: 1000",
 		[Category.TextToNumber_Thousand]: "Text to Number: 1000",
 
+		[Category.Clock_HourHalf]: "Clock: hour and half hour",
+		[Category.Clock_Quarter]: "Clock: quarter hour",
+		[Category.Clock_FiveMin]: "Clock: 5 minutes",
+
 		// Number words (0–20)
 		number_0: "zero",
 		number_1: "one",
@@ -163,6 +167,7 @@ export const translations = {
 		group_Comparison: "Comparison",
 		group_NumberText: "Number & Text",
 		group_NextPrevious: "Next/Previous",
+		group_Clock: "Clock",
 
 		// Grouping toggle
 		grouping_by_type: "By Type",
@@ -313,6 +318,10 @@ export const translations = {
 		[Category.NumberToText_Thousand]: "Število v besedo: 1000",
 		[Category.TextToNumber_Thousand]: "Beseda v število: 1000",
 
+		[Category.Clock_HourHalf]: "Ura: polne in pol ure",
+		[Category.Clock_Quarter]: "Ura: četrt ure",
+		[Category.Clock_FiveMin]: "Ura: 5 minut",
+
 		// Number words (0–20)
 		number_0: "nič",
 		number_1: "ena",
@@ -348,6 +357,7 @@ export const translations = {
 		group_Comparison: "Primerjanje",
 		group_NumberText: "Številke in besede",
 		group_NextPrevious: "Predhodnik/Naslednik",
+		group_Clock: "Ura",
 
 		// Year Group Names
 		"group_1. razred": "1. razred",
