@@ -52,6 +52,21 @@ const generateProps: Record<
 		yMin: 1,
 		threeNumbers: true,
 	},
+	[Category.Subtraction_DoubleSingleWithoutBorrow]: {
+		xMax: 99,
+		yMax: 9,
+		xMin: 10,
+		yMin: 1,
+		borrowAllowed: false,
+	},
+	[Category.Subtraction_DoubleSingleWithBorrow]: {
+		xMax: 99,
+		yMax: 9,
+		xMin: 10,
+		yMin: 1,
+		borrowAllowed: true,
+		borrowForced: true,
+	},
 	[Category.Subtraction_HundredWithoutBorrow]: {
 		xMax: 100,
 		yMax: 100,

@@ -43,6 +43,10 @@ export const translations = {
 		[Category.Addition_ThreeNumbers_Twenty]: "Addition: 20 (3 numbers)",
 		[Category.Addition_ThreeNumbers_Hundred]: "Addition: 100 (3 numbers)",
 		[Category.Addition_ThreeNumbers_Thousand]: "Addition: 1000 (3 numbers)",
+		[Category.Addition_DoubleSingleWithoutCarry]:
+			"Addition: 100 (2-digit + 1-digit, without carry)",
+		[Category.Addition_DoubleSingleWithCarry]:
+			"Addition: 100 (2-digit + 1-digit, with carry)",
 		[Category.Addition_HundredWithoutCarry]:
 			"Addition: 100 (without carry)",
 		[Category.Addition_HundredWithCarry]: "Addition: 100 (with carry)",
@@ -67,6 +71,10 @@ export const translations = {
 			"Subtraction: 100 (3 numbers)",
 		[Category.Subtraction_ThreeNumbers_Thousand]:
 			"Subtraction: 1000 (3 numbers)",
+		[Category.Subtraction_DoubleSingleWithoutBorrow]:
+			"Subtraction: 100 (2-digit - 1-digit, without borrow)",
+		[Category.Subtraction_DoubleSingleWithBorrow]:
+			"Subtraction: 100 (2-digit - 1-digit, with borrow)",
 		[Category.Subtraction_HundredWithoutBorrow]:
 			"Subtraction: 100 (without borrow)",
 		[Category.Subtraction_HundredWithBorrow]:
@@ -223,6 +231,10 @@ export const translations = {
 		[Category.Addition_ThreeNumbers_Hundred]: "Seštevanje: 100 (3 števila)",
 		[Category.Addition_ThreeNumbers_Thousand]:
 			"Seštevanje: 1000 (3 števila)",
+		[Category.Addition_DoubleSingleWithoutCarry]:
+			"Seštevanje: 100 (dvomestno + enomestno, brez prehoda)",
+		[Category.Addition_DoubleSingleWithCarry]:
+			"Seštevanje: 100 (dvomestno + enomestno, s prehodom)",
 		[Category.Addition_HundredWithoutCarry]:
 			"Seštevanje: 100 (brez prehoda)",
 		[Category.Addition_HundredWithCarry]: "Seštevanje: 100 (s prehodom)",
@@ -246,6 +258,10 @@ export const translations = {
 			"Odštevanje: 100 (3 števila)",
 		[Category.Subtraction_ThreeNumbers_Thousand]:
 			"Odštevanje: 1000 (3 števila)",
+		[Category.Subtraction_DoubleSingleWithoutBorrow]:
+			"Odštevanje: 100 (dvomestno - enomestno, brez prehoda)",
+		[Category.Subtraction_DoubleSingleWithBorrow]:
+			"Odštevanje: 100 (dvomestno - enomestno, s prehodom)",
 		[Category.Subtraction_HundredWithoutBorrow]:
 			"Odštevanje: 100 (brez prehoda)",
 		[Category.Subtraction_HundredWithBorrow]:

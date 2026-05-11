@@ -71,6 +71,23 @@ const generateProps: Record<
 		maxResult: 100,
 		threeNumbers: true,
 	},
+	[Category.Addition_DoubleSingleWithoutCarry]: {
+		xMax: 99,
+		yMax: 9,
+		xMin: 10,
+		yMin: 1,
+		maxResult: 100,
+		carryAllowed: false,
+	},
+	[Category.Addition_DoubleSingleWithCarry]: {
+		xMax: 99,
+		yMax: 9,
+		xMin: 10,
+		yMin: 1,
+		maxResult: 100,
+		carryAllowed: true,
+		carryForced: true,
+	},
 	[Category.Addition_HundredWithoutCarry]: {
 		xMax: 100,
 		yMax: 100,
