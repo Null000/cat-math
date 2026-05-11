@@ -208,6 +208,9 @@ export const yearGroupsSl: Record<string, Category[]> = {
 		Category.Comparison_Hundred,
 		Category.NumberToText_Hundred,
 		Category.TextToNumber_Hundred,
+		Category.Addition_HundredWithoutCarry,
+		Category.Addition_HundredWithCarry,
+		Category.Addition_Hundred,
 	],
 	"3. razred": [
 		Category.Addition_HundredWithoutCarry,
