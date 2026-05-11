@@ -9,6 +9,7 @@ const generateProps: Record<
 > = {
 	[Category.NextPrevious_Ten]: { max: 10, min: 0 },
 	[Category.NextPrevious_Twenty]: { max: 20, min: 0 },
+	[Category.NextPrevious_Hundred]: { max: 100, min: 0 },
 };
 
 export function count(category: Category): number {

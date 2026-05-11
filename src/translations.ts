@@ -156,6 +156,7 @@ export const translations = {
 		number_20: "twenty",
 		[Category.NextPrevious_Ten]: "Next/Previous: 10",
 		[Category.NextPrevious_Twenty]: "Next/Previous: 20",
+		[Category.NextPrevious_Hundred]: "Next/Previous: 100",
 
 		// Group Names
 		group_Addition: "Addition",
@@ -346,6 +347,7 @@ export const translations = {
 		number_20: "dvajset",
 		[Category.NextPrevious_Ten]: "Predhodnik/Naslednik: 10",
 		[Category.NextPrevious_Twenty]: "Predhodnik/Naslednik: 20",
+		[Category.NextPrevious_Hundred]: "Predhodnik/Naslednik: 100",
 
 		// Group Names
 		group_Addition: "Seštevanje",

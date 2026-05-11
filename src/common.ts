@@ -78,6 +78,7 @@ export enum Category {
 	TextToNumber_Thousand = "Text to Number: 1000",
 	NextPrevious_Ten = "Next/Previous: 10",
 	NextPrevious_Twenty = "Next/Previous: 20",
+	NextPrevious_Hundred = "Next/Previous: 100",
 	Clock_HourHalf = "Clock: hour and half hour",
 	Clock_Quarter = "Clock: quarter hour",
 	Clock_FiveMin = "Clock: 5 minutes",
@@ -171,6 +172,7 @@ export const categoryGroups: Record<string, Category[]> = {
 	NextPrevious: [
 		Category.NextPrevious_Ten,
 		Category.NextPrevious_Twenty,
+		Category.NextPrevious_Hundred,
 	],
 	Clock: [
 		Category.Clock_HourHalf,
@@ -199,6 +201,7 @@ export const yearGroupsSl: Record<string, Category[]> = {
 		Category.TextToNumber_Twenty,
 	],
 	"2. razred": [
+		Category.NextPrevious_Hundred,
 		Category.Addition_TwentyWithoutCarry,
 		Category.Addition_TwentyWithCarry,
 		Category.Addition_Twenty,
