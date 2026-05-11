@@ -17,7 +17,7 @@ const generateProps: Record<
 			| ("first" | "second" | "result")[];
 	}
 > = {
-	[Category.Addition_Ten]: { xMax: 10, yMax: 10 },
+	[Category.Addition_Ten]: { xMax: 10, yMax: 10, maxResult: 10 },
 	[Category.Addition_ThreeNumbers_Ten]: {
 		xMax: 10,
 		yMax: 10,
@@ -27,6 +27,7 @@ const generateProps: Record<
 	[Category.Addition_Ten_Missing]: {
 		xMax: 10,
 		yMax: 10,
+		maxResult: 10,
 		missingFact: ["first", "second"],
 	},
 	[Category.Addition_TwentyWithoutCarry]: {
