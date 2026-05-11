@@ -236,9 +236,9 @@ function enumerate(category: Category, targetIndex: number): { problem?: Problem
 
 			const digitI = Math.floor(i / step) % 10;
 			const digitJ = Math.floor(j / step) % 10;
-			const hasCarry = carryAllowed && digitI + digitJ >= 10;
-			if (hasCarry && !carryForced) continue;
-			if (!hasCarry && carryForced) continue;
+			const hasCarry = digitI + digitJ >= 10;
+			if (!carryAllowed && hasCarry) continue;
+			if (carryForced && !hasCarry) continue;
 
 			const result = i + j;
 			if (maxResult && result > maxResult) continue;

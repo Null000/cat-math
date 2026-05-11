@@ -195,9 +195,9 @@ function enumerate(category: Category, targetIndex: number): { problem?: Problem
 			}
 			const digitI = Math.floor(i / step) % 10;
 			const digitJ = Math.floor(j / step) % 10;
-			const hasBorrow = borrowAllowed && digitI < digitJ;
-			if (hasBorrow && !borrowForced) continue;
-			if (!hasBorrow && borrowForced) continue;
+			const hasBorrow = digitI < digitJ;
+			if (!borrowAllowed && hasBorrow) continue;
+			if (borrowForced && !hasBorrow) continue;
 
 			for (const fact of missingFacts) {
 				if (idx === targetIndex) {
