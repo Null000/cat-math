@@ -1,7 +1,7 @@
 import {Application, Sprite} from "pixi.js";
 import {getCategories, getYearGroupsSl} from "../app.ts";
 import {getRandomProblem} from "../problem.ts";
-import {getCategoryDisplayName, getCurrentLanguage, Language, setLanguage, t,} from "../i18n.ts";
+import {getCategoryDisplayName, getCurrentLanguage, Language, localizeProblemText, setLanguage, t,} from "../i18n.ts";
 import {Category} from "../common.ts";
 import {getSolvedCount} from "../constants.ts";
 import {initWizard} from "./Wizard.ts";
@@ -191,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
 					if (exampleProblem.svg) {
 						exampleDiv.innerHTML = exampleProblem.svg;
 					} else {
-						exampleDiv.textContent = exampleProblem.text;
+						exampleDiv.textContent = localizeProblemText(exampleProblem.text);
 					}
 					examplesList.appendChild(exampleDiv);
 				}
