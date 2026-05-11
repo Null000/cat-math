@@ -15,14 +15,17 @@ const generateProps: Record<
 };
 
 // All indices below are normalized: a' = (a - min) / step, etc.
-// R = (max - min) / step is the max normalized index.
+// R  = (max - min)     / step  is the max normalized index for a single operand.
+// Rs = (max - 2*min)   / step  is the max normalized sum a' + b' when a + b <= max.
+// Mq = min / step              is the offset that turns a normalized sum back into a value.
 
 // Pattern A: a + b - c = ?
-// Constraints: a + b <= max (i.e., b' <= R - a'), c ∈ [min, a+b] (i.e., c' ∈ [0, a'+b'])
-// Count for fixed a': sum_{b'=0}^{R-a'} (a' + b' + 1)
-function patternACountForA(aPrime: number, R: number): number {
-	const L = R - aPrime;
-	return (L + 1) * (aPrime + 1) + (L * (L + 1)) / 2;
+// Constraints: a + b <= max (i.e., a' + b' <= Rs), c ∈ [min, a+b] (i.e., c' ∈ [0, a' + b' + Mq])
+// Count for fixed a': sum_{b'=0}^{Rs - a'} (a' + b' + Mq + 1)
+function patternACountForA(aPrime: number, Rs: number, Mq: number): number {
+	const L = Rs - aPrime;
+	if (L < 0) return 0;
+	return (L + 1) * (aPrime + Mq + 1) + (L * (L + 1)) / 2;
 }
 
 // Pattern B: a - b + c = ?
@@ -33,14 +36,14 @@ function patternBCountForA(aPrime: number, R: number): number {
 	return (aPrime + 1) * (D + 1) + (aPrime * (aPrime + 1)) / 2;
 }
 
-function lookupPatternA(category: Category, n: number, min: number, step: number, R: number): Problem {
+function lookupPatternA(category: Category, n: number, min: number, step: number, Rs: number, Mq: number): Problem {
 	let remaining = n;
-	for (let aPrime = 0; aPrime <= R; aPrime++) {
-		const aCount = patternACountForA(aPrime, R);
+	for (let aPrime = 0; aPrime <= Rs; aPrime++) {
+		const aCount = patternACountForA(aPrime, Rs, Mq);
 		if (remaining < aCount) {
 			// Find b' within this a'
-			for (let bPrime = 0; bPrime <= R - aPrime; bPrime++) {
-				const cCount = aPrime + bPrime + 1;
+			for (let bPrime = 0; bPrime <= Rs - aPrime; bPrime++) {
+				const cCount = aPrime + bPrime + Mq + 1;
 				if (remaining < cCount) {
 					const cPrime = remaining;
 					const a = min + aPrime * step;
@@ -93,10 +96,12 @@ function enumerate(category: Category, targetIndex: number): { problem?: Problem
 	const min = props.min ?? 0;
 	const step = props.step ?? 1;
 	const R = (max - min) / step;
+	const Rs = (max - 2 * min) / step;
+	const Mq = min / step;
 
 	let countA = 0;
-	for (let aPrime = 0; aPrime <= R; aPrime++) {
-		countA += patternACountForA(aPrime, R);
+	for (let aPrime = 0; aPrime <= Rs; aPrime++) {
+		countA += patternACountForA(aPrime, Rs, Mq);
 	}
 
 	let countB = 0;
@@ -111,7 +116,7 @@ function enumerate(category: Category, targetIndex: number): { problem?: Problem
 	}
 
 	if (targetIndex < countA) {
-		return { problem: lookupPatternA(category, targetIndex, min, step, R), count: total };
+		return { problem: lookupPatternA(category, targetIndex, min, step, Rs, Mq), count: total };
 	}
 
 	return { problem: lookupPatternB(category, targetIndex - countA, min, step, R), count: total };
