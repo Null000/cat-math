@@ -149,6 +149,7 @@ export class Wizard extends Actor {
 			defensePower: Math.floor(xpFactor),
 			speed: Math.floor(6 * xpFactor),
 		});
+		this.xp = xp;
 		this.updateSparkleConfig(xp);
 	}
 
@@ -585,7 +586,7 @@ export class Wizard extends Actor {
 	}
 
 	levelUpStats(newXp: number) {
-		this.xp += newXp;
+		this.xp = newXp;
 		this.updateSparkleConfig(this.xp);
 		const xpFactor = 1 + this.xp / 100;
 		this.maxHealth = Math.floor(100 * xpFactor);
