@@ -180,6 +180,15 @@ const generateProps: Record<
 	},
 };
 
+function hasCarry(a: number, b: number): boolean {
+	while (a > 0 || b > 0) {
+		if ((a % 10) + (b % 10) >= 10) return true;
+		a = Math.floor(a / 10);
+		b = Math.floor(b / 10);
+	}
+	return false;
+}
+
 function makeProblem(category: Category, i: number, j: number, fact: "first" | "second" | "result"): Problem {
 	const result = i + j;
 	switch (fact) {
@@ -251,11 +260,9 @@ function enumerate(category: Category, targetIndex: number): { problem?: Problem
 				continue;
 			}
 
-			const digitI = Math.floor(i / step) % 10;
-			const digitJ = Math.floor(j / step) % 10;
-			const hasCarry = digitI + digitJ >= 10;
-			if (!carryAllowed && hasCarry) continue;
-			if (carryForced && !hasCarry) continue;
+			const carry = hasCarry(i, j);
+			if (!carryAllowed && carry) continue;
+			if (carryForced && !carry) continue;
 
 			const result = i + j;
 			if (maxResult && result > maxResult) continue;

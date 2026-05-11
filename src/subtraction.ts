@@ -141,6 +141,15 @@ const generateProps: Record<
 	},
 };
 
+function hasBorrow(a: number, b: number): boolean {
+	while (b > 0) {
+		if ((a % 10) < (b % 10)) return true;
+		a = Math.floor(a / 10);
+		b = Math.floor(b / 10);
+	}
+	return false;
+}
+
 function makeProblem(category: Category, i: number, j: number, fact: "first" | "second" | "result"): Problem {
 	switch (fact) {
 		case "first":
@@ -208,11 +217,9 @@ function enumerate(category: Category, targetIndex: number): { problem?: Problem
 				}
 				continue;
 			}
-			const digitI = Math.floor(i / step) % 10;
-			const digitJ = Math.floor(j / step) % 10;
-			const hasBorrow = digitI < digitJ;
-			if (!borrowAllowed && hasBorrow) continue;
-			if (borrowForced && !hasBorrow) continue;
+			const borrow = hasBorrow(i, j);
+			if (!borrowAllowed && borrow) continue;
+			if (borrowForced && !borrow) continue;
 
 			for (const fact of missingFacts) {
 				if (idx === targetIndex) {
