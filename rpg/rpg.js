@@ -3552,7 +3552,7 @@ class TexturePoolClass {
     });
     return new Texture({
       source: textureSource,
-      label: `texturePool_${count11++}`
+      label: `texturePool_${count12++}`
     });
   }
   getOptimalTexture(frameWidth, frameHeight, resolution = 1, antialias) {
@@ -3607,7 +3607,7 @@ class TexturePoolClass {
     this._texturePool = {};
   }
 }
-var count11 = 0, TexturePool;
+var count12 = 0, TexturePool;
 var init_TexturePool = __esm(() => {
   init_pow2();
   init_GlobalResourceRegistry();
@@ -4523,12 +4523,12 @@ var _Ticker = class _Ticker2 {
     if (!this._head) {
       return 0;
     }
-    let count12 = 0;
+    let count13 = 0;
     let current = this._head;
     while (current = current.next) {
-      count12++;
+      count13++;
     }
-    return count12;
+    return count13;
   }
   start() {
     if (!this.started) {
@@ -11697,23 +11697,23 @@ var init_buildCircle = __esm(() => {
       }
       centerX /= points.length / 2;
       centerY /= points.length / 2;
-      let count12 = verticesOffset;
-      vertices[count12 * verticesStride] = centerX;
-      vertices[count12 * verticesStride + 1] = centerY;
-      const centerIndex = count12++;
+      let count13 = verticesOffset;
+      vertices[count13 * verticesStride] = centerX;
+      vertices[count13 * verticesStride + 1] = centerY;
+      const centerIndex = count13++;
       for (let i2 = 0;i2 < points.length; i2 += 2) {
-        vertices[count12 * verticesStride] = points[i2];
-        vertices[count12 * verticesStride + 1] = points[i2 + 1];
+        vertices[count13 * verticesStride] = points[i2];
+        vertices[count13 * verticesStride + 1] = points[i2 + 1];
         if (i2 > 0) {
-          indices[indicesOffset++] = count12;
+          indices[indicesOffset++] = count13;
           indices[indicesOffset++] = centerIndex;
-          indices[indicesOffset++] = count12 - 1;
+          indices[indicesOffset++] = count13 - 1;
         }
-        count12++;
+        count13++;
       }
       indices[indicesOffset++] = centerIndex + 1;
       indices[indicesOffset++] = centerIndex;
-      indices[indicesOffset++] = count12 - 1;
+      indices[indicesOffset++] = count13 - 1;
     }
   };
   buildEllipse = { ...buildCircle, extension: { ...buildCircle.extension, name: "ellipse" } };
@@ -12580,20 +12580,20 @@ var init_buildRectangle = __esm(() => {
       return true;
     },
     triangulate(points, vertices, verticesStride, verticesOffset, indices, indicesOffset) {
-      let count12 = 0;
+      let count13 = 0;
       verticesOffset *= verticesStride;
-      vertices[verticesOffset + count12] = points[0];
-      vertices[verticesOffset + count12 + 1] = points[1];
-      count12 += verticesStride;
-      vertices[verticesOffset + count12] = points[2];
-      vertices[verticesOffset + count12 + 1] = points[3];
-      count12 += verticesStride;
-      vertices[verticesOffset + count12] = points[6];
-      vertices[verticesOffset + count12 + 1] = points[7];
-      count12 += verticesStride;
-      vertices[verticesOffset + count12] = points[4];
-      vertices[verticesOffset + count12 + 1] = points[5];
-      count12 += verticesStride;
+      vertices[verticesOffset + count13] = points[0];
+      vertices[verticesOffset + count13 + 1] = points[1];
+      count13 += verticesStride;
+      vertices[verticesOffset + count13] = points[2];
+      vertices[verticesOffset + count13 + 1] = points[3];
+      count13 += verticesStride;
+      vertices[verticesOffset + count13] = points[6];
+      vertices[verticesOffset + count13 + 1] = points[7];
+      count13 += verticesStride;
+      vertices[verticesOffset + count13] = points[4];
+      vertices[verticesOffset + count13 + 1] = points[5];
+      count13 += verticesStride;
       const verticesIndex = verticesOffset / verticesStride;
       indices[indicesOffset++] = verticesIndex;
       indices[indicesOffset++] = verticesIndex + 1;
@@ -12624,16 +12624,16 @@ var init_buildTriangle = __esm(() => {
       return true;
     },
     triangulate(points, vertices, verticesStride, verticesOffset, indices, indicesOffset) {
-      let count12 = 0;
+      let count13 = 0;
       verticesOffset *= verticesStride;
-      vertices[verticesOffset + count12] = points[0];
-      vertices[verticesOffset + count12 + 1] = points[1];
-      count12 += verticesStride;
-      vertices[verticesOffset + count12] = points[2];
-      vertices[verticesOffset + count12 + 1] = points[3];
-      count12 += verticesStride;
-      vertices[verticesOffset + count12] = points[4];
-      vertices[verticesOffset + count12 + 1] = points[5];
+      vertices[verticesOffset + count13] = points[0];
+      vertices[verticesOffset + count13 + 1] = points[1];
+      count13 += verticesStride;
+      vertices[verticesOffset + count13] = points[2];
+      vertices[verticesOffset + count13 + 1] = points[3];
+      count13 += verticesStride;
+      vertices[verticesOffset + count13] = points[4];
+      vertices[verticesOffset + count13 + 1] = points[5];
       const verticesIndex = verticesOffset / verticesStride;
       indices[indicesOffset++] = verticesIndex;
       indices[indicesOffset++] = verticesIndex + 1;
@@ -26964,7 +26964,7 @@ class GpuStateSystem {
   contextChange(gpu) {
     this.gpu = gpu;
   }
-  getColorTargets(state, count12) {
+  getColorTargets(state, count13) {
     const blend = GpuBlendModesToPixi[state.blendMode] || GpuBlendModesToPixi.normal;
     const targets = [];
     const target = {
@@ -26972,7 +26972,7 @@ class GpuStateSystem {
       writeMask: 0,
       blend
     };
-    for (let i2 = 0;i2 < count12; i2++) {
+    for (let i2 = 0;i2 < count13; i2++) {
       targets[i2] = target;
     }
     return targets;
@@ -29083,8 +29083,8 @@ class GlRenderTargetAdaptor {
     }
   }
   _setDrawBuffers(renderTarget, gl) {
-    const count12 = renderTarget.colorTextures.length;
-    const bufferArray = this._drawBuffersCache[count12];
+    const count13 = renderTarget.colorTextures.length;
+    const bufferArray = this._drawBuffersCache[count13];
     if (this._renderer.context.webGLVersion === 1) {
       const ext = this._renderer.context.extensions.drawBuffers;
       if (!ext) {
@@ -30881,6 +30881,8 @@ var categoryGroups = {
     "Addition: 10 (3 numbers)" /* Addition_ThreeNumbers_Ten */,
     "Addition: 20 (3 numbers)" /* Addition_ThreeNumbers_Twenty */,
     "Addition: 100 (3 numbers)" /* Addition_ThreeNumbers_Hundred */,
+    "Addition: 100 (2-digit + 1-digit, without carry)" /* Addition_DoubleSingleWithoutCarry */,
+    "Addition: 100 (2-digit + 1-digit, with carry)" /* Addition_DoubleSingleWithCarry */,
     "Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */,
     "Addition: 100 (with carry)" /* Addition_HundredWithCarry */,
     "Addition: 100" /* Addition_Hundred */,
@@ -30900,6 +30902,8 @@ var categoryGroups = {
     "Subtraction: 10 (3 numbers)" /* Subtraction_ThreeNumbers_Ten */,
     "Subtraction: 20 (3 numbers)" /* Subtraction_ThreeNumbers_Twenty */,
     "Subtraction: 100 (3 numbers)" /* Subtraction_ThreeNumbers_Hundred */,
+    "Subtraction: 100 (2-digit - 1-digit, without borrow)" /* Subtraction_DoubleSingleWithoutBorrow */,
+    "Subtraction: 100 (2-digit - 1-digit, with borrow)" /* Subtraction_DoubleSingleWithBorrow */,
     "Subtraction: 100 (without borrow)" /* Subtraction_HundredWithoutBorrow */,
     "Subtraction: 100 (with borrow)" /* Subtraction_HundredWithBorrow */,
     "Subtraction: 100" /* Subtraction_Hundred */,
@@ -30952,7 +30956,13 @@ var categoryGroups = {
   ],
   NextPrevious: [
     "Next/Previous: 10" /* NextPrevious_Ten */,
-    "Next/Previous: 20" /* NextPrevious_Twenty */
+    "Next/Previous: 20" /* NextPrevious_Twenty */,
+    "Next/Previous: 100" /* NextPrevious_Hundred */
+  ],
+  Clock: [
+    "Clock: hour and half hour" /* Clock_HourHalf */,
+    "Clock: quarter hour" /* Clock_Quarter */,
+    "Clock: 5 minutes" /* Clock_FiveMin */
   ],
   Test: ["test" /* Test */]
 };
@@ -30975,19 +30985,28 @@ var yearGroupsSl = {
     "Text to Number: 20" /* TextToNumber_Twenty */
   ],
   "2. razred": [
+    "Next/Previous: 100" /* NextPrevious_Hundred */,
     "Addition: 20 (without carry)" /* Addition_TwentyWithoutCarry */,
     "Addition: 20 (with carry)" /* Addition_TwentyWithCarry */,
     "Addition: 20" /* Addition_Twenty */,
     "Addition: 20 (missing facts)" /* Addition_Twenty_Missing */,
     "Addition: 20 (3 numbers)" /* Addition_ThreeNumbers_Twenty */,
     "Addition: Tens" /* Addition_Tens */,
+    "Addition: 100 (2-digit + 1-digit, without carry)" /* Addition_DoubleSingleWithoutCarry */,
+    "Addition: 100 (2-digit + 1-digit, with carry)" /* Addition_DoubleSingleWithCarry */,
     "Subtraction: 20" /* Subtraction_Twenty */,
     "Subtraction: 20 (missing facts)" /* Subtraction_Twenty_Missing */,
     "Subtraction: 20 (3 numbers)" /* Subtraction_ThreeNumbers_Twenty */,
     "Mixed +/-: 20 (3 numbers)" /* Mixed_ThreeNumbers_Twenty */,
     "Subtraction: Tens" /* Subtraction_Tens */,
+    "Subtraction: 100 (2-digit - 1-digit, without borrow)" /* Subtraction_DoubleSingleWithoutBorrow */,
+    "Subtraction: 100 (2-digit - 1-digit, with borrow)" /* Subtraction_DoubleSingleWithBorrow */,
+    "Comparison: 100" /* Comparison_Hundred */,
     "Number to Text: 100" /* NumberToText_Hundred */,
-    "Text to Number: 100" /* TextToNumber_Hundred */
+    "Text to Number: 100" /* TextToNumber_Hundred */,
+    "Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */,
+    "Addition: 100 (with carry)" /* Addition_HundredWithCarry */,
+    "Addition: 100" /* Addition_Hundred */
   ],
   "3. razred": [
     "Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */,
@@ -31008,9 +31027,11 @@ var yearGroupsSl = {
     "Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */,
     "Division: 10" /* Division_Ten */,
     "Division: 10 (missing facts)" /* Division_Ten_Missing */,
-    "Comparison: 100" /* Comparison_Hundred */,
     "Number to Text: 1000" /* NumberToText_Thousand */,
-    "Text to Number: 1000" /* TextToNumber_Thousand */
+    "Text to Number: 1000" /* TextToNumber_Thousand */,
+    "Clock: hour and half hour" /* Clock_HourHalf */,
+    "Clock: quarter hour" /* Clock_Quarter */,
+    "Clock: 5 minutes" /* Clock_FiveMin */
   ],
   "4. razred": [
     "Addition: 1000 (without carry)" /* Addition_ThousandWithoutCarry */,
@@ -31068,7 +31089,7 @@ __export(exports_addition, {
   count: () => count
 });
 var generateProps = {
-  ["Addition: 10" /* Addition_Ten */]: { xMax: 10, yMax: 10 },
+  ["Addition: 10" /* Addition_Ten */]: { xMax: 10, yMax: 10, maxResult: 10 },
   ["Addition: 10 (3 numbers)" /* Addition_ThreeNumbers_Ten */]: {
     xMax: 10,
     yMax: 10,
@@ -31078,6 +31099,7 @@ var generateProps = {
   ["Addition: 10 (missing facts)" /* Addition_Ten_Missing */]: {
     xMax: 10,
     yMax: 10,
+    maxResult: 10,
     missingFact: ["first", "second"]
   },
   ["Addition: 20 (without carry)" /* Addition_TwentyWithoutCarry */]: {
@@ -31121,6 +31143,23 @@ var generateProps = {
     yMin: 10,
     maxResult: 100,
     threeNumbers: true
+  },
+  ["Addition: 100 (2-digit + 1-digit, without carry)" /* Addition_DoubleSingleWithoutCarry */]: {
+    xMax: 99,
+    yMax: 9,
+    xMin: 10,
+    yMin: 1,
+    maxResult: 100,
+    carryAllowed: false
+  },
+  ["Addition: 100 (2-digit + 1-digit, with carry)" /* Addition_DoubleSingleWithCarry */]: {
+    xMax: 99,
+    yMax: 9,
+    xMin: 10,
+    yMin: 1,
+    maxResult: 100,
+    carryAllowed: true,
+    carryForced: true
   },
   ["Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */]: {
     xMax: 100,
@@ -31213,6 +31252,15 @@ var generateProps = {
     maxResult: 1000
   }
 };
+function hasCarry(a, b) {
+  while (a > 0 || b > 0) {
+    if (a % 10 + b % 10 >= 10)
+      return true;
+    a = Math.floor(a / 10);
+    b = Math.floor(b / 10);
+  }
+  return false;
+}
 function makeProblem(category, i, j, fact) {
   const result = i + j;
   switch (fact) {
@@ -31281,12 +31329,10 @@ function enumerate(category, targetIndex) {
         }
         continue;
       }
-      const digitI = Math.floor(i / step) % 10;
-      const digitJ = Math.floor(j / step) % 10;
-      const hasCarry = carryAllowed && digitI + digitJ >= 10;
-      if (hasCarry && !carryForced)
+      const carry = hasCarry(i, j);
+      if (!carryAllowed && carry)
         continue;
-      if (!hasCarry && carryForced)
+      if (carryForced && !carry)
         continue;
       const result = i + j;
       if (maxResult && result > maxResult)
@@ -31345,6 +31391,21 @@ var generateProps2 = {
     xMin: 10,
     yMin: 1,
     threeNumbers: true
+  },
+  ["Subtraction: 100 (2-digit - 1-digit, without borrow)" /* Subtraction_DoubleSingleWithoutBorrow */]: {
+    xMax: 99,
+    yMax: 9,
+    xMin: 10,
+    yMin: 1,
+    borrowAllowed: false
+  },
+  ["Subtraction: 100 (2-digit - 1-digit, with borrow)" /* Subtraction_DoubleSingleWithBorrow */]: {
+    xMax: 99,
+    yMax: 9,
+    xMin: 10,
+    yMin: 1,
+    borrowAllowed: true,
+    borrowForced: true
   },
   ["Subtraction: 100 (without borrow)" /* Subtraction_HundredWithoutBorrow */]: {
     xMax: 100,
@@ -31419,6 +31480,15 @@ var generateProps2 = {
     step: 100
   }
 };
+function hasBorrow(a, b) {
+  while (b > 0) {
+    if (a % 10 < b % 10)
+      return true;
+    a = Math.floor(a / 10);
+    b = Math.floor(b / 10);
+  }
+  return false;
+}
 function makeProblem2(category, i, j, fact) {
   switch (fact) {
     case "first":
@@ -31484,12 +31554,10 @@ function enumerate2(category, targetIndex) {
         }
         continue;
       }
-      const digitI = Math.floor(i / step) % 10;
-      const digitJ = Math.floor(j / step) % 10;
-      const hasBorrow = borrowAllowed && digitI < digitJ;
-      if (hasBorrow && !borrowForced)
+      const borrow = hasBorrow(i, j);
+      if (!borrowAllowed && borrow)
         continue;
-      if (!hasBorrow && borrowForced)
+      if (borrowForced && !borrow)
         continue;
       for (const fact of missingFacts) {
         if (idx === targetIndex) {
@@ -31753,6 +31821,8 @@ var translations = {
     ["Addition: 20 (3 numbers)" /* Addition_ThreeNumbers_Twenty */]: "Addition: 20 (3 numbers)",
     ["Addition: 100 (3 numbers)" /* Addition_ThreeNumbers_Hundred */]: "Addition: 100 (3 numbers)",
     ["Addition: 1000 (3 numbers)" /* Addition_ThreeNumbers_Thousand */]: "Addition: 1000 (3 numbers)",
+    ["Addition: 100 (2-digit + 1-digit, without carry)" /* Addition_DoubleSingleWithoutCarry */]: "Addition: 100 (2-digit + 1-digit, without carry)",
+    ["Addition: 100 (2-digit + 1-digit, with carry)" /* Addition_DoubleSingleWithCarry */]: "Addition: 100 (2-digit + 1-digit, with carry)",
     ["Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */]: "Addition: 100 (without carry)",
     ["Addition: 100 (with carry)" /* Addition_HundredWithCarry */]: "Addition: 100 (with carry)",
     ["Addition: 100" /* Addition_Hundred */]: "Addition: 100",
@@ -31770,6 +31840,8 @@ var translations = {
     ["Subtraction: 20 (3 numbers)" /* Subtraction_ThreeNumbers_Twenty */]: "Subtraction: 20 (3 numbers)",
     ["Subtraction: 100 (3 numbers)" /* Subtraction_ThreeNumbers_Hundred */]: "Subtraction: 100 (3 numbers)",
     ["Subtraction: 1000 (3 numbers)" /* Subtraction_ThreeNumbers_Thousand */]: "Subtraction: 1000 (3 numbers)",
+    ["Subtraction: 100 (2-digit - 1-digit, without borrow)" /* Subtraction_DoubleSingleWithoutBorrow */]: "Subtraction: 100 (2-digit - 1-digit, without borrow)",
+    ["Subtraction: 100 (2-digit - 1-digit, with borrow)" /* Subtraction_DoubleSingleWithBorrow */]: "Subtraction: 100 (2-digit - 1-digit, with borrow)",
     ["Subtraction: 100 (without borrow)" /* Subtraction_HundredWithoutBorrow */]: "Subtraction: 100 (without borrow)",
     ["Subtraction: 100 (with borrow)" /* Subtraction_HundredWithBorrow */]: "Subtraction: 100 (with borrow)",
     ["Subtraction: 100" /* Subtraction_Hundred */]: "Subtraction: 100",
@@ -31808,6 +31880,9 @@ var translations = {
     ["Text to Number: 100" /* TextToNumber_Hundred */]: "Text to Number: 100",
     ["Number to Text: 1000" /* NumberToText_Thousand */]: "Number to Text: 1000",
     ["Text to Number: 1000" /* TextToNumber_Thousand */]: "Text to Number: 1000",
+    ["Clock: hour and half hour" /* Clock_HourHalf */]: "Clock: hour and half hour",
+    ["Clock: quarter hour" /* Clock_Quarter */]: "Clock: quarter hour",
+    ["Clock: 5 minutes" /* Clock_FiveMin */]: "Clock: 5 minutes",
     number_0: "zero",
     number_1: "one",
     number_2: "two",
@@ -31831,6 +31906,7 @@ var translations = {
     number_20: "twenty",
     ["Next/Previous: 10" /* NextPrevious_Ten */]: "Next/Previous: 10",
     ["Next/Previous: 20" /* NextPrevious_Twenty */]: "Next/Previous: 20",
+    ["Next/Previous: 100" /* NextPrevious_Hundred */]: "Next/Previous: 100",
     group_Addition: "Addition",
     group_Subtraction: "Subtraction",
     group_Mixed: "Mixed +/-",
@@ -31840,6 +31916,7 @@ var translations = {
     group_Comparison: "Comparison",
     group_NumberText: "Number & Text",
     group_NextPrevious: "Next/Previous",
+    group_Clock: "Clock",
     grouping_by_type: "By Type",
     grouping_by_year: "By Year",
     rpg_title: "Choose Your Spells",
@@ -31895,6 +31972,8 @@ var translations = {
     ["Addition: 20 (3 numbers)" /* Addition_ThreeNumbers_Twenty */]: "Seštevanje: 20 (3 števila)",
     ["Addition: 100 (3 numbers)" /* Addition_ThreeNumbers_Hundred */]: "Seštevanje: 100 (3 števila)",
     ["Addition: 1000 (3 numbers)" /* Addition_ThreeNumbers_Thousand */]: "Seštevanje: 1000 (3 števila)",
+    ["Addition: 100 (2-digit + 1-digit, without carry)" /* Addition_DoubleSingleWithoutCarry */]: "Seštevanje: 100 (dvomestno + enomestno, brez prehoda)",
+    ["Addition: 100 (2-digit + 1-digit, with carry)" /* Addition_DoubleSingleWithCarry */]: "Seštevanje: 100 (dvomestno + enomestno, s prehodom)",
     ["Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */]: "Seštevanje: 100 (brez prehoda)",
     ["Addition: 100 (with carry)" /* Addition_HundredWithCarry */]: "Seštevanje: 100 (s prehodom)",
     ["Addition: 100" /* Addition_Hundred */]: "Seštevanje: 100",
@@ -31912,6 +31991,8 @@ var translations = {
     ["Subtraction: 20 (3 numbers)" /* Subtraction_ThreeNumbers_Twenty */]: "Odštevanje: 20 (3 števila)",
     ["Subtraction: 100 (3 numbers)" /* Subtraction_ThreeNumbers_Hundred */]: "Odštevanje: 100 (3 števila)",
     ["Subtraction: 1000 (3 numbers)" /* Subtraction_ThreeNumbers_Thousand */]: "Odštevanje: 1000 (3 števila)",
+    ["Subtraction: 100 (2-digit - 1-digit, without borrow)" /* Subtraction_DoubleSingleWithoutBorrow */]: "Odštevanje: 100 (dvomestno - enomestno, brez prehoda)",
+    ["Subtraction: 100 (2-digit - 1-digit, with borrow)" /* Subtraction_DoubleSingleWithBorrow */]: "Odštevanje: 100 (dvomestno - enomestno, s prehodom)",
     ["Subtraction: 100 (without borrow)" /* Subtraction_HundredWithoutBorrow */]: "Odštevanje: 100 (brez prehoda)",
     ["Subtraction: 100 (with borrow)" /* Subtraction_HundredWithBorrow */]: "Odštevanje: 100 (s prehodom)",
     ["Subtraction: 100" /* Subtraction_Hundred */]: "Odštevanje: 100",
@@ -31950,6 +32031,9 @@ var translations = {
     ["Text to Number: 100" /* TextToNumber_Hundred */]: "Beseda v število: 100",
     ["Number to Text: 1000" /* NumberToText_Thousand */]: "Število v besedo: 1000",
     ["Text to Number: 1000" /* TextToNumber_Thousand */]: "Beseda v število: 1000",
+    ["Clock: hour and half hour" /* Clock_HourHalf */]: "Ura: polne in pol ure",
+    ["Clock: quarter hour" /* Clock_Quarter */]: "Ura: četrt ure",
+    ["Clock: 5 minutes" /* Clock_FiveMin */]: "Ura: 5 minut",
     number_0: "nič",
     number_1: "ena",
     number_2: "dve",
@@ -31973,6 +32057,7 @@ var translations = {
     number_20: "dvajset",
     ["Next/Previous: 10" /* NextPrevious_Ten */]: "Predhodnik/Naslednik: 10",
     ["Next/Previous: 20" /* NextPrevious_Twenty */]: "Predhodnik/Naslednik: 20",
+    ["Next/Previous: 100" /* NextPrevious_Hundred */]: "Predhodnik/Naslednik: 100",
     group_Addition: "Seštevanje",
     group_Subtraction: "Odštevanje",
     group_Mixed: "Mešano +/-",
@@ -31982,6 +32067,7 @@ var translations = {
     group_Comparison: "Primerjanje",
     group_NumberText: "Številke in besede",
     group_NextPrevious: "Predhodnik/Naslednik",
+    group_Clock: "Ura",
     "group_1. razred": "1. razred",
     "group_2. razred": "2. razred",
     "group_3. razred": "3. razred",
@@ -32157,7 +32243,8 @@ __export(exports_nextPrevious, {
 });
 var generateProps6 = {
   ["Next/Previous: 10" /* NextPrevious_Ten */]: { max: 10, min: 0 },
-  ["Next/Previous: 20" /* NextPrevious_Twenty */]: { max: 20, min: 0 }
+  ["Next/Previous: 20" /* NextPrevious_Twenty */]: { max: 20, min: 0 },
+  ["Next/Previous: 100" /* NextPrevious_Hundred */]: { max: 100, min: 0 }
 };
 function count8(category) {
   const props = generateProps6[category];
@@ -32197,21 +32284,23 @@ var generateProps7 = {
   ["Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */]: { max: 100, min: 10 },
   ["Mixed +/-: 1000 (3 numbers)" /* Mixed_ThreeNumbers_Thousand */]: { max: 1000, min: 100 }
 };
-function patternACountForA(aPrime, R) {
-  const L = R - aPrime;
-  return (L + 1) * (aPrime + 1) + L * (L + 1) / 2;
+function patternACountForA(aPrime, Rs, Mq) {
+  const L = Rs - aPrime;
+  if (L < 0)
+    return 0;
+  return (L + 1) * (aPrime + Mq + 1) + L * (L + 1) / 2;
 }
 function patternBCountForA(aPrime, R) {
   const D = R - aPrime;
   return (aPrime + 1) * (D + 1) + aPrime * (aPrime + 1) / 2;
 }
-function lookupPatternA(category, n, min, step, R) {
+function lookupPatternA(category, n, min, step, Rs, Mq) {
   let remaining = n;
-  for (let aPrime = 0;aPrime <= R; aPrime++) {
-    const aCount = patternACountForA(aPrime, R);
+  for (let aPrime = 0;aPrime <= Rs; aPrime++) {
+    const aCount = patternACountForA(aPrime, Rs, Mq);
     if (remaining < aCount) {
-      for (let bPrime = 0;bPrime <= R - aPrime; bPrime++) {
-        const cCount = aPrime + bPrime + 1;
+      for (let bPrime = 0;bPrime <= Rs - aPrime; bPrime++) {
+        const cCount = aPrime + bPrime + Mq + 1;
         if (remaining < cCount) {
           const cPrime = remaining;
           const a = min + aPrime * step;
@@ -32261,9 +32350,11 @@ function enumerate5(category, targetIndex) {
   const min = props.min ?? 0;
   const step = props.step ?? 1;
   const R = (max - min) / step;
+  const Rs = (max - 2 * min) / step;
+  const Mq = min / step;
   let countA = 0;
-  for (let aPrime = 0;aPrime <= R; aPrime++) {
-    countA += patternACountForA(aPrime, R);
+  for (let aPrime = 0;aPrime <= Rs; aPrime++) {
+    countA += patternACountForA(aPrime, Rs, Mq);
   }
   let countB = 0;
   for (let aPrime = 0;aPrime <= R; aPrime++) {
@@ -32274,7 +32365,7 @@ function enumerate5(category, targetIndex) {
     return { count: total };
   }
   if (targetIndex < countA) {
-    return { problem: lookupPatternA(category, targetIndex, min, step, R), count: total };
+    return { problem: lookupPatternA(category, targetIndex, min, step, Rs, Mq), count: total };
   }
   return { problem: lookupPatternB(category, targetIndex - countA, min, step, R), count: total };
 }
@@ -32457,6 +32548,74 @@ function enumerate6(category, targetIndex) {
 }
 var { count: count10, getProblem: getProblem10 } = makeGenerator(enumerate6);
 
+// src/clockReading.ts
+var exports_clockReading = {};
+__export(exports_clockReading, {
+  getProblem: () => getProblem11,
+  count: () => count11
+});
+
+// src/clock.ts
+var CX = 100;
+var CY = 100;
+var R_OUTER = 95;
+function onCircle(r, deg) {
+  const rad = (deg - 90) * Math.PI / 180;
+  return [CX + r * Math.cos(rad), CY + r * Math.sin(rad)];
+}
+function fmt(n) {
+  return n.toFixed(2);
+}
+function renderClockSVG(hour, minute) {
+  const parts = [];
+  parts.push(`<circle cx="${CX}" cy="${CY}" r="${R_OUTER}" fill="white" stroke="black" stroke-width="3"/>`);
+  for (let i = 0;i < 60; i++) {
+    const angle = i * 6;
+    const isHour = i % 5 === 0;
+    const innerR = isHour ? 82 : 88;
+    const [x1, y1] = onCircle(innerR, angle);
+    const [x2, y2] = onCircle(R_OUTER - 2, angle);
+    const sw = isHour ? 3 : 1.5;
+    parts.push(`<line x1="${fmt(x1)}" y1="${fmt(y1)}" x2="${fmt(x2)}" y2="${fmt(y2)}" stroke="black" stroke-width="${sw}" stroke-linecap="round"/>`);
+  }
+  for (let n = 1;n <= 12; n++) {
+    const [x, y] = onCircle(70, n * 30);
+    parts.push(`<text x="${fmt(x)}" y="${fmt(y)}" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="black">${n}</text>`);
+  }
+  const hourAngle = hour % 12 * 30 + minute * 0.5;
+  const [hx, hy] = onCircle(45, hourAngle);
+  parts.push(`<line x1="${CX}" y1="${CY}" x2="${fmt(hx)}" y2="${fmt(hy)}" stroke="black" stroke-width="6" stroke-linecap="round"/>`);
+  const minuteAngle = minute * 6;
+  const [mx, my] = onCircle(78, minuteAngle);
+  parts.push(`<line x1="${CX}" y1="${CY}" x2="${fmt(mx)}" y2="${fmt(my)}" stroke="black" stroke-width="3" stroke-linecap="round"/>`);
+  parts.push(`<circle cx="${CX}" cy="${CY}" r="4" fill="black"/>`);
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" class="clock-svg">${parts.join("")}</svg>`;
+}
+
+// src/clockReading.ts
+var minutesPerCategory = {
+  ["Clock: hour and half hour" /* Clock_HourHalf */]: [0, 30],
+  ["Clock: quarter hour" /* Clock_Quarter */]: [0, 15, 30, 45],
+  ["Clock: 5 minutes" /* Clock_FiveMin */]: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+};
+function count11(category) {
+  const minutes = minutesPerCategory[category];
+  return 12 * minutes.length;
+}
+function getProblem11(category, n) {
+  const minutes = minutesPerCategory[category];
+  const hourIdx = Math.floor(n / minutes.length);
+  const minute = minutes[n % minutes.length];
+  const hour = hourIdx + 1;
+  const answer = `${hour}:${String(minute).padStart(2, "0")}`;
+  return {
+    id: `Clock_${category}_${hour}_${minute}`,
+    text: "\uD83D\uDD52",
+    svg: renderClockSVG(hour, minute),
+    answer
+  };
+}
+
 // src/problem.ts
 var generatorPerGroup = {
   Addition: exports_addition,
@@ -32468,6 +32627,7 @@ var generatorPerGroup = {
   Comparison: exports_comparison,
   NumberText: exports_numberText,
   NextPrevious: exports_nextPrevious,
+  Clock: exports_clockReading,
   Test: exports_test
 };
 function getGenerator(category) {
@@ -32481,7 +32641,7 @@ function getRandomProblem(category) {
 }
 
 // src/app.ts
-function getProblem11(categories) {
+function getProblem12(categories) {
   const category = categories[Math.floor(Math.random() * categories.length)];
   return { problem: getRandomProblem(category), category };
 }
@@ -33264,7 +33424,7 @@ var _Loader = class _Loader2 {
     }
     const options = typeof onProgressOrOptions === "function" ? { ..._Loader2.defaultOptions, ...this.loadOptions, onProgress: onProgressOrOptions } : { ..._Loader2.defaultOptions, ...this.loadOptions, ...onProgressOrOptions || {} };
     const { onProgress, onError, strategy, retryCount, retryDelay } = options;
-    let count12 = 0;
+    let count13 = 0;
     const assets = {};
     const singleAsset = isSingleItem(assetsToLoadIn);
     const assetsToLoad = convertToList(assetsToLoadIn, (item) => ({
@@ -33278,9 +33438,9 @@ var _Loader = class _Loader2 {
       if (assets[asset.src])
         return;
       await this._loadAssetWithRetry(url, asset, { onProgress, onError, strategy, retryCount, retryDelay }, assets);
-      count12 += asset.progressSize || 1;
+      count13 += asset.progressSize || 1;
       if (onProgress)
-        onProgress(count12 / total);
+        onProgress(count13 / total);
     });
     await Promise.all(promises);
     return singleAsset ? assets[assetsToLoad[0].src] : assets;
@@ -34998,6 +35158,7 @@ class Wizard extends Actor {
       defensePower: Math.floor(xpFactor),
       speed: Math.floor(6 * xpFactor)
     });
+    this.xp = xp;
     this.updateSparkleConfig(xp);
   }
   updateSparkleConfig(xp) {
@@ -35350,7 +35511,7 @@ class Wizard extends Actor {
     this.magicTrails.push({ graphic: trail, life: 350 });
   }
   levelUpStats(newXp) {
-    this.xp += newXp;
+    this.xp = newXp;
     this.updateSparkleConfig(this.xp);
     const xpFactor = 1 + this.xp / 100;
     this.maxHealth = Math.floor(100 * xpFactor);
@@ -36436,20 +36597,20 @@ class BattleManager {
     this.enemyParty = [];
     const area2 = areas[this.area];
     this.enemyParty.push(...await this._makeEnemies(area2.waves[this.wave]));
-    const count12 = this.enemyParty.length;
+    const count13 = this.enemyParty.length;
     const minX = 450;
     const maxX = 750;
     const minY = 480;
     const maxY = 570;
     const enterPromises = [];
     const enterFromX = standardWidth + 100;
-    for (let i2 = 0;i2 < count12; i2++) {
+    for (let i2 = 0;i2 < count13; i2++) {
       const actor = this.enemyParty[i2];
-      if (count12 === 1) {
+      if (count13 === 1) {
         actor.x = (minX + maxX) / 2;
         actor.y = (minY + maxY) / 2;
       } else {
-        actor.x = minX + i2 / (count12 - 1) * (maxX - minX);
+        actor.x = minX + i2 / (count13 - 1) * (maxX - minX);
         actor.y = minY + i2 % 2 * (maxY - minY);
       }
       actor.zIndex = actor.y;
@@ -36587,6 +36748,7 @@ class ProblemUI {
   submitButton;
   inputRow;
   optionsContainer;
+  problemSvgDiv;
   styleTag;
   submitCallback;
   constructor(parentContainer, onSubmit) {
@@ -36789,6 +36951,26 @@ class ProblemUI {
                 color: #e74c3c !important;
                 animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
             }
+
+            #problem-svg {
+                position: absolute;
+                width: 200px;
+                height: 200px;
+                background: white;
+                border-radius: 16px;
+                padding: 8px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+                box-sizing: border-box;
+                pointer-events: none;
+                display: none;
+                z-index: 1000;
+            }
+
+            #problem-svg .clock-svg {
+                display: block;
+                width: 100%;
+                height: 100%;
+            }
         `;
     document.head.appendChild(this.styleTag);
     this.container = document.createElement("div");
@@ -36813,9 +36995,12 @@ class ProblemUI {
     this.inputRow.appendChild(this.submitButton);
     this.optionsContainer = document.createElement("div");
     this.optionsContainer.id = "options-container";
+    this.problemSvgDiv = document.createElement("div");
+    this.problemSvgDiv.id = "problem-svg";
     this.container.appendChild(this.inputRow);
     this.container.appendChild(this.optionsContainer);
     document.body.appendChild(this.container);
+    document.body.appendChild(this.problemSvgDiv);
     this.input.addEventListener("keyup", (event) => {
       if (event.key === "Enter") {
         this.onSubmit();
@@ -36834,9 +37019,23 @@ class ProblemUI {
     this.container.style.left = `${screenX}px`;
     this.container.style.top = `${screenY}px`;
     this.container.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    const svgScreenX = gameX * scale + offsetX;
+    const svgScreenY = 150 * scale + offsetY;
+    this.problemSvgDiv.style.left = `${svgScreenX}px`;
+    this.problemSvgDiv.style.top = `${svgScreenY}px`;
+    this.problemSvgDiv.style.transform = `translate(-50%, -50%) scale(${scale})`;
   }
-  setProblem(text, options, answerType = "number") {
-    this.problemText.text = localizeProblemText(text);
+  setProblem(text, options, answerType = "number", svg) {
+    if (svg) {
+      this.problemSvgDiv.innerHTML = svg;
+      this.problemSvgDiv.style.display = "block";
+      this.problemText.visible = false;
+    } else {
+      this.problemSvgDiv.innerHTML = "";
+      this.problemSvgDiv.style.display = "none";
+      this.problemText.visible = true;
+      this.problemText.text = localizeProblemText(text);
+    }
     this.problemText.style.fill = "#ffffff";
     if (answerType === "string") {
       this.input.inputMode = "text";
@@ -36920,8 +37119,8 @@ function getSolvedCount(category) {
   return parseInt(localStorage.getItem(SOLVED_COUNT_PREFIX + category) || "0");
 }
 function incrementSolvedCount(category) {
-  const count12 = getSolvedCount(category) + 1;
-  localStorage.setItem(SOLVED_COUNT_PREFIX + category, count12.toString());
+  const count13 = getSolvedCount(category) + 1;
+  localStorage.setItem(SOLVED_COUNT_PREFIX + category, count13.toString());
 }
 
 // src/rpg/rpg.ts
@@ -36973,7 +37172,7 @@ async function init2() {
   } else {
     selectedCategories = ["Addition: 10" /* Addition_Ten */];
   }
-  let currentProblem = getProblem11(selectedCategories);
+  let currentProblem = getProblem12(selectedCategories);
   const startXp = parseInt(localStorage.getItem("xp") || "0");
   const startArea = parseInt(localStorage.getItem("rpg_area") || "0");
   const battleManager = new BattleManager(world, startXp, startArea);
@@ -36997,10 +37196,10 @@ async function init2() {
     categories: selectedCategories.join(";")
   });
   const mathUI = new ProblemUI(gameStage, onSubmit);
-  mathUI.setProblem(currentProblem.problem.text, currentProblem.problem.options, typeof currentProblem.problem.answer);
+  mathUI.setProblem(currentProblem.problem.text, currentProblem.problem.options, typeof currentProblem.problem.answer, currentProblem.problem.svg);
   function nextProblem() {
-    currentProblem = getProblem11(selectedCategories);
-    mathUI.setProblem(currentProblem.problem.text, currentProblem.problem.options, typeof currentProblem.problem.answer);
+    currentProblem = getProblem12(selectedCategories);
+    mathUI.setProblem(currentProblem.problem.text, currentProblem.problem.options, typeof currentProblem.problem.answer, currentProblem.problem.svg);
   }
   app.ticker.add((time) => {
     battleManager.update(time);

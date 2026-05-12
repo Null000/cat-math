@@ -38,6 +38,8 @@ var categoryGroups = {
     "Addition: 10 (3 numbers)" /* Addition_ThreeNumbers_Ten */,
     "Addition: 20 (3 numbers)" /* Addition_ThreeNumbers_Twenty */,
     "Addition: 100 (3 numbers)" /* Addition_ThreeNumbers_Hundred */,
+    "Addition: 100 (2-digit + 1-digit, without carry)" /* Addition_DoubleSingleWithoutCarry */,
+    "Addition: 100 (2-digit + 1-digit, with carry)" /* Addition_DoubleSingleWithCarry */,
     "Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */,
     "Addition: 100 (with carry)" /* Addition_HundredWithCarry */,
     "Addition: 100" /* Addition_Hundred */,
@@ -57,6 +59,8 @@ var categoryGroups = {
     "Subtraction: 10 (3 numbers)" /* Subtraction_ThreeNumbers_Ten */,
     "Subtraction: 20 (3 numbers)" /* Subtraction_ThreeNumbers_Twenty */,
     "Subtraction: 100 (3 numbers)" /* Subtraction_ThreeNumbers_Hundred */,
+    "Subtraction: 100 (2-digit - 1-digit, without borrow)" /* Subtraction_DoubleSingleWithoutBorrow */,
+    "Subtraction: 100 (2-digit - 1-digit, with borrow)" /* Subtraction_DoubleSingleWithBorrow */,
     "Subtraction: 100 (without borrow)" /* Subtraction_HundredWithoutBorrow */,
     "Subtraction: 100 (with borrow)" /* Subtraction_HundredWithBorrow */,
     "Subtraction: 100" /* Subtraction_Hundred */,
@@ -109,7 +113,13 @@ var categoryGroups = {
   ],
   NextPrevious: [
     "Next/Previous: 10" /* NextPrevious_Ten */,
-    "Next/Previous: 20" /* NextPrevious_Twenty */
+    "Next/Previous: 20" /* NextPrevious_Twenty */,
+    "Next/Previous: 100" /* NextPrevious_Hundred */
+  ],
+  Clock: [
+    "Clock: hour and half hour" /* Clock_HourHalf */,
+    "Clock: quarter hour" /* Clock_Quarter */,
+    "Clock: 5 minutes" /* Clock_FiveMin */
   ],
   Test: ["test" /* Test */]
 };
@@ -132,19 +142,28 @@ var yearGroupsSl = {
     "Text to Number: 20" /* TextToNumber_Twenty */
   ],
   "2. razred": [
+    "Next/Previous: 100" /* NextPrevious_Hundred */,
     "Addition: 20 (without carry)" /* Addition_TwentyWithoutCarry */,
     "Addition: 20 (with carry)" /* Addition_TwentyWithCarry */,
     "Addition: 20" /* Addition_Twenty */,
     "Addition: 20 (missing facts)" /* Addition_Twenty_Missing */,
     "Addition: 20 (3 numbers)" /* Addition_ThreeNumbers_Twenty */,
     "Addition: Tens" /* Addition_Tens */,
+    "Addition: 100 (2-digit + 1-digit, without carry)" /* Addition_DoubleSingleWithoutCarry */,
+    "Addition: 100 (2-digit + 1-digit, with carry)" /* Addition_DoubleSingleWithCarry */,
     "Subtraction: 20" /* Subtraction_Twenty */,
     "Subtraction: 20 (missing facts)" /* Subtraction_Twenty_Missing */,
     "Subtraction: 20 (3 numbers)" /* Subtraction_ThreeNumbers_Twenty */,
     "Mixed +/-: 20 (3 numbers)" /* Mixed_ThreeNumbers_Twenty */,
     "Subtraction: Tens" /* Subtraction_Tens */,
+    "Subtraction: 100 (2-digit - 1-digit, without borrow)" /* Subtraction_DoubleSingleWithoutBorrow */,
+    "Subtraction: 100 (2-digit - 1-digit, with borrow)" /* Subtraction_DoubleSingleWithBorrow */,
+    "Comparison: 100" /* Comparison_Hundred */,
     "Number to Text: 100" /* NumberToText_Hundred */,
-    "Text to Number: 100" /* TextToNumber_Hundred */
+    "Text to Number: 100" /* TextToNumber_Hundred */,
+    "Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */,
+    "Addition: 100 (with carry)" /* Addition_HundredWithCarry */,
+    "Addition: 100" /* Addition_Hundred */
   ],
   "3. razred": [
     "Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */,
@@ -165,9 +184,11 @@ var yearGroupsSl = {
     "Multiplication: 10 (missing facts)" /* Multiplication_Ten_Missing */,
     "Division: 10" /* Division_Ten */,
     "Division: 10 (missing facts)" /* Division_Ten_Missing */,
-    "Comparison: 100" /* Comparison_Hundred */,
     "Number to Text: 1000" /* NumberToText_Thousand */,
-    "Text to Number: 1000" /* TextToNumber_Thousand */
+    "Text to Number: 1000" /* TextToNumber_Thousand */,
+    "Clock: hour and half hour" /* Clock_HourHalf */,
+    "Clock: quarter hour" /* Clock_Quarter */,
+    "Clock: 5 minutes" /* Clock_FiveMin */
   ],
   "4. razred": [
     "Addition: 1000 (without carry)" /* Addition_ThousandWithoutCarry */,
@@ -225,7 +246,7 @@ __export(exports_addition, {
   count: () => count
 });
 var generateProps = {
-  ["Addition: 10" /* Addition_Ten */]: { xMax: 10, yMax: 10 },
+  ["Addition: 10" /* Addition_Ten */]: { xMax: 10, yMax: 10, maxResult: 10 },
   ["Addition: 10 (3 numbers)" /* Addition_ThreeNumbers_Ten */]: {
     xMax: 10,
     yMax: 10,
@@ -235,6 +256,7 @@ var generateProps = {
   ["Addition: 10 (missing facts)" /* Addition_Ten_Missing */]: {
     xMax: 10,
     yMax: 10,
+    maxResult: 10,
     missingFact: ["first", "second"]
   },
   ["Addition: 20 (without carry)" /* Addition_TwentyWithoutCarry */]: {
@@ -278,6 +300,23 @@ var generateProps = {
     yMin: 10,
     maxResult: 100,
     threeNumbers: true
+  },
+  ["Addition: 100 (2-digit + 1-digit, without carry)" /* Addition_DoubleSingleWithoutCarry */]: {
+    xMax: 99,
+    yMax: 9,
+    xMin: 10,
+    yMin: 1,
+    maxResult: 100,
+    carryAllowed: false
+  },
+  ["Addition: 100 (2-digit + 1-digit, with carry)" /* Addition_DoubleSingleWithCarry */]: {
+    xMax: 99,
+    yMax: 9,
+    xMin: 10,
+    yMin: 1,
+    maxResult: 100,
+    carryAllowed: true,
+    carryForced: true
   },
   ["Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */]: {
     xMax: 100,
@@ -370,6 +409,15 @@ var generateProps = {
     maxResult: 1000
   }
 };
+function hasCarry(a, b) {
+  while (a > 0 || b > 0) {
+    if (a % 10 + b % 10 >= 10)
+      return true;
+    a = Math.floor(a / 10);
+    b = Math.floor(b / 10);
+  }
+  return false;
+}
 function makeProblem(category, i, j, fact) {
   const result = i + j;
   switch (fact) {
@@ -438,12 +486,10 @@ function enumerate(category, targetIndex) {
         }
         continue;
       }
-      const digitI = Math.floor(i / step) % 10;
-      const digitJ = Math.floor(j / step) % 10;
-      const hasCarry = carryAllowed && digitI + digitJ >= 10;
-      if (hasCarry && !carryForced)
+      const carry = hasCarry(i, j);
+      if (!carryAllowed && carry)
         continue;
-      if (!hasCarry && carryForced)
+      if (carryForced && !carry)
         continue;
       const result = i + j;
       if (maxResult && result > maxResult)
@@ -502,6 +548,21 @@ var generateProps2 = {
     xMin: 10,
     yMin: 1,
     threeNumbers: true
+  },
+  ["Subtraction: 100 (2-digit - 1-digit, without borrow)" /* Subtraction_DoubleSingleWithoutBorrow */]: {
+    xMax: 99,
+    yMax: 9,
+    xMin: 10,
+    yMin: 1,
+    borrowAllowed: false
+  },
+  ["Subtraction: 100 (2-digit - 1-digit, with borrow)" /* Subtraction_DoubleSingleWithBorrow */]: {
+    xMax: 99,
+    yMax: 9,
+    xMin: 10,
+    yMin: 1,
+    borrowAllowed: true,
+    borrowForced: true
   },
   ["Subtraction: 100 (without borrow)" /* Subtraction_HundredWithoutBorrow */]: {
     xMax: 100,
@@ -576,6 +637,15 @@ var generateProps2 = {
     step: 100
   }
 };
+function hasBorrow(a, b) {
+  while (b > 0) {
+    if (a % 10 < b % 10)
+      return true;
+    a = Math.floor(a / 10);
+    b = Math.floor(b / 10);
+  }
+  return false;
+}
 function makeProblem2(category, i, j, fact) {
   switch (fact) {
     case "first":
@@ -641,12 +711,10 @@ function enumerate2(category, targetIndex) {
         }
         continue;
       }
-      const digitI = Math.floor(i / step) % 10;
-      const digitJ = Math.floor(j / step) % 10;
-      const hasBorrow = borrowAllowed && digitI < digitJ;
-      if (hasBorrow && !borrowForced)
+      const borrow = hasBorrow(i, j);
+      if (!borrowAllowed && borrow)
         continue;
-      if (!hasBorrow && borrowForced)
+      if (borrowForced && !borrow)
         continue;
       for (const fact of missingFacts) {
         if (idx === targetIndex) {
@@ -910,6 +978,8 @@ var translations = {
     ["Addition: 20 (3 numbers)" /* Addition_ThreeNumbers_Twenty */]: "Addition: 20 (3 numbers)",
     ["Addition: 100 (3 numbers)" /* Addition_ThreeNumbers_Hundred */]: "Addition: 100 (3 numbers)",
     ["Addition: 1000 (3 numbers)" /* Addition_ThreeNumbers_Thousand */]: "Addition: 1000 (3 numbers)",
+    ["Addition: 100 (2-digit + 1-digit, without carry)" /* Addition_DoubleSingleWithoutCarry */]: "Addition: 100 (2-digit + 1-digit, without carry)",
+    ["Addition: 100 (2-digit + 1-digit, with carry)" /* Addition_DoubleSingleWithCarry */]: "Addition: 100 (2-digit + 1-digit, with carry)",
     ["Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */]: "Addition: 100 (without carry)",
     ["Addition: 100 (with carry)" /* Addition_HundredWithCarry */]: "Addition: 100 (with carry)",
     ["Addition: 100" /* Addition_Hundred */]: "Addition: 100",
@@ -927,6 +997,8 @@ var translations = {
     ["Subtraction: 20 (3 numbers)" /* Subtraction_ThreeNumbers_Twenty */]: "Subtraction: 20 (3 numbers)",
     ["Subtraction: 100 (3 numbers)" /* Subtraction_ThreeNumbers_Hundred */]: "Subtraction: 100 (3 numbers)",
     ["Subtraction: 1000 (3 numbers)" /* Subtraction_ThreeNumbers_Thousand */]: "Subtraction: 1000 (3 numbers)",
+    ["Subtraction: 100 (2-digit - 1-digit, without borrow)" /* Subtraction_DoubleSingleWithoutBorrow */]: "Subtraction: 100 (2-digit - 1-digit, without borrow)",
+    ["Subtraction: 100 (2-digit - 1-digit, with borrow)" /* Subtraction_DoubleSingleWithBorrow */]: "Subtraction: 100 (2-digit - 1-digit, with borrow)",
     ["Subtraction: 100 (without borrow)" /* Subtraction_HundredWithoutBorrow */]: "Subtraction: 100 (without borrow)",
     ["Subtraction: 100 (with borrow)" /* Subtraction_HundredWithBorrow */]: "Subtraction: 100 (with borrow)",
     ["Subtraction: 100" /* Subtraction_Hundred */]: "Subtraction: 100",
@@ -965,6 +1037,9 @@ var translations = {
     ["Text to Number: 100" /* TextToNumber_Hundred */]: "Text to Number: 100",
     ["Number to Text: 1000" /* NumberToText_Thousand */]: "Number to Text: 1000",
     ["Text to Number: 1000" /* TextToNumber_Thousand */]: "Text to Number: 1000",
+    ["Clock: hour and half hour" /* Clock_HourHalf */]: "Clock: hour and half hour",
+    ["Clock: quarter hour" /* Clock_Quarter */]: "Clock: quarter hour",
+    ["Clock: 5 minutes" /* Clock_FiveMin */]: "Clock: 5 minutes",
     number_0: "zero",
     number_1: "one",
     number_2: "two",
@@ -988,6 +1063,7 @@ var translations = {
     number_20: "twenty",
     ["Next/Previous: 10" /* NextPrevious_Ten */]: "Next/Previous: 10",
     ["Next/Previous: 20" /* NextPrevious_Twenty */]: "Next/Previous: 20",
+    ["Next/Previous: 100" /* NextPrevious_Hundred */]: "Next/Previous: 100",
     group_Addition: "Addition",
     group_Subtraction: "Subtraction",
     group_Mixed: "Mixed +/-",
@@ -997,6 +1073,7 @@ var translations = {
     group_Comparison: "Comparison",
     group_NumberText: "Number & Text",
     group_NextPrevious: "Next/Previous",
+    group_Clock: "Clock",
     grouping_by_type: "By Type",
     grouping_by_year: "By Year",
     rpg_title: "Choose Your Spells",
@@ -1052,6 +1129,8 @@ var translations = {
     ["Addition: 20 (3 numbers)" /* Addition_ThreeNumbers_Twenty */]: "Seštevanje: 20 (3 števila)",
     ["Addition: 100 (3 numbers)" /* Addition_ThreeNumbers_Hundred */]: "Seštevanje: 100 (3 števila)",
     ["Addition: 1000 (3 numbers)" /* Addition_ThreeNumbers_Thousand */]: "Seštevanje: 1000 (3 števila)",
+    ["Addition: 100 (2-digit + 1-digit, without carry)" /* Addition_DoubleSingleWithoutCarry */]: "Seštevanje: 100 (dvomestno + enomestno, brez prehoda)",
+    ["Addition: 100 (2-digit + 1-digit, with carry)" /* Addition_DoubleSingleWithCarry */]: "Seštevanje: 100 (dvomestno + enomestno, s prehodom)",
     ["Addition: 100 (without carry)" /* Addition_HundredWithoutCarry */]: "Seštevanje: 100 (brez prehoda)",
     ["Addition: 100 (with carry)" /* Addition_HundredWithCarry */]: "Seštevanje: 100 (s prehodom)",
     ["Addition: 100" /* Addition_Hundred */]: "Seštevanje: 100",
@@ -1069,6 +1148,8 @@ var translations = {
     ["Subtraction: 20 (3 numbers)" /* Subtraction_ThreeNumbers_Twenty */]: "Odštevanje: 20 (3 števila)",
     ["Subtraction: 100 (3 numbers)" /* Subtraction_ThreeNumbers_Hundred */]: "Odštevanje: 100 (3 števila)",
     ["Subtraction: 1000 (3 numbers)" /* Subtraction_ThreeNumbers_Thousand */]: "Odštevanje: 1000 (3 števila)",
+    ["Subtraction: 100 (2-digit - 1-digit, without borrow)" /* Subtraction_DoubleSingleWithoutBorrow */]: "Odštevanje: 100 (dvomestno - enomestno, brez prehoda)",
+    ["Subtraction: 100 (2-digit - 1-digit, with borrow)" /* Subtraction_DoubleSingleWithBorrow */]: "Odštevanje: 100 (dvomestno - enomestno, s prehodom)",
     ["Subtraction: 100 (without borrow)" /* Subtraction_HundredWithoutBorrow */]: "Odštevanje: 100 (brez prehoda)",
     ["Subtraction: 100 (with borrow)" /* Subtraction_HundredWithBorrow */]: "Odštevanje: 100 (s prehodom)",
     ["Subtraction: 100" /* Subtraction_Hundred */]: "Odštevanje: 100",
@@ -1107,6 +1188,9 @@ var translations = {
     ["Text to Number: 100" /* TextToNumber_Hundred */]: "Beseda v število: 100",
     ["Number to Text: 1000" /* NumberToText_Thousand */]: "Število v besedo: 1000",
     ["Text to Number: 1000" /* TextToNumber_Thousand */]: "Beseda v število: 1000",
+    ["Clock: hour and half hour" /* Clock_HourHalf */]: "Ura: polne in pol ure",
+    ["Clock: quarter hour" /* Clock_Quarter */]: "Ura: četrt ure",
+    ["Clock: 5 minutes" /* Clock_FiveMin */]: "Ura: 5 minut",
     number_0: "nič",
     number_1: "ena",
     number_2: "dve",
@@ -1130,6 +1214,7 @@ var translations = {
     number_20: "dvajset",
     ["Next/Previous: 10" /* NextPrevious_Ten */]: "Predhodnik/Naslednik: 10",
     ["Next/Previous: 20" /* NextPrevious_Twenty */]: "Predhodnik/Naslednik: 20",
+    ["Next/Previous: 100" /* NextPrevious_Hundred */]: "Predhodnik/Naslednik: 100",
     group_Addition: "Seštevanje",
     group_Subtraction: "Odštevanje",
     group_Mixed: "Mešano +/-",
@@ -1139,6 +1224,7 @@ var translations = {
     group_Comparison: "Primerjanje",
     group_NumberText: "Številke in besede",
     group_NextPrevious: "Predhodnik/Naslednik",
+    group_Clock: "Ura",
     "group_1. razred": "1. razred",
     "group_2. razred": "2. razred",
     "group_3. razred": "3. razred",
@@ -1314,7 +1400,8 @@ __export(exports_nextPrevious, {
 });
 var generateProps6 = {
   ["Next/Previous: 10" /* NextPrevious_Ten */]: { max: 10, min: 0 },
-  ["Next/Previous: 20" /* NextPrevious_Twenty */]: { max: 20, min: 0 }
+  ["Next/Previous: 20" /* NextPrevious_Twenty */]: { max: 20, min: 0 },
+  ["Next/Previous: 100" /* NextPrevious_Hundred */]: { max: 100, min: 0 }
 };
 function count8(category) {
   const props = generateProps6[category];
@@ -1354,21 +1441,23 @@ var generateProps7 = {
   ["Mixed +/-: 100 (3 numbers)" /* Mixed_ThreeNumbers_Hundred */]: { max: 100, min: 10 },
   ["Mixed +/-: 1000 (3 numbers)" /* Mixed_ThreeNumbers_Thousand */]: { max: 1000, min: 100 }
 };
-function patternACountForA(aPrime, R) {
-  const L = R - aPrime;
-  return (L + 1) * (aPrime + 1) + L * (L + 1) / 2;
+function patternACountForA(aPrime, Rs, Mq) {
+  const L = Rs - aPrime;
+  if (L < 0)
+    return 0;
+  return (L + 1) * (aPrime + Mq + 1) + L * (L + 1) / 2;
 }
 function patternBCountForA(aPrime, R) {
   const D = R - aPrime;
   return (aPrime + 1) * (D + 1) + aPrime * (aPrime + 1) / 2;
 }
-function lookupPatternA(category, n, min, step, R) {
+function lookupPatternA(category, n, min, step, Rs, Mq) {
   let remaining = n;
-  for (let aPrime = 0;aPrime <= R; aPrime++) {
-    const aCount = patternACountForA(aPrime, R);
+  for (let aPrime = 0;aPrime <= Rs; aPrime++) {
+    const aCount = patternACountForA(aPrime, Rs, Mq);
     if (remaining < aCount) {
-      for (let bPrime = 0;bPrime <= R - aPrime; bPrime++) {
-        const cCount = aPrime + bPrime + 1;
+      for (let bPrime = 0;bPrime <= Rs - aPrime; bPrime++) {
+        const cCount = aPrime + bPrime + Mq + 1;
         if (remaining < cCount) {
           const cPrime = remaining;
           const a = min + aPrime * step;
@@ -1418,9 +1507,11 @@ function enumerate5(category, targetIndex) {
   const min = props.min ?? 0;
   const step = props.step ?? 1;
   const R = (max - min) / step;
+  const Rs = (max - 2 * min) / step;
+  const Mq = min / step;
   let countA = 0;
-  for (let aPrime = 0;aPrime <= R; aPrime++) {
-    countA += patternACountForA(aPrime, R);
+  for (let aPrime = 0;aPrime <= Rs; aPrime++) {
+    countA += patternACountForA(aPrime, Rs, Mq);
   }
   let countB = 0;
   for (let aPrime = 0;aPrime <= R; aPrime++) {
@@ -1431,7 +1522,7 @@ function enumerate5(category, targetIndex) {
     return { count: total };
   }
   if (targetIndex < countA) {
-    return { problem: lookupPatternA(category, targetIndex, min, step, R), count: total };
+    return { problem: lookupPatternA(category, targetIndex, min, step, Rs, Mq), count: total };
   }
   return { problem: lookupPatternB(category, targetIndex - countA, min, step, R), count: total };
 }
@@ -1614,6 +1705,74 @@ function enumerate6(category, targetIndex) {
 }
 var { count: count10, getProblem: getProblem10 } = makeGenerator(enumerate6);
 
+// src/clockReading.ts
+var exports_clockReading = {};
+__export(exports_clockReading, {
+  getProblem: () => getProblem11,
+  count: () => count11
+});
+
+// src/clock.ts
+var CX = 100;
+var CY = 100;
+var R_OUTER = 95;
+function onCircle(r, deg) {
+  const rad = (deg - 90) * Math.PI / 180;
+  return [CX + r * Math.cos(rad), CY + r * Math.sin(rad)];
+}
+function fmt(n) {
+  return n.toFixed(2);
+}
+function renderClockSVG(hour, minute) {
+  const parts = [];
+  parts.push(`<circle cx="${CX}" cy="${CY}" r="${R_OUTER}" fill="white" stroke="black" stroke-width="3"/>`);
+  for (let i = 0;i < 60; i++) {
+    const angle = i * 6;
+    const isHour = i % 5 === 0;
+    const innerR = isHour ? 82 : 88;
+    const [x1, y1] = onCircle(innerR, angle);
+    const [x2, y2] = onCircle(R_OUTER - 2, angle);
+    const sw = isHour ? 3 : 1.5;
+    parts.push(`<line x1="${fmt(x1)}" y1="${fmt(y1)}" x2="${fmt(x2)}" y2="${fmt(y2)}" stroke="black" stroke-width="${sw}" stroke-linecap="round"/>`);
+  }
+  for (let n = 1;n <= 12; n++) {
+    const [x, y] = onCircle(70, n * 30);
+    parts.push(`<text x="${fmt(x)}" y="${fmt(y)}" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="black">${n}</text>`);
+  }
+  const hourAngle = hour % 12 * 30 + minute * 0.5;
+  const [hx, hy] = onCircle(45, hourAngle);
+  parts.push(`<line x1="${CX}" y1="${CY}" x2="${fmt(hx)}" y2="${fmt(hy)}" stroke="black" stroke-width="6" stroke-linecap="round"/>`);
+  const minuteAngle = minute * 6;
+  const [mx, my] = onCircle(78, minuteAngle);
+  parts.push(`<line x1="${CX}" y1="${CY}" x2="${fmt(mx)}" y2="${fmt(my)}" stroke="black" stroke-width="3" stroke-linecap="round"/>`);
+  parts.push(`<circle cx="${CX}" cy="${CY}" r="4" fill="black"/>`);
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" class="clock-svg">${parts.join("")}</svg>`;
+}
+
+// src/clockReading.ts
+var minutesPerCategory = {
+  ["Clock: hour and half hour" /* Clock_HourHalf */]: [0, 30],
+  ["Clock: quarter hour" /* Clock_Quarter */]: [0, 15, 30, 45],
+  ["Clock: 5 minutes" /* Clock_FiveMin */]: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+};
+function count11(category) {
+  const minutes = minutesPerCategory[category];
+  return 12 * minutes.length;
+}
+function getProblem11(category, n) {
+  const minutes = minutesPerCategory[category];
+  const hourIdx = Math.floor(n / minutes.length);
+  const minute = minutes[n % minutes.length];
+  const hour = hourIdx + 1;
+  const answer = `${hour}:${String(minute).padStart(2, "0")}`;
+  return {
+    id: `Clock_${category}_${hour}_${minute}`,
+    text: "\uD83D\uDD52",
+    svg: renderClockSVG(hour, minute),
+    answer
+  };
+}
+
 // src/problem.ts
 var generatorPerGroup = {
   Addition: exports_addition,
@@ -1625,6 +1784,7 @@ var generatorPerGroup = {
   Comparison: exports_comparison,
   NumberText: exports_numberText,
   NextPrevious: exports_nextPrevious,
+  Clock: exports_clockReading,
   Test: exports_test
 };
 function getGenerator(category) {
@@ -1638,7 +1798,7 @@ function getRandomProblem(category) {
 }
 
 // src/app.ts
-function getProblem11(categories) {
+function getProblem12(categories) {
   const category = categories[Math.floor(Math.random() * categories.length)];
   return { problem: getRandomProblem(category), category };
 }
@@ -1656,8 +1816,8 @@ function getSolvedCount(category) {
   return parseInt(localStorage.getItem(SOLVED_COUNT_PREFIX + category) || "0");
 }
 function incrementSolvedCount(category) {
-  const count11 = getSolvedCount(category) + 1;
-  localStorage.setItem(SOLVED_COUNT_PREFIX + category, count11.toString());
+  const count12 = getSolvedCount(category) + 1;
+  localStorage.setItem(SOLVED_COUNT_PREFIX + category, count12.toString());
 }
 
 // src/index.ts
@@ -1775,12 +1935,12 @@ document.addEventListener("DOMContentLoaded", () => {
         checkbox.addEventListener("change", updateSelectedDisplay);
         const label = document.createElement("label");
         label.htmlFor = category;
-        const count11 = getSolvedCount(category);
+        const count12 = getSolvedCount(category);
         const labelText = document.createTextNode(getCategoryDisplayName(category));
         label.appendChild(labelText);
-        if (count11 > 0) {
+        if (count12 > 0) {
           const countSpan = document.createElement("span");
-          countSpan.textContent = ` (${count11} ${t("solved")})`;
+          countSpan.textContent = ` (${count12} ${t("solved")})`;
           countSpan.style.fontSize = "0.8em";
           countSpan.style.color = "#718096";
           countSpan.style.fontWeight = "normal";
@@ -1810,7 +1970,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const exampleProblem = getRandomProblem(cat);
             const exampleDiv = document.createElement("div");
             exampleDiv.className = "example-problem";
-            exampleDiv.textContent = exampleProblem.text;
+            if (exampleProblem.svg) {
+              exampleDiv.innerHTML = exampleProblem.svg;
+            } else {
+              exampleDiv.textContent = localizeProblemText(exampleProblem.text);
+            }
             examplesList.appendChild(exampleDiv);
           }
           examplesDiv.appendChild(examplesList);
